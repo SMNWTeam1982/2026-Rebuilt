@@ -12,7 +12,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.CANIDs;
+import frc.robot.CANIDs.IntakeIDS;
 
 /**                                     IMPORTANT
  * All values/IDs are placeholders and are in need of change once design in complete and 
@@ -38,10 +38,10 @@ public class IntakeSubsystem extends SubsystemBase {
         public static final SparkBaseConfig INTAKE_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(35).idleMode(SparkBaseConfig.IdleMode.kCoast);
     } 
     /** Motor on the Arm */
-    private final SparkMax intakeMotor = new SparkMax(CANIDs.intakMotorID, SparkMax.MotorType.kBrushless); 
+    private final SparkMax intakeMotor = new SparkMax(IntakeIDS.INTAKE, SparkMax.MotorType.kBrushless); 
     private final RelativeEncoder intakeMotorEncoder = intakeMotor.getEncoder();
 
-    private final SparkMax armMotor = new SparkMax(CANIDs.armMotorID, SparkMax.MotorType.kBrushless);
+    private final SparkMax armMotor = new SparkMax(IntakeIDS.PIVOT, SparkMax.MotorType.kBrushless);
     private final RelativeEncoder armMotorEncoder = armMotor.getEncoder();
 
     private final PIDController armController = new PIDController(

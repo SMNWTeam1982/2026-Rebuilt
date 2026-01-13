@@ -26,8 +26,12 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.CANIDs.DriveIDs;
 import frc.robot.Subsystems.Vision.VisionData;
 
+/**
+ * FL FR BL BR
+ */
 public class DriveSubsystem extends SubsystemBase {
 
     public static final class DriveConstants {
@@ -76,10 +80,26 @@ public class DriveSubsystem extends SubsystemBase {
                 new RobotConfig(ROBOT_MASS, ROBOT_MOMENT_OF_INERTIA, MODULE_CONFIG, MODULE_OFFSETS);
     }
 
-    private final SwerveModule frontLeft = new SwerveModule(7, 8, 4);
-    private final SwerveModule frontRight = new SwerveModule(1, 2, 3);
-    private final SwerveModule backLeft = new SwerveModule(5, 4, 1);
-    private final SwerveModule backRight = new SwerveModule(3, 6, 2);
+    private final SwerveModule frontLeft = new SwerveModule(
+        DriveIDs.FRONT_LEFT_DRIVE, 
+        DriveIDs.FRONT_LEFT_TURN, 
+        DriveIDs.FRONT_LEFT_ENCODER
+    );
+    private final SwerveModule frontRight = new SwerveModule(
+        DriveIDs.FRONT_RIGHT_DRIVE, 
+        DriveIDs.FRONT_RIGHT_TURN, 
+        DriveIDs.FRONT_RIGHT_ENCODER
+    );
+    private final SwerveModule backLeft = new SwerveModule(
+        DriveIDs.BACK_LEFT_DRIVE,
+        DriveIDs.BACK_LEFT_TURN, 
+        DriveIDs.BACK_LEFT_ENCODER
+    );
+    private final SwerveModule backRight = new SwerveModule(
+        DriveIDs.BACK_RIGHT_DRIVE, 
+        DriveIDs.BACK_RIGHT_TURN, 
+        DriveIDs.BACK_RIGHT_ENCODER
+    );
 
     /**
      * the rotation the gyro represents is not the same as the robot heading the gyro data is used as
