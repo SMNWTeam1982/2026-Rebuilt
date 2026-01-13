@@ -14,8 +14,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.CANIDs.IntakeIDS;
 
+
 /**                                     IMPORTANT
- * All values/IDs are placeholders and are in need of change once design in complete and 
+ * All values/IDs are placeholders and are in need of change once robot design is complete and 
  * futher research has been conducted. 
  * 1/12/2026
  */
