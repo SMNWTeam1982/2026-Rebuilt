@@ -1,6 +1,6 @@
-package frc.robot.Subsytems;
+package frc.robot.Subsystems.Intake;
 
-public class Intake {
+public class IntakeSubsystem {
     public static final class IntakeConstants {
         public static final double intakeSpeed = 5; // Placeholder 
         public static final double ejectSpeed = -5; // Placeholder 
