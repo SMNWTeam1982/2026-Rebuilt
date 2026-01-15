@@ -62,7 +62,7 @@ public class IntakeSubsystem extends SubsystemBase {
         armMotorEncoder.setPosition(0);
 
         armController.setTolerance(IntakeConstants.WRIST_PID_TOLERANCE);
-        armController.setGoal(IntakeConstants.STOW_POS.getRadians());
+        armController.setSetpoint(IntakeConstants.STOW_POS.getRadians());
 
         setDefaultCommand(runPID());
     }
