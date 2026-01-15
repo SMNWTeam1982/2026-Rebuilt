@@ -60,6 +60,32 @@ public final class DriveBase {
         new Pose2d()
     );
 
+    /** 
+     * sets the pose of the pose estimator to the given pose
+     * <p> useful when you need to reset the pose to a given one
+     * <p>anything that resets the pose estimator will be irrelavant with absolute position
+     */
+    public void resetEstimatedPose(Pose2d newPose) {
+        swervePoseEstimator.resetPosition(gyro.getRotation2d(), getModulePositions(), newPose);
+    }
+
+    /**
+     * Zeroes the heading of the pose estimator
+     *
+     * <p>anything that resets the pose estimator will be irrelavant with absolute position
+     */
+    public void zeroEstimatedHeading() {
+        swervePoseEstimator.resetRotation(new Rotation2d());
+    }
+
+    /** sets all of the drivetrain motors to 0 */
+    public void stop() {
+        frontLeft.stop();
+        frontRight.stop();
+        backLeft.stop();
+        backRight.stop();
+    }
+
     /**
      * calls the update uptade method on the pose estimator, fetches the odometry data from the chassis
      */

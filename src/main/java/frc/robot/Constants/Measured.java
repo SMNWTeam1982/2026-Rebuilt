@@ -16,4 +16,16 @@ public class Measured {
         /** used for discretization */
         public static final double DRIVE_PERIOD = TimedRobot.kDefaultPeriod;
     }
+
+    public static final class SwerveModuleMeasurements{
+        /** a number that is measured every year */
+        public static final double POSITION_TO_METERS_MULTIPLIER = -0.31927 / 6.75;
+        /** position to meters / 60seconds */
+        public static final double RPM_TO_MPS_MULTIPLIER = POSITION_TO_METERS_MULTIPLIER / 60;
+
+        /** the minimum value that the drive motor has to be set to before it can move */
+        public static final double DRIVE_STATIC_GAIN = 0.05;
+        /** multiplier that converts a velocity to a voltage to feed to the drive motor */
+        public static final double DRIVE_VELOCITY_GAIN_VOLT_SECONDS_PER_METER = 2.87;
+    }
 }
