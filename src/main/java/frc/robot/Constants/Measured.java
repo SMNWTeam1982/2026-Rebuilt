@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Measured {
-
     public static final class DriveBaseMeasurements {
         public static final Translation2d FRONT_LEFT_TRANSLATION = new Translation2d(0.2635, 0.2635);
         public static final Translation2d FRONT_RIGHT_TRANSLATION = new Translation2d(0.2635, -0.2635);
@@ -27,5 +26,10 @@ public class Measured {
         public static final double DRIVE_STATIC_GAIN = 0.05;
         /** multiplier that converts a velocity to a voltage to feed to the drive motor */
         public static final double DRIVE_VELOCITY_GAIN_VOLT_SECONDS_PER_METER = 2.87;
+    }
+
+    public static final class FieldMeasurements{
+        public static final Translation2d BLUE_HUB_CENTER = new Translation2d();
+        public static final Translation2d RED_HUB_CENTER = new Translation2d();
     }
 }

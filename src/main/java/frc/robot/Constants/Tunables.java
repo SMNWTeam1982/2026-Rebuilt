@@ -13,7 +13,6 @@ public class Tunables {
         /** a speed for the commands that fine tune the robot position robot-relative */
         public static final double NUDGE_SPEED = 0.25;
 
-
         public static final double MAX_AUTO_SPEED = 0.5;
         public static final double AUTO_TRANSLATION_TOLERANCE = 0.02; // 2cm
         public static final Rotation2d AUTO_ROTATION_TOLERANCE = Rotation2d.fromDegrees(1);
@@ -37,5 +36,10 @@ public class Tunables {
         public static final SparkBaseConfig DRIVE_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(35).idleMode(SparkBaseConfig.IdleMode.kBrake);
         /** config for the turn motor on the module */
         public static final SparkBaseConfig TURN_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(30).idleMode(SparkBaseConfig.IdleMode.kCoast);
+    }
+
+    public static final class FieldTunables{
+        /** the distance from the hub that we have to be in order to score */
+        public static final double HUB_SCORING_DISTANCE = 2.5;
     }
 }
