@@ -3,12 +3,18 @@ package frc.robot.Subsystems.Drive;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
@@ -42,12 +48,42 @@ public class DriveSubsystem extends SubsystemBase {
         DriveBaseTunables.TRANSLATION_D
     );
 
-    /** set pid settings */
+    /** set pid settings and config autobuilder  */
     public DriveSubsystem(){
         headingController.setTolerance(DriveBaseTunables.AUTO_ROTATION_TOLERANCE.getRadians());
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         xController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
         yController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
+
+
+        RobotConfig config;
+        try{
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        AutoBuilder.configure(
+            this::getPose,
+            this::resetPose,
+            this::getRobotRelativeSpeeds, 
+            (speeds, feedforwards) -> driveRobotRelative(speeds),
+            new PPHolonomicDriveController(
+                new PIDConstants(5.0, 0.0, 0.0), 
+                new PIDConstants(5.0, 0.0, 0.0)
+                ),
+                config,
+                ()->{
+                    var alliance = DriverStation.getAlliance();
+                    if(alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+
+
+                },
+                this
+         );
+
     }
 
     /** update telemetry and pose estimation here */

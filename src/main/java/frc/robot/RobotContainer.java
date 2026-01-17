@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 public class RobotContainer {
  private final SendableChooser<Command> autoChooser;
   public RobotContainer() {
-    autoChooser = AutoBuilder.buildAutoChooser("tests");
+    autoChooser = AutoBuilder.buildAutoChooser("test");
     SmartDashboard.putData("auto mode", autoChooser);
     NamedCommands.registerCommand("score ", Commands.runOnce(()->{System.out.println("we scored!");}));
 
