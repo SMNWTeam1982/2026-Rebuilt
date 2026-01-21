@@ -21,9 +21,6 @@ import frc.robot.Constants.Tunables.SwerveModuleTunables;
  * one module
  */
 public final class SwerveModule {
-
-    
-
     private final SparkMax driveMotor;
     private final SparkMax turnMotor;
     private final CANcoder turnEncoder;

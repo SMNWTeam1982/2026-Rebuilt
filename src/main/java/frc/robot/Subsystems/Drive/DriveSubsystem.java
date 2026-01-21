@@ -1,5 +1,6 @@
 package frc.robot.Subsystems.Drive;
 
+import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -12,6 +13,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
+import frc.robot.Subsystems.Vision.VisionData;
 
 /**
  * The Subsystem that the other code will interface with when interacting with the drive
@@ -19,7 +21,7 @@ import frc.robot.Constants.Tunables.DriveBaseTunables;
 public class DriveSubsystem extends SubsystemBase {
 
     /** abstraction of the swerve module coordination */
-    private final DriveBase driveBase = new DriveBase();
+    private final DriveBase driveBase;
 
     /** controller for the field-relative heading of the robot */
     private final PIDController headingController = new PIDController(
@@ -43,7 +45,9 @@ public class DriveSubsystem extends SubsystemBase {
     );
 
     /** set pid settings */
-    public DriveSubsystem(){
+    public DriveSubsystem(Supplier<Optional<VisionData>> visionResults){
+        driveBase = new DriveBase(visionResults);
+
         headingController.setTolerance(DriveBaseTunables.AUTO_ROTATION_TOLERANCE.getRadians());
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         xController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
@@ -224,7 +228,7 @@ public class DriveSubsystem extends SubsystemBase {
     /**
      * Zeroes the heading of the pose estimator
      *
-     * <p>anything that resets the pose estimator will be irrelavant with absolute position
+     * <p>anything that resets the pose estimator will be overridden by absolute position from vision
      */
     public Command zeroEstimatedHeading() {
         return runOnce(driveBase::zeroEstimatedHeading);

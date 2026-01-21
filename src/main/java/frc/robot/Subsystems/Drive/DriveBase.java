@@ -1,5 +1,8 @@
 package frc.robot.Subsystems.Drive;
 
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -16,7 +19,8 @@ import frc.robot.Subsystems.Vision.VisionData;
 
 /**
  * NOT A SUBSYSTEM
- * <p> another abstraction from the swerve modules so that the Subsystem doesn't have to manage every swerve module and module telemetry
+ * <p> this class only exists so that the technical tasks of running the swerve modules wont be cluttered with the functions for driving the robot
+ * <p> an abstraction from the swerve modules so that the Subsystem doesn't have to manage every swerve module and module telemetry
  * <p> this class only provides the bare-bones functionality of a swerve drive: robot-relative control and odometry
  * <p> this class is not designed for anything more advanced, such as pathplanner or vision
  */
@@ -44,6 +48,8 @@ public final class DriveBase {
 
     public final Pigeon2 gyro = new Pigeon2(0);
 
+    public final Supplier<Optional<VisionData>> visionResults;
+
     /** stores data about the swerve modules and their states */
     public final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
         DriveBaseMeasurements.FRONT_LEFT_TRANSLATION, 
@@ -59,6 +65,10 @@ public final class DriveBase {
         getModulePositions(), 
         new Pose2d()
     );
+
+    public DriveBase(Supplier<Optional<VisionData>> visionResults){
+        this.visionResults = visionResults;
+    }
 
     /** 
      * sets the pose of the pose estimator to the given pose
@@ -94,10 +104,16 @@ public final class DriveBase {
     }
 
     /**
-     * adds a vision measurment to the pose estimator
+     * adds a vision measurment to the pose estimator, if one is available
      */
-    public void addVisionDataToEstimator(VisionData visionData){
-        swervePoseEstimator.addVisionMeasurement(visionData.pose, visionData.timestamp, visionData.standardDeviations);
+    public void updatePoseEstimatorVision(){
+        visionResults.get().ifPresent(
+            visionData -> swervePoseEstimator.addVisionMeasurement(
+                visionData.pose, 
+                visionData.timestamp, 
+                visionData.standardDeviations
+            )
+        );
     }
 
     /**
@@ -199,5 +215,9 @@ public final class DriveBase {
      */
     public ChassisSpeeds getRobotRelativeSpeeds() {
         return driveKinematics.toChassisSpeeds(getModuleStates());
+    }
+
+    public ChassisSpeeds getFieldRelativeSpeeds() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getHeading());
     }
 }

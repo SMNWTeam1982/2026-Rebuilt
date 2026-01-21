@@ -31,5 +31,15 @@ public class Measured {
     public static final class FieldMeasurements{
         public static final Translation2d BLUE_HUB_CENTER = new Translation2d();
         public static final Translation2d RED_HUB_CENTER = new Translation2d();
+
+        /** the equation will be derived from a best fit of a data table that will be measured, expected to be quadratic or cubic */
+        public static double hubDistanceToFlywheelRPM(double distanceFromHub){
+            return 0.0;
+        }
+
+        /** the equation will be derived from a best fit of a data table that will be measured, expected to be linear */
+        public static double hubDistanceToFlightTime(double distanceFromHub){
+            return 0.0;
+        }
     }
 }
