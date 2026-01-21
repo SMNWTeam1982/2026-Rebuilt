@@ -37,6 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
         public static final double MULTIPLIER = 0;  
 
         public static final SparkBaseConfig INTAKE_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(35).idleMode(SparkBaseConfig.IdleMode.kCoast);
+        public static final double INTAKE_PID_TOLERANCE = 0;
     } 
     /** Motor on the Arm */
     private final SparkMax intakeMotor = new SparkMax(IntakeIDS.INTAKE, SparkMax.MotorType.kBrushless); 
@@ -61,7 +62,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMotorEncoder.setPosition(0);
         armMotorEncoder.setPosition(0);
 
-        armController.setTolerance(IntakeConstants.WRIST_PID_TOLERANCE);
+        armController.setTolerance(IntakeConstants.INTAKE_PID_TOLERANCE);
         armController.setSetpoint(IntakeConstants.STOW_POS.getRadians());
 
         setDefaultCommand(runPID());
@@ -84,8 +85,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public Command setStowPos() {
         return runOnce(
-            intakeMotor.set(0);
-            
+            intakeMotor.set(0)
         );
     }
 
