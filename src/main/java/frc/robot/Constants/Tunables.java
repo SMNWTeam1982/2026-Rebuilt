@@ -42,4 +42,9 @@ public class Tunables {
         /** the distance from the hub that we have to be in order to score */
         public static final double HUB_SCORING_DISTANCE = 2.5;
     }
+
+    public static final class ClimberConstants {
+        public static final double EXTEND_SPEED = 0.0;
+        public static final double RETRACT_SPEED = 0.0;
+    }
 }
