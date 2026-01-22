@@ -115,14 +115,13 @@ spotless {
     java {
         target fileTree('.') {
             include '**/*.java'
-            exclude '**/build/**', '**/build-*/**', '**/bin/**', '**/BuildConstants.java'
+            exclude '**/build/**', '**/build-*/**', '**/bin/**'
         }
         toggleOffOn()
-        googleJavaFormat()
+        palantirJavaFormat()
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
-        leadingTabsToSpaces(4)
     }
     groovyGradle {
         target fileTree('.') {
@@ -130,7 +129,7 @@ spotless {
             exclude '**/build/**', '**/build-*/**'
         }
         greclipse()
-        leadingTabsToSpaces(4)
+        indentWithSpaces(4)
         trimTrailingWhitespace()
         endWithNewline()
     }
@@ -141,7 +140,7 @@ spotless {
         }
         eclipseWtp('xml')
         trimTrailingWhitespace()
-        leadingTabsToSpaces(2)
+        indentWithSpaces(2)
         endWithNewline()
     }
     format 'misc', {
@@ -150,7 +149,7 @@ spotless {
             exclude '**/build/**', '**/build-*/**'
         }
         trimTrailingWhitespace()
-        leadingTabsToSpaces(2)
+        indentWithSpaces(2)
         endWithNewline()
     }
 }
