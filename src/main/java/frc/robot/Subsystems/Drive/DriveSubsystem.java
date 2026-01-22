@@ -63,9 +63,9 @@ public class DriveSubsystem extends SubsystemBase {
             e.printStackTrace();
         }
         AutoBuilder.configure(
-            this::getPose,
-            this::resetPose,
-            this::getRobotRelativeSpeeds, 
+            getRobotPose(),
+            resetEstimatedPose(getRobotPose()),
+           driveRobotRelative(), 
             (speeds, feedforwards) -> driveRobotRelative(speeds),
             new PPHolonomicDriveController(
                 new PIDConstants(5.0, 0.0, 0.0), 
