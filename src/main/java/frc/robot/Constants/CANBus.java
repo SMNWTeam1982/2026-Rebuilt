@@ -3,9 +3,11 @@ package frc.robot.Constants;
 
 public class CANBus {
    
-    public static final class IntakeIDS {
-        public final static int INTAKE = 0; //Place Holder
-        public final static int PIVOT = 0; //Place Holder
+    public static final class IntakeIDs {
+        public final static int INTAKE = 0;
+        public final static int PIVOT = 0;
+
+        public static final int PIVOT_ENCODER = 0;
     }
 
     public static final class DriveIDs {

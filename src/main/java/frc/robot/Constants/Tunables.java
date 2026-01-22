@@ -43,8 +43,31 @@ public class Tunables {
         public static final double HUB_SCORING_DISTANCE = 2.5;
     }
 
+
     public static final class ClimberConstants {
         public static final double EXTEND_SPEED = 0.0;
         public static final double RETRACT_SPEED = 0.0;
+    }
+
+    public static final class IntakeTunables{
+        // pid gains for the deploy/retraction of the intake
+        public static final double PIVOT_P = 1.0;
+        public static final double PIVOT_I = 0.0;
+        public static final double PIVOT_D = 0.0;
+
+        public static final Rotation2d PIVOT_TOLERANCE = Rotation2d.fromDegrees(1);
+
+        // feedforward gains for the gravity compensation
+        public static final double PIVOT_S = 0.0;
+        public static final double PIVOT_G = 0.0;
+        public static final double PIVOT_V = 0.0;
+
+        public static final Rotation2d STOW_POSITION = new Rotation2d();
+        public static final Rotation2d DEPLOY_POSITION = new Rotation2d();
+
+        // percent that the intake will be set at when intaking
+        public static final double INTAKE_SPEED = 0.0;
+
+        public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(30).idleMode(SparkBaseConfig.IdleMode.kBrake);
     }
 }
