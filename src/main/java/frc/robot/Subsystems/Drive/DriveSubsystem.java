@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
@@ -24,6 +25,8 @@ public class DriveSubsystem extends SubsystemBase {
     private final PIDController headingController =
             new PIDController(DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D);
 
+    public final Trigger atTargetHeading = new Trigger(headingController::atSetpoint);
+
     /** controller for the field-relative x of the robot */
     private final PIDController xController = new PIDController(
             DriveBaseTunables.TRANSLATION_P, DriveBaseTunables.TRANSLATION_I, DriveBaseTunables.TRANSLATION_D);
@@ -31,6 +34,8 @@ public class DriveSubsystem extends SubsystemBase {
     /** controller for the field-relative y of the robot */
     private final PIDController yController = new PIDController(
             DriveBaseTunables.TRANSLATION_P, DriveBaseTunables.TRANSLATION_I, DriveBaseTunables.TRANSLATION_D);
+
+    public final Trigger atTargetTranslation = new Trigger(xController::atSetpoint).and(yController::atSetpoint);
 
     /** set pid settings */
     public DriveSubsystem(Supplier<Optional<VisionData>> visionResults) {
