@@ -8,6 +8,12 @@ public class CANBus {
         public final static int PIVOT = 0; //Place Holder
     }
 
+    public static final class ShooterIDs {
+        // all placeholders
+        public final static int LEFT_MOTOR_ID = 0;
+        public final static int RIGHT_MOTOR_ID = 0;
+    }
+
     public static final class DriveIDs {
         public final static int FRONT_LEFT_DRIVE = 7;
         public final static int FRONT_LEFT_TURN = 8;
