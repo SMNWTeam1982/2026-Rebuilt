@@ -6,16 +6,16 @@ import java.util.Optional;
 
 public class VisionSubsystem extends SubsystemBase {
 
-  private Optional<VisionData> lastVisionResult;
+    private Optional<VisionData> lastVisionResult;
 
-  public VisionSubsystem() {}
+    public VisionSubsystem() {}
 
-  public Optional<VisionData> getLastVisionResult() {
-    return lastVisionResult;
-  }
+    public Optional<VisionData> getLastVisionResult() {
+        return lastVisionResult;
+    }
 
-  /** fetches the data from the limelight and then updates the internal variable */
-  public Command getLatestVisionResults() {
-    return run(() -> {});
-  }
+    /** fetches the data from the limelight and then updates the internal variable */
+    public Command getLatestVisionResults() {
+        return run(() -> {});
+    }
 }

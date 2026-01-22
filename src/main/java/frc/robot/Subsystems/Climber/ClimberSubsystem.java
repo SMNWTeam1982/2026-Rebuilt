@@ -8,7 +8,7 @@ import frc.robot.Constants.Tunables.climberTunables;
 import frc.robot.Constants.CANBus.ClimberIDs;
 
 public class ClimberSubsystem extends SubsystemBase {
-  private final SparkMax climberMotor;
+    private final SparkMax climberMotor;
 
   public ClimberSubsystem() {
     climberMotor = new SparkMax(ClimberIDs.CLIMBER_MOTER, MotorType.kBrushless);

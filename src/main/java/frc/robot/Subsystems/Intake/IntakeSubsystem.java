@@ -15,84 +15,81 @@ import frc.robot.Constants.Tunables.IntakeTunables;
 
 /** controls the pivoting of the intake and the roller bar */
 public class IntakeSubsystem extends SubsystemBase {
-  /** for pulling in fuel */
-  private final SparkMax intakeMotor =
-      new SparkMax(IntakeIDs.INTAKE, SparkMax.MotorType.kBrushless);
+    /** for pulling in fuel */
+    private final SparkMax intakeMotor = new SparkMax(IntakeIDs.INTAKE, SparkMax.MotorType.kBrushless);
 
-  /** for deploying the intake */
-  private final SparkMax pivotMotor = new SparkMax(IntakeIDs.PIVOT, SparkMax.MotorType.kBrushless);
+    /** for deploying the intake */
+    private final SparkMax pivotMotor = new SparkMax(IntakeIDs.PIVOT, SparkMax.MotorType.kBrushless);
 
-  /** the absolue throughbore encoder attatched to the hex shaft */
-  private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
+    /** the absolue throughbore encoder attatched to the hex shaft */
+    private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
 
-  private final PIDController pivotController =
-      new PIDController(IntakeTunables.PIVOT_P, IntakeTunables.PIVOT_I, IntakeTunables.PIVOT_D);
+    private final PIDController pivotController =
+            new PIDController(IntakeTunables.PIVOT_P, IntakeTunables.PIVOT_I, IntakeTunables.PIVOT_D);
 
-  /** for gravity compensation */
-  public final ArmFeedforward pivotFeedforward =
-      new ArmFeedforward(IntakeTunables.PIVOT_S, IntakeTunables.PIVOT_G, IntakeTunables.PIVOT_V);
+    /** for gravity compensation */
+    public final ArmFeedforward pivotFeedforward =
+            new ArmFeedforward(IntakeTunables.PIVOT_S, IntakeTunables.PIVOT_G, IntakeTunables.PIVOT_V);
 
-  public IntakeSubsystem() {
-    pivotMotor.configure(
-        IntakeTunables.PIVOT_MOTOR_CONFIG,
-        ResetMode.kResetSafeParameters,
-        PersistMode.kPersistParameters);
+    public IntakeSubsystem() {
+        pivotMotor.configure(
+                IntakeTunables.PIVOT_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-    pivotController.setTolerance(IntakeTunables.PIVOT_TOLERANCE.getRotations());
-    pivotController.setSetpoint(IntakeTunables.STOW_POSITION.getRotations());
+        pivotController.setTolerance(IntakeTunables.PIVOT_TOLERANCE.getRotations());
+        pivotController.setSetpoint(IntakeTunables.STOW_POSITION.getRotations());
 
-    setDefaultCommand(runPID());
-  }
+        setDefaultCommand(runPID());
+    }
 
-  /** sets the pid setpoint to the desired angle */
-  public Command setTargetAngle(
-      Rotation2d targetAngle) { // Finds the target angle for the wrist based on button input
-    return runOnce(() -> pivotController.setSetpoint(targetAngle.getRotations()));
-  }
+    /** sets the pid setpoint to the desired angle */
+    public Command setTargetAngle(
+            Rotation2d targetAngle) { // Finds the target angle for the wrist based on button input
+        return runOnce(() -> pivotController.setSetpoint(targetAngle.getRotations()));
+    }
 
-  /** runs the feedback and feedforward control and sets the motor */
-  public Command runPID() {
-    return runEnd(
-        () -> {
-          double intakeRotation = getIntakePosition().getRotations();
+    /** runs the feedback and feedforward control and sets the motor */
+    public Command runPID() {
+        return runEnd(
+                () -> {
+                    double intakeRotation = getIntakePosition().getRotations();
 
-          // pid loop tuned to output in volts
-          double pidOutput = pivotController.calculate(intakeRotation);
+                    // pid loop tuned to output in volts
+                    double pidOutput = pivotController.calculate(intakeRotation);
 
-          double feedForwardOutput = pivotFeedforward.calculate(pivotController.getSetpoint(), 0);
+                    double feedForwardOutput = pivotFeedforward.calculate(pivotController.getSetpoint(), 0);
 
-          double outputVoltage = MathUtil.clamp(feedForwardOutput + pidOutput, -12, 12);
+                    double outputVoltage = MathUtil.clamp(feedForwardOutput + pidOutput, -12, 12);
 
-          pivotMotor.setVoltage(outputVoltage);
-        },
-        () -> {
-          pivotMotor.set(0);
-          pivotController.reset();
-        });
-  }
+                    pivotMotor.setVoltage(outputVoltage);
+                },
+                () -> {
+                    pivotMotor.set(0);
+                    pivotController.reset();
+                });
+    }
 
-  /** sets the intake to start intaking and the intake target to the deploy position */
-  public Command deploy() {
-    return startIntaking().andThen(setTargetAngle(IntakeTunables.DEPLOY_POSITION));
-  }
+    /** sets the intake to start intaking and the intake target to the deploy position */
+    public Command deploy() {
+        return startIntaking().andThen(setTargetAngle(IntakeTunables.DEPLOY_POSITION));
+    }
 
-  /** sets the intake to stop intaking and the intake target to the stow position */
-  public Command retract() {
-    return stopIntaking().andThen(setTargetAngle(IntakeTunables.STOW_POSITION));
-  }
+    /** sets the intake to stop intaking and the intake target to the stow position */
+    public Command retract() {
+        return stopIntaking().andThen(setTargetAngle(IntakeTunables.STOW_POSITION));
+    }
 
-  /** sets the intake motor to the intake speed */
-  public Command startIntaking() {
-    return runOnce(() -> intakeMotor.set(IntakeTunables.INTAKE_SPEED));
-  }
+    /** sets the intake motor to the intake speed */
+    public Command startIntaking() {
+        return runOnce(() -> intakeMotor.set(IntakeTunables.INTAKE_SPEED));
+    }
 
-  /** sets the intake motor to 0 */
-  public Command stopIntaking() {
-    return runOnce(() -> intakeMotor.set(0));
-  }
+    /** sets the intake motor to 0 */
+    public Command stopIntaking() {
+        return runOnce(() -> intakeMotor.set(0));
+    }
 
-  /** the absolute position of the intake from the throughbore encoder */
-  public Rotation2d getIntakePosition() {
-    return Rotation2d.fromRotations(pivotEncoder.getPosition().getValueAsDouble());
-  }
+    /** the absolute position of the intake from the throughbore encoder */
+    public Rotation2d getIntakePosition() {
+        return Rotation2d.fromRotations(pivotEncoder.getPosition().getValueAsDouble());
+    }
 }
