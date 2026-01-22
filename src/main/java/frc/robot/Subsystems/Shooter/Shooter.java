@@ -25,22 +25,23 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 public class Shooter{
     
     public static final class ShooterConstants{
-        
+
         public static final SparkBaseConfig INTAKE_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(35).idleMode(SparkBaseConfig.IdleMode.kCoast);
+
     }
 
-    private final SparkMax leftShooterMotor = new SparkMax(ShooterIDs.LEFT_MOTOR_ID, SparkMax.MotorType.kBrushless); 
-    private final RelativeEncoder leftShooterMotorEncoder = leftShooterMotor.getEncoder();
+    // private final SparkMax leftShooterMotor = new SparkMax(ShooterIDs.LEFT_MOTOR_ID, SparkMax.MotorType.kBrushless); 
+    // private final RelativeEncoder leftShooterMotorEncoder = leftShooterMotor.getEncoder();
 
     private final SparkMax rightShooterMotor = new SparkMax(ShooterIDs.RIGHT_MOTOR_ID, SparkMax.MotorType.kBrushless); 
     private final RelativeEncoder rightShooterMotorEncoder = rightShooterMotor.getEncoder();
     
-    public static final SysIdRoutine sysIdRoutine = new SysIdRoutine(
+    public static final SysIdRoutine sysIdRoutine = new SysIdRoutine( // SysID from TechHounds 2026-Ri3d
                 new SysIdRoutine.Config(),
                 new SysIdRoutine.Mechanism(
                         (Voltage volts) -> setVoltage(volts.in(Volts)),
                         log -> {
-                            log.motor("left")
+                            log.motor("Right Motor")
                                     .voltage(sysidAppliedVoltageMeasure.mut_replace(voltageSignal.getValueAsDouble(),
                                             Volts))
                                     .angularPosition(sysidPositionMeasure
@@ -54,12 +55,12 @@ public class Shooter{
         setDefaultCommand(spinAtVelocityCommand(() -> 0.0));
 
     public double getRightMotorSpeed(){
-        return rightShooterMotor.get
+        return rightShooterMotor.getBusVoltage();
     }
 
-    public double getLeftMotorSpeed(){
+    // public double getLeftMotorSpeed(){
 
-    }
+    // }
 
 
     
