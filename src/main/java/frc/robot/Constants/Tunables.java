@@ -46,12 +46,17 @@ public class Tunables {
         public static final double HUB_SCORING_DISTANCE = 2.5;
     }
 
-    public static final class ClimberConstants {
-        public static final double EXTEND_SPEED = 0.0;
-        public static final double RETRACT_SPEED = 0.0;
+    public static final class climberTunables {
+        public static final double EXTEND_SPEED = .25;
+        public static final double RETRACT_SPEED = -.25;
     }
 
-    public static final class IntakeTunables {
+    public static final class kickerTuneables {
+        public static final double INTAKE_KICKER_SPEED = 1;
+    
+    }
+
+        public static final class IntakeTunables {
         // pid gains for the deploy/retraction of the intake
         public static final double PIVOT_P = 1.0;
         public static final double PIVOT_I = 0.0;

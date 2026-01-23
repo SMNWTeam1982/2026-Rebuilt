@@ -14,7 +14,7 @@ public class KickerSubsystem extends SubsystemBase {
     public KickerSubsystem(){}
 
      public Command startKicker() {
-    return runOnce(() -> kickerMotor.set(kickerTuneables.INTAKE_SPEED)
+    return runOnce(() -> kickerMotor.set(kickerTuneables.INTAKE_KICKER_SPEED)
   );
   }
 public Command stopKicker() {
