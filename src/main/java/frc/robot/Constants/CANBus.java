@@ -26,4 +26,12 @@ public class CANBus {
         public static final int BACK_RIGHT_TURN = 6;
         public static final int BACK_RIGHT_ENCODER = 2;
     }
+
+    public static final class ClimberIDs {
+        public static final int CLIMBER = 0;
+    }
+
+    public static final class KickerIDs {
+        public static final int KICKER = 0;
+    }
 }

@@ -46,11 +46,6 @@ public class Tunables {
         public static final double HUB_SCORING_DISTANCE = 2.5;
     }
 
-    public static final class ClimberConstants {
-        public static final double EXTEND_SPEED = 0.0;
-        public static final double RETRACT_SPEED = 0.0;
-    }
-
     public static final class IntakeTunables {
         // pid gains for the deploy/retraction of the intake
         public static final double PIVOT_P = 1.0;
@@ -79,5 +74,14 @@ public class Tunables {
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
+    }
+
+    public static final class KickerTunables {
+        public static final double KICKER_SPEED = 0.0;
+    }
+
+    public static final class ClimberTunables {
+        public static final double EXTEND_SPEED = 0.0;
+        public static final double RETRACT_SPEED = 0.0;
     }
 }
