@@ -18,22 +18,25 @@ import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.FieldTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
+import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import java.util.Optional;
 
 public class RobotContainer {
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
+
     private final DriveSubsystem drive = new DriveSubsystem(() -> Optional.empty());
+    private final IntakeSubsystem intake = new IntakeSubsystem();
+
+    private final boolean onBlueAlliance;
+    private final Translation2d hubCenter;
+
+    private final Trigger confidentShot;
 
     public RobotContainer() {
-        configureBindings();
-    }
 
-    private void configureBindings() {
-        boolean onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
-
-        Translation2d hubCenter;
+        onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
 
         if (onBlueAlliance) {
             hubCenter = FieldMeasurements.BLUE_HUB_CENTER;
@@ -41,7 +44,7 @@ public class RobotContainer {
             hubCenter = FieldMeasurements.RED_HUB_CENTER;
         }
 
-        Trigger confidentShot = new Trigger(() -> {
+        confidentShot = new Trigger(() -> {
             Pose2d robotPose = drive.getRobotPose();
             Translation2d newHubPosition = HubCommands.calculateScoringTarget(
                     robotPose.getTranslation(), hubCenter, drive.getFieldRelativeVelocity());
@@ -49,11 +52,17 @@ public class RobotContainer {
             double futureDistanceFromHub = newHubPosition.getDistance(robotPose.getTranslation());
             double currentDistanecFromHub = robotPose.getTranslation().getDistance(hubCenter);
 
-            // // if the distance from the hub changes by a negligable amount in the future then the shot confidence is
+            // if the distance from the hub changes by a negligable amount in the future, then the shot confidence is
             // high
             return Math.abs(futureDistanceFromHub - currentDistanecFromHub)
                     <= ShooterTunables.SHOOTING_POSITION_TOLERANCE;
         });
+
+        configureDriverBindings();
+        configureOperatorBindings();
+    }
+
+    private void configureDriverBindings() {
 
         // set the drive controls to aim mode when pressed
         driverController
@@ -84,6 +93,11 @@ public class RobotContainer {
                 .debounce(0.1)
                 .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.orbitPoint(
                         () -> -driverController.getLeftY(), hubCenter, FieldTunables.HUB_SCORING_DISTANCE))));
+    }
+
+    private void configureOperatorBindings() {
+        operatorController.a().debounce(0.1).onTrue(intake.deploy());
+        operatorController.b().debounce(0.1).onTrue(intake.retract());
     }
 
     private ChassisSpeeds getJoystickSpeeds() {
