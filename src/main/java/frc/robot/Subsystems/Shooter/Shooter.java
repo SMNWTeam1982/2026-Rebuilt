@@ -18,11 +18,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.ShooterIDs;
 
 //SysID Routine Imports 
-import edu.wpi.first.units.Units.Volts;
-import edu.wpi.first.units.Units.Rotations;
-import edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
+
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.units.measure.MutAngle;
+import edu.wpi.first.units.measure.MutAngularVelocity;
+import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Subsystems.Shooter.Shooter;
+import frc.robot.Subsystems.Shooter.Shooter.ShooterConstants;
 
 
 public class Shooter extends SubsystemBase {
@@ -47,28 +58,9 @@ public class Shooter extends SubsystemBase {
 
     private final SparkMax rightShooterMotor = new SparkMax(ShooterIDs.RIGHT_MOTOR_ID, SparkMax.MotorType.kBrushless); 
     private final RelativeEncoder rightShooterMotorEncoder = rightShooterMotor.getEncoder();
-    
-    public static final SysIdRoutine sysIdRoutine = new SysIdRoutine( // SysID from TechHounds 2026-Ri3d
-                new SysIdRoutine.Config(),
-                new SysIdRoutine.Mechanism(
-                        (Voltage volts) -> setVoltage(volts.in(Volts)),
-                        log -> {
-                            log.motor("Right Motor")
-                                    .voltage(sysidAppliedVoltageMeasure.mut_replace(voltageSignal.getValueAsDouble(),
-                                            Volts))
-                                    .angularPosition(sysidPositionMeasure
-                                            .mut_replace(positionSignal.getValueAsDouble(), Rotations))
-                                    .angularVelocity(
-                                            sysidVelocityMeasure.mut_replace(velocitySignal.getValueAsDouble(),
-                                                    RotationsPerSecond));
-                        },
-                        this));
-                        
-        setDefaultCommand(spinAtVelocityCommand(() -> 0.0));
 
     private final PIDController shooterPIDController = new PIDController(ShooterConstants.SHOOTER_PIDCONST_P, ShooterConstants.SHOOTER_PIDCONST_I, ShooterConstants.SHOOTER_PIDCONST_D);
     private final SimpleMotorFeedforward shooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.SHOOTER_FEEDFORWARDCONST_KS, ShooterConstants.SHOOTER_FEEDFORWARDCONST_KV);
-
     private Supplier<Double> getDistanceToHub;
 
 
@@ -117,5 +109,70 @@ public class Shooter extends SubsystemBase {
         // in RPM
         return leftShooterMotorEncoder.getVelocity();
     }
+    private final MutVoltage m_appliedVoltage = Volts.mutable(0);
+    // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+    // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+    private final MutAngularVelocity m_velocity = RadiansPerSecond.mutable(0);
 
+      private final SysIdRoutine m_sysIdRoutine =
+      new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new SysIdRoutine.Config(),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motor(s).
+              m_shooterMotor::setVoltage,
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              log -> {
+                // Record a frame for the shooter motor.
+                log.motor("Right Shooter")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                            m_shooterMotor.get() * RobotController.getBatteryVoltage(), Volts))
+                    .angularPosition(m_angle.mut_replace(m_shooterEncoder.getDistance(), Rotations))
+                    .angularVelocity(
+                        m_velocity.mut_replace(m_shooterEncoder.getRate(), RotationsPerSecond));
+              },
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("shooter")
+              this));
+
+  private final PIDController m_shooterFeedback = new PIDController(ShooterConstants.kP, 0, 0);
+  // Feedforward controller to run the shooter wheel in closed-loop, set the constants equal to
+  // those calculated by SysId
+  private final SimpleMotorFeedforward m_shooterFeedforward =
+      new SimpleMotorFeedforward();
+
+    public Command runShooter(DoubleSupplier shooterSpeed) {
+    // Run shooter wheel at the desired speed using a PID controller and feedforward.
+    return run(() -> {
+          m_shooterMotor.setVoltage(
+              m_shooterFeedback.calculate(m_shooterEncoder.getRate(), shooterSpeed.getAsDouble())
+                  + m_shooterFeedforward.calculate(shooterSpeed.getAsDouble()));
+          m_feederMotor.set(ShooterConstants.kFeederSpeed);
+        })
+        .finallyDo(
+            () -> {
+              m_shooterMotor.stopMotor();
+              m_feederMotor.stopMotor();
+            })
+        .withName("runShooter");
+  }
+
+  /**
+   * Returns a command that will execute a quasistatic test in the given direction.
+   *
+   * @param direction The direction (forward or reverse) to run the test in
+   */
+  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.quasistatic(direction);
+  }
+
+  /**
+   *
+   * @param direction The direction (forward or reverse) to run the test in
+   */
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.dynamic(direction);
+  }
 }
