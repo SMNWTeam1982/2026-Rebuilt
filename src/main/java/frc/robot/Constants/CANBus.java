@@ -9,6 +9,12 @@ public class CANBus {
         public static final int PIVOT_ENCODER = 0;
     }
 
+    public static final class ShooterIDs {
+        // all placeholders
+        public final static int LEFT_MOTOR_ID = 0;
+        public final static int RIGHT_MOTOR_ID = 0;
+    }
+
     public static final class DriveIDs {
         public static final int FRONT_LEFT_DRIVE = 7;
         public static final int FRONT_LEFT_TURN = 8;
