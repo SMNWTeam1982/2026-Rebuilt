@@ -5,17 +5,15 @@ import java.util.function.Supplier;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.ShooterIDs;
+import frc.robot.Constants.Measured.FieldMeasurements;
 
 
 public class Shooter extends SubsystemBase {
@@ -85,10 +83,5 @@ public class Shooter extends SubsystemBase {
     public double getRightMotorSpeed(){
         // in RPM
         return rightShooterMotorEncoder.getVelocity();
-    }
-
-    public double getLeftMotorSpeed(){
-        // in RPM
-        return leftShooterMotorEncoder.getVelocity();
     }
 }
