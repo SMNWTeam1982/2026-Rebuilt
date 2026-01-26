@@ -37,6 +37,12 @@ public class Measured {
 
         public static final double MAX_HUB_SCORING_DISTANCE = 4.5;
         public static final double MIN_HUB_SCORING_DISTANCE = 1.5;
+    }
+
+    public static final class ShooterMeasurements {
+        public static final double FLYWHEEL_S = 0.0;
+        public static final double FLYWHEEL_V = 0.0;
+        public static final double FLYWHEEL_A = 0.0;
 
         /**
          * the equation will be derived from a best fit of a data table that will be measured, expected
@@ -53,11 +59,5 @@ public class Measured {
         public static double hubDistanceToFlightTime(double distanceFromHub) {
             return 0.0;
         }
-    }
-
-    public static final class ShooterMeasurements {
-        public static final double FLYWHEEL_S = 0.0;
-        public static final double FLYWHEEL_V = 0.0;
-        public static final double FLYWHEEL_A = 0.0;
     }
 }

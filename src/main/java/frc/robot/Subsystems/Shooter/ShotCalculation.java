@@ -1,15 +1,15 @@
-package frc.robot.Commands;
+package frc.robot.Subsystems.Shooter;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.Constants.Measured.FieldMeasurements;
+import frc.robot.Constants.Measured.ShooterMeasurements;
 
-public final class HubCommands {
+public final class ShotCalculation {
     public static Translation2d calculateScoringTarget(
             Translation2d robotPosition, Translation2d hubPosition, ChassisSpeeds robotVelocity) {
         double distanceFromHub = robotPosition.getDistance(hubPosition);
 
-        double flightTime = FieldMeasurements.hubDistanceToFlightTime(distanceFromHub);
+        double flightTime = ShooterMeasurements.hubDistanceToFlightTime(distanceFromHub);
 
         Translation2d robotTravel = new Translation2d(
                 robotVelocity.vxMetersPerSecond * flightTime, robotVelocity.vyMetersPerSecond * flightTime);
@@ -33,7 +33,7 @@ public final class HubCommands {
 
         // use the previous position to calculate the new flight time
         double distanceFromHub = robotPosition.getDistance(previousHubPosition);
-        double flightTime = FieldMeasurements.hubDistanceToFlightTime(distanceFromHub);
+        double flightTime = ShooterMeasurements.hubDistanceToFlightTime(distanceFromHub);
 
         // calculate new robot travel
         Translation2d robotTravel = new Translation2d(
@@ -41,5 +41,12 @@ public final class HubCommands {
 
         // return the new hub position
         return hubPosition.minus(robotTravel);
+    }
+
+    public static double calculateRPMMultiStep(
+            Translation2d robotPosition, Translation2d hubPosition, ChassisSpeeds robotVelocity, int steps) {
+        Translation2d futureHubTarget =
+                calculateScoringTargetMultiStep(robotPosition, hubPosition, robotVelocity, steps);
+        return ShooterMeasurements.hubDistanceToFlywheelRPM(robotPosition.getDistance(futureHubTarget));
     }
 }

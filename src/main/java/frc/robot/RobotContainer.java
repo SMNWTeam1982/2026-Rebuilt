@@ -13,24 +13,31 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Commands.HubCommands;
 import frc.robot.Constants.Measured.FieldMeasurements;
+import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.FieldTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
+import frc.robot.Subsystems.Kicker.KickerSubsystem;
+import frc.robot.Subsystems.Shooter.ShooterSubsystem;
+import frc.robot.Subsystems.Shooter.ShotCalculation;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class RobotContainer {
-
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     private final DriveSubsystem drive = new DriveSubsystem(() -> Optional.empty());
     private final IntakeSubsystem intake = new IntakeSubsystem();
+    private final ShooterSubsystem shooter = new ShooterSubsystem();
+    private final KickerSubsystem kicker = new KickerSubsystem();
 
     private final boolean onBlueAlliance;
     private final Translation2d hubCenter;
+
+    private final Supplier<Translation2d> shotTarget;
 
     private final Trigger confidentShot;
 
@@ -46,7 +53,7 @@ public class RobotContainer {
 
         confidentShot = new Trigger(() -> {
             Pose2d robotPose = drive.getRobotPose();
-            Translation2d newHubPosition = HubCommands.calculateScoringTarget(
+            Translation2d newHubPosition = ShotCalculation.calculateScoringTarget(
                     robotPose.getTranslation(), hubCenter, drive.getFieldRelativeVelocity());
 
             double futureDistanceFromHub = newHubPosition.getDistance(robotPose.getTranslation());
@@ -57,6 +64,15 @@ public class RobotContainer {
             return Math.abs(futureDistanceFromHub - currentDistanecFromHub)
                     <= ShooterTunables.SHOOTING_POSITION_TOLERANCE;
         });
+
+        shotTarget = () -> ShotCalculation.calculateScoringTargetMultiStep(
+                drive.getRobotPose().getTranslation(),
+                hubCenter,
+                drive.getFieldRelativeVelocity(),
+                ShooterTunables.SHOT_PREDICTION_ITERATIONS);
+
+        shooter.setDefaultCommand(shooter.runAtRPM(() -> ShooterMeasurements.hubDistanceToFlywheelRPM(
+                drive.getRobotPose().getTranslation().getDistance(shotTarget.get()))));
 
         configureDriverBindings();
         configureOperatorBindings();
@@ -70,8 +86,7 @@ public class RobotContainer {
                 .debounce(0.1)
                 .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveAndPointAtTarget(
                         () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(getJoystickSpeeds(), onBlueAlliance),
-                        () -> HubCommands.calculateScoringTarget(
-                                drive.getRobotPose().getTranslation(), hubCenter, drive.getFieldRelativeVelocity())))));
+                        shotTarget::get))));
 
         // sets the drive controls to standard field relative when pressed
         driverController
@@ -98,6 +113,13 @@ public class RobotContainer {
     private void configureOperatorBindings() {
         operatorController.a().debounce(0.1).onTrue(intake.deploy());
         operatorController.b().debounce(0.1).onTrue(intake.retract());
+
+        Trigger robotReadyToShoot = drive.atTargetHeading.and(shooter.flywheelUpToSpeed);
+
+        // right trigger starts shooting
+        operatorController.rightTrigger().debounce(0.1).and(robotReadyToShoot).onTrue(kicker.startKicker());
+        // left trigger stops shooting
+        operatorController.leftTrigger().debounce(0.1).onTrue(kicker.stopKicker());
     }
 
     private ChassisSpeeds getJoystickSpeeds() {

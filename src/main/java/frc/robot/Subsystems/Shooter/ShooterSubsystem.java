@@ -16,7 +16,7 @@ import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import java.util.function.DoubleSupplier;
 
-public class Shooter extends SubsystemBase {
+public class ShooterSubsystem extends SubsystemBase {
 
     private final SparkMax leadMotor = new SparkMax(ShooterIDs.LEFT_MOTOR_ID, MotorType.kBrushless);
     private final RelativeEncoder flywheelEncoder = leadMotor.getEncoder();
@@ -32,7 +32,7 @@ public class Shooter extends SubsystemBase {
 
     public final Trigger flywheelUpToSpeed = new Trigger(flywheelVelocityController::atSetpoint);
 
-    public Shooter() {
+    public ShooterSubsystem() {
         leadMotor.configure(
                 ShooterTunables.FLYWHEEL_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         // get the follower to follow the lead motor's CANID
