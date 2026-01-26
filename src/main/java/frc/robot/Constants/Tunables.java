@@ -59,6 +59,8 @@ public class Tunables {
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
 
+        public static final int SHOT_PREDICTION_ITERATIONS = 2;
+
         // the flywheels should coast when disables so the motors don't have to absorb all of the momentum
         // the total flywheel current should not exceed 50A (25A * 2 motors)
         public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG =
