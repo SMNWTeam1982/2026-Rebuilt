@@ -80,4 +80,15 @@ public class Tunables {
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
     }
+
+    public static final class SysIDTunables{
+        public static final double kP = 0;
+
+        public static final double kSVolts = 0;
+
+        public static final double kVVoltSecondsPerRotation = 0;
+        public static final double kAVoltSecondsSquaredPerRotation = 0;
+        public static final double kEncoderDistancePerPulse = 0;
+        public static final double kFeederSpeed = 0;
+    }
 }
