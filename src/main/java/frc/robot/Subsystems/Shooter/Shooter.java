@@ -15,20 +15,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Measured.FieldMeasurements;
+import frc.robot.Constants.Tunables.SysIDTunables;
 
 // SysID Imports: 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.function.DoubleSupplier;
+
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
@@ -49,34 +47,6 @@ public class Shooter extends SubsystemBase {
 
         public static final double SHOOTER_FEEDFORWARDCONST_KS = 0.0;
         public static final double SHOOTER_FEEDFORWARDCONST_KV = 0.0;   
-        
-        //SysID Constnat values (Need editing)
-        public static final int[] kEncoderPorts = {4, 5};
-        public static final boolean kEncoderReversed = false;
-        public static final int kEncoderCPR = 1024;
-        public static final double kEncoderDistancePerPulse =
-        // Distance units will be rotations
-        1.0 / kEncoderCPR;
-
-        public static final int kShooterMotorPort = 4; // edit 
-        public static final int kFeederMotorPort = 5; // edit 
-
-        public static final double kShooterFreeRPS = 5300;
-        public static final double kShooterTargetRPS = 4000;
-        public static final double kShooterToleranceRPS = 50;
-
-        // These are not real PID gains, and will have to be tuned for your specific robot.
-        public static final double kP = 1;
-
-        // On a real robot the feedforward constants should be empirically determined; these are
-        // reasonable guesses.
-        public static final double kSVolts = 0.05;
-        public static final double kVVoltSecondsPerRotation =
-        // Should have value 12V at free speed...
-        12.0 / kShooterFreeRPS;
-        public static final double kAVoltSecondsSquaredPerRotation = 0;
-
-        public static final double kFeederSpeed = 0.5;
 
     }
 
@@ -92,6 +62,8 @@ public class Shooter extends SubsystemBase {
     private final PIDController shooterPIDController = new PIDController(ShooterConstants.SHOOTER_PIDCONST_P, ShooterConstants.SHOOTER_PIDCONST_I, ShooterConstants.SHOOTER_PIDCONST_D);
     private final SimpleMotorFeedforward shooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.SHOOTER_FEEDFORWARDCONST_KS, ShooterConstants.SHOOTER_FEEDFORWARDCONST_KV);
     private Supplier<Double> getDistanceToHub;
+
+    private double distancePerPulse = 1;
 
      // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
     private final MutVoltage m_appliedVoltage = Volts.mutable(0);
@@ -141,7 +113,7 @@ public class Shooter extends SubsystemBase {
         return rightShooterMotorEncoder.getVelocity();
     }
 
-  private final SysIdRoutine m_sysIdRoutine =
+  private final SysIdRoutine sysIdRoutine1 =
       new SysIdRoutine(
           // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
           new SysIdRoutine.Config(),
@@ -152,13 +124,13 @@ public class Shooter extends SubsystemBase {
               // characterized.
               log -> {
                 // Record a frame for the shooter motor.
-                log.motor("shooter-flywheel")
+                log.motor("right-shooter")
                     .voltage(
                         m_appliedVoltage.mut_replace(
                             rightShooterMotor.get() * RobotController.getBatteryVoltage(), Volts))
-                    .angularPosition(m_angle.mut_replace(rightShooterMotorEncoder.getDistance(), Rotations))
+                    .angularPosition(m_angle.mut_replace(getDistance(), Rotations))
                     .angularVelocity(
-                        m_velocity.mut_replace(rightShooterMotorEncoder.getRate(), RotationsPerSecond));
+                        m_velocity.mut_replace(((Encoder) rightShooterMotorEncoder).getRate(), RotationsPerSecond));
               },
               // Tell SysId to make generated commands require this subsystem, suffix test state in
               // WPILog with this subsystem's name ("shooter")
@@ -167,20 +139,20 @@ public class Shooter extends SubsystemBase {
   
   // PID controller to run the shooter wheel in closed-loop, set the constants equal to those
   // calculated by SysId
-  private final PIDController m_shooterFeedback = new PIDController(ShooterConstants.kP, 0, 0);
+  private final PIDController m_shooterFeedback = new PIDController(SysIDTunables.kP, 0, 0);
   
   // Feedforward controller to run the shooter wheel in closed-loop, set the constants equal to
   // those calculated by SysId
   private final SimpleMotorFeedforward m_shooterFeedforward =
       new SimpleMotorFeedforward(
-          ShooterConstants.kSVolts,
-          ShooterConstants.kVVoltSecondsPerRotation,
-          ShooterConstants.kAVoltSecondsSquaredPerRotation);
+          SysIDTunables.kSVolts,
+          SysIDTunables.kVVoltSecondsPerRotation,
+          SysIDTunables.kAVoltSecondsSquaredPerRotation);
 
   /** Creates a new Shooter subsystem. */
   public void Shooter() {
     // Sets the distance per pulse for the encoders
-    rightShooterMotorEncoder.setDistancePerPulse(ShooterConstants.kEncoderDistancePerPulse);
+    ((Encoder) rightShooterMotorEncoder).setDistancePerPulse(SysIDTunables.kEncoderDistancePerPulse);
   }
 
   /**
@@ -192,9 +164,9 @@ public class Shooter extends SubsystemBase {
     // Run shooter wheel at the desired speed using a PID controller and feedforward.
     return run(() -> {
           rightShooterMotor.setVoltage(
-              m_shooterFeedback.calculate(rightShooterMotorEncoder.getRate(), shooterSpeed.getAsDouble())
+              m_shooterFeedback.calculate(((Encoder) rightShooterMotorEncoder).getRate(), shooterSpeed.getAsDouble())
                   + m_shooterFeedforward.calculate(shooterSpeed.getAsDouble()));
-          leftShooterMotor.set(ShooterConstants.kFeederSpeed);
+          leftShooterMotor.set(SysIDTunables.kFeederSpeed);
         })
         .finallyDo(
             () -> {
@@ -210,7 +182,7 @@ public class Shooter extends SubsystemBase {
    * @param direction The direction (forward or reverse) to run the test in
    */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutine.quasistatic(direction);
+    return sysIdRoutine1.quasistatic(direction);
   }
 
   /**
@@ -219,6 +191,10 @@ public class Shooter extends SubsystemBase {
    * @param direction The direction (forward or reverse) to run the test in
    */
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutine.dynamic(direction);
+    return sysIdRoutine1.dynamic(direction);
+  }
+
+  public double getDistance(){
+    return rightShooterMotorEncoder.getPosition() * distancePerPulse;
   }
 }
