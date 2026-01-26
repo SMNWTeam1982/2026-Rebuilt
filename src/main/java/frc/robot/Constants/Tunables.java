@@ -46,7 +46,7 @@ public class Tunables {
         public static final double HUB_SCORING_DISTANCE = 2.5;
     }
 
-    public static final class ShooterTunables{
+    public static final class ShooterTunables {
         public static final double FLYWHEEL_P = 0.0;
         public static final double FLYWHEEL_I = 0.0;
         public static final double FLYWHEEL_D = 0.0;
@@ -58,12 +58,13 @@ public class Tunables {
         public static final double SHOOTER_RPM_CEILING = 5600;
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
-        
+
         // the flywheels should coast when disables so the motors don't have to absorb all of the momentum
         // the total flywheel current should not exceed 50A (25A * 2 motors)
-        public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(25).idleMode(SparkBaseConfig.IdleMode.kCoast);
+        public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG =
+                new SparkMaxConfig().smartCurrentLimit(25).idleMode(SparkBaseConfig.IdleMode.kCoast);
     }
-  
+
     public static final class IntakeTunables {
         // pid gains for the deploy/retraction of the intake
         public static final double PIVOT_P = 1.0;

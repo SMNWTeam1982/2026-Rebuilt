@@ -11,9 +11,9 @@ public class CANBus {
 
     public static final class ShooterIDs {
         /** the left one will be the leader */
-        public final static int LEFT_MOTOR_ID = 0;
+        public static final int LEFT_MOTOR_ID = 0;
         /** the right one will be the follower */
-        public final static int RIGHT_MOTOR_ID = 0;
+        public static final int RIGHT_MOTOR_ID = 0;
     }
 
     public static final class DriveIDs {
