@@ -14,24 +14,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Measured.FieldMeasurements;
+import frc.robot.Constants.Tunables.ShooterTunables;
 
 
 public class Shooter extends SubsystemBase {
     
-    public static final class ShooterConstants{
-        // all placeholder values pretty much
-        public static final double FIRING_SPEED_ROTATIONS_PER_SECOND = 0; 
-        public static final SparkBaseConfig INTAKE_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(35).idleMode(SparkBaseConfig.IdleMode.kCoast);
-        public static final SparkBaseConfig RIGHT_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(35).idleMode(SparkBaseConfig.IdleMode.kCoast);
 
-        public static final double SHOOTER_PIDCONST_P = 0.0; 
-        public static final double SHOOTER_PIDCONST_I = 0.0;
-        public static final double SHOOTER_PIDCONST_D = 0.0;
-
-        public static final double SHOOTER_FEEDFORWARDCONST_KS = 0.0;
-        public static final double SHOOTER_FEEDFORWARDCONST_KV = 0.0;      
-
-    }
 
     // private final SparkMax leftShooterMotor = new SparkMax(ShooterIDs.LEFT_MOTOR_ID, SparkMax.MotorType.kBrushless); 
     // private final RelativeEncoder leftShooterMotorEncoder = leftShooterMotor.getEncoder();
@@ -39,13 +27,13 @@ public class Shooter extends SubsystemBase {
     private final SparkMax rightShooterMotor = new SparkMax(ShooterIDs.RIGHT_MOTOR_ID, SparkMax.MotorType.kBrushless); 
     private final RelativeEncoder rightShooterMotorEncoder = rightShooterMotor.getEncoder();
 
-    private final PIDController shooterPIDController = new PIDController(ShooterConstants.SHOOTER_PIDCONST_P, ShooterConstants.SHOOTER_PIDCONST_I, ShooterConstants.SHOOTER_PIDCONST_D);
-    private final SimpleMotorFeedforward shooterFeedforward = new SimpleMotorFeedforward(ShooterConstants.SHOOTER_FEEDFORWARDCONST_KS, ShooterConstants.SHOOTER_FEEDFORWARDCONST_KV);
+    private final PIDController shooterPIDController = new PIDController(ShooterTunables.SHOOTER_PIDCONST_P, ShooterTunables.SHOOTER_PIDCONST_I, ShooterTunables.SHOOTER_PIDCONST_D);
+    private final SimpleMotorFeedforward shooterFeedforward = new SimpleMotorFeedforward(ShooterTunables.SHOOTER_FEEDFORWARDCONST_KS, ShooterTunables.SHOOTER_FEEDFORWARDCONST_KV);
     private Supplier<Double> getDistanceToHub;
 
 
     public Shooter(Supplier<Double> getDToHub) {
-        rightShooterMotor.configure(ShooterConstants.RIGHT_MOTOR_CONFIG, 
+        rightShooterMotor.configure(ShooterTunables.RIGHT_MOTOR_CONFIG, 
         ResetMode.kResetSafeParameters, 
         PersistMode.kPersistParameters);
 
