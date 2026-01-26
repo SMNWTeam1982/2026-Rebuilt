@@ -23,7 +23,7 @@ import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+// import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.function.DoubleSupplier;
 
@@ -150,7 +150,7 @@ public class Shooter extends SubsystemBase {
           SysIDTunables.kAVoltSecondsSquaredPerRotation);
 
   /** Creates a new Shooter subsystem. */
-  public void Shooter() {
+  public void ShooterSubsystem() {
     // Sets the distance per pulse for the encoders
     ((Encoder) rightShooterMotorEncoder).setDistancePerPulse(SysIDTunables.kEncoderDistancePerPulse);
   }
