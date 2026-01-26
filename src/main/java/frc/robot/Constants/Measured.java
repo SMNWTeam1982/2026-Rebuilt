@@ -42,4 +42,10 @@ public class Measured {
             return 0.0;
         }
     }
+
+    public static final class ShooterMeasurements{
+        public static final double FLYWHEEL_S = 0.0;
+        public static final double FLYWHEEL_V = 0.0;
+        public static final double FLYWHEEL_A = 0.0;
+    }
 }

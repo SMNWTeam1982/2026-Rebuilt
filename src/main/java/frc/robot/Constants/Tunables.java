@@ -42,4 +42,18 @@ public class Tunables {
         /** the distance from the hub that we have to be in order to score */
         public static final double HUB_SCORING_DISTANCE = 2.5;
     }
+
+    public static final class ShooterTunables{
+        public static final double FLYWHEEL_P = 0.0;
+        public static final double FLYWHEEL_I = 0.0;
+        public static final double FLYWHEEL_D = 0.0;
+
+        public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
+
+        public static final double FLYWHEEL_IDLE_RPM = 500.0;
+
+        // the flywheels should coast when disables so the motors don't have to absorb all of the momentum
+        // the total flywheel current should not exceed 50A (25A * 2 motors)
+        public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(25).idleMode(SparkBaseConfig.IdleMode.kCoast);
+    }
 }

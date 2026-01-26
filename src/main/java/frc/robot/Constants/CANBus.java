@@ -9,8 +9,9 @@ public class CANBus {
     }
 
     public static final class ShooterIDs {
-        // all placeholders
+        /** the left one will be the leader */
         public final static int LEFT_MOTOR_ID = 0;
+        /** the right one will be the follower */
         public final static int RIGHT_MOTOR_ID = 0;
     }
 
@@ -31,7 +32,4 @@ public class CANBus {
         public final static int BACK_RIGHT_TURN = 6;
         public final static int BACK_RIGHT_ENCODER = 2;
     }
-    
-
-
 }
