@@ -4,9 +4,8 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-
+import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -42,17 +41,13 @@ public final class SwerveModule {
                 PersistMode.kPersistParameters);
         turnMotor = new SparkMax(turnMotorCANID, MotorType.kBrushless);
         turnMotor.configure(
-                SwerveModuleTunables.TURN_MOTOR_CONFIG,
-                ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+                SwerveModuleTunables.TURN_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         turnEncoder = new CANcoder(encoderCANID);
         driveEncoder = driveMotor.getEncoder();
 
         turnPIDController = new PIDController(
-                SwerveModuleTunables.TURN_P,
-                SwerveModuleTunables.TURN_I,
-                SwerveModuleTunables.TURN_D);
+                SwerveModuleTunables.TURN_P, SwerveModuleTunables.TURN_I, SwerveModuleTunables.TURN_D);
 
         driveFeedforward = new SimpleMotorFeedforward(
                 SwerveModuleMeasurements.DRIVE_STATIC_GAIN,
@@ -80,8 +75,8 @@ public final class SwerveModule {
         double driveOutput = driveFeedforward.calculate(desiredState.speedMetersPerSecond);
 
         // the final safety checks for the speed
-        driveOutput = MathUtil.clamp(driveOutput,-12.0,12.0);
-        
+        driveOutput = MathUtil.clamp(driveOutput, -12.0, 12.0);
+
         if (Math.abs(driveOutput) < 0.001) {
             driveOutput = 0.0;
         }
@@ -90,7 +85,7 @@ public final class SwerveModule {
 
         // clamp the turn output
         turnOutput = MathUtil.clamp(turnOutput, -1.0, 1.0);
-        
+
         driveMotor.setVoltage(driveOutput);
         turnMotor.set(turnOutput);
     }
@@ -136,7 +131,7 @@ public final class SwerveModule {
 
     /**
      * @return the output current of the drive motor in amps,
-     * <p> this is data from the motor controller NOT the PDP
+     *     <p>this is data from the motor controller NOT the PDP
      */
     public double getDriveMotorOutputCurrent() {
         return driveMotor.getOutputCurrent();

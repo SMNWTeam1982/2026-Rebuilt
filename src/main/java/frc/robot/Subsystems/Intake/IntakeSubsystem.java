@@ -1,98 +1,95 @@
 package frc.robot.Subsystems.Intake;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.CANBus.IntakeIDS;
+import frc.robot.Constants.CANBus.IntakeIDs;
+import frc.robot.Constants.Tunables.IntakeTunables;
 
-
-/**                                     IMPORTANT
- * All values/IDs are placeholders and are in need of change once robot design is complete and 
- * futher research has been conducted. 
- * 1/12/2026
- */
-
+/** controls the pivoting of the intake and the roller bar */
 public class IntakeSubsystem extends SubsystemBase {
-    public static final class IntakeConstants {
-        public static final double intakeSpeed = 5;
-        public static final double ejectSpeed = -5;  
-        
-        public static final Rotation2d STOW_POS = Rotation2d.fromDegrees(0); 
-        public static final Rotation2d INTAKE_POS = Rotation2d.fromDegrees(0);
+    /** for pulling in fuel */
+    private final SparkMax intakeMotor = new SparkMax(IntakeIDs.INTAKE, SparkMax.MotorType.kBrushless);
 
+    /** for deploying the intake */
+    private final SparkMax pivotMotor = new SparkMax(IntakeIDs.PIVOT, SparkMax.MotorType.kBrushless);
 
-        public static final double PROPORTIONAL_GAIN = 0;  
-        public static final double INTEGRAL_GAIN = 0;  
-        public static final double DERIVITIVE_GAIN = 0;  
+    /** the absolue throughbore encoder attatched to the hex shaft */
+    private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
 
-        public static final double MULTIPLIER = 0;  
+    private final PIDController pivotController =
+            new PIDController(IntakeTunables.PIVOT_P, IntakeTunables.PIVOT_I, IntakeTunables.PIVOT_D);
 
-        public static final SparkBaseConfig INTAKE_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(35).idleMode(SparkBaseConfig.IdleMode.kCoast);
-        public static final double INTAKE_PID_TOLERANCE = 0;
-    } 
-    /** Motor on the Arm */
-    private final SparkMax intakeMotor = new SparkMax(IntakeIDS.INTAKE, SparkMax.MotorType.kBrushless); 
-    private final RelativeEncoder intakeMotorEncoder = intakeMotor.getEncoder();
-
-    private final SparkMax armMotor = new SparkMax(IntakeIDS.PIVOT, SparkMax.MotorType.kBrushless);
-    private final RelativeEncoder armMotorEncoder = armMotor.getEncoder();
-
-    private final PIDController armController = new PIDController(
-        IntakeConstants.PROPORTIONAL_GAIN,
-        IntakeConstants.INTEGRAL_GAIN,
-        IntakeConstants.DERIVITIVE_GAIN
-    );
+    /** for gravity compensation */
+    public final ArmFeedforward pivotFeedforward =
+            new ArmFeedforward(IntakeTunables.PIVOT_S, IntakeTunables.PIVOT_G, IntakeTunables.PIVOT_V);
 
     public IntakeSubsystem() {
-        armMotor.configure(
-            IntakeConstants.INTAKE_MOTOR_CONFIG,
-            ResetMode.kNoResetSafeParameters,
-            PersistMode.kNoPersistParameters
-        );
+        pivotMotor.configure(
+                IntakeTunables.PIVOT_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        intakeMotorEncoder.setPosition(0);
-        armMotorEncoder.setPosition(0);
-
-        armController.setTolerance(IntakeConstants.INTAKE_PID_TOLERANCE);
-        armController.setSetpoint(IntakeConstants.STOW_POS.getRadians());
+        pivotController.setTolerance(IntakeTunables.PIVOT_TOLERANCE.getRotations());
+        pivotController.setSetpoint(IntakeTunables.STOW_POSITION.getRotations());
 
         setDefaultCommand(runPID());
     }
 
+    /** sets the pid setpoint to the desired angle */
     public Command setTargetAngle(
             Rotation2d targetAngle) { // Finds the target angle for the wrist based on button input
-        return runOnce(() -> {
-            armController.setGoal(targetAngle.getRadians());
-        });
+        return runOnce(() -> pivotController.setSetpoint(targetAngle.getRotations()));
     }
 
-    public Command setIntaking() {
+    /** runs the feedback and feedforward control and sets the motor */
+    public Command runPID() {
+        return runEnd(
+                () -> {
+                    double intakeRotation = getIntakePosition().getRotations();
 
-    } 
+                    // pid loop tuned to output in volts
+                    double pidOutput = pivotController.calculate(intakeRotation);
 
-    public Command setEjecting() {
+                    double feedForwardOutput = pivotFeedforward.calculate(pivotController.getSetpoint(), 0);
 
+                    double outputVoltage = MathUtil.clamp(feedForwardOutput + pidOutput, -12, 12);
+
+                    pivotMotor.setVoltage(outputVoltage);
+                },
+                () -> {
+                    pivotMotor.set(0);
+                    pivotController.reset();
+                });
     }
 
-    public Command setStowPos() {
-        return runOnce(
-            intakeMotor.set(0)
-        );
+    /** sets the intake to start intaking and the intake target to the deploy position */
+    public Command deploy() {
+        return startIntaking().andThen(setTargetAngle(IntakeTunables.DEPLOY_POSITION));
     }
 
-    public Rotation2d getArmPos() {
-
+    /** sets the intake to stop intaking and the intake target to the stow position */
+    public Command retract() {
+        return stopIntaking().andThen(setTargetAngle(IntakeTunables.STOW_POSITION));
     }
 
+    /** sets the intake motor to the intake speed */
+    public Command startIntaking() {
+        return runOnce(() -> intakeMotor.set(IntakeTunables.INTAKE_SPEED));
+    }
 
+    /** sets the intake motor to 0 */
+    public Command stopIntaking() {
+        return runOnce(() -> intakeMotor.set(0));
+    }
 
+    /** the absolute position of the intake from the throughbore encoder */
+    public Rotation2d getIntakePosition() {
+        return Rotation2d.fromRotations(pivotEncoder.getPosition().getValueAsDouble());
+    }
 }
