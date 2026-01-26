@@ -37,7 +37,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 ShooterTunables.FLYWHEEL_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         // get the follower to follow the lead motor's CANID
         followMotor.configure(
-                ShooterTunables.FLYWHEEL_MOTOR_CONFIG.follow(ShooterIDs.LEFT_MOTOR_ID),
+                ShooterTunables.FLYWHEEL_MOTOR_CONFIG.follow(ShooterIDs.LEFT_MOTOR_ID,true),
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
@@ -88,6 +88,21 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public Command setTargetRPM(double targetRPM) {
         return runOnce(() -> flywheelVelocityController.setSetpoint(targetRPM));
+    }
+
+    public Command changeTargetRPM(double change){
+        return runOnce(() -> {
+            double currentTargetRPM = flywheelVelocityController.getSetpoint();
+            double newTargetRPM = currentTargetRPM + change;
+            if (newTargetRPM > ShooterTunables.SHOOTER_RPM_CEILING){
+                newTargetRPM = ShooterTunables.SHOOTER_RPM_CEILING;
+            }
+            if (newTargetRPM < 0){
+                newTargetRPM = 0;
+            }
+
+            flywheelVelocityController.setSetpoint(newTargetRPM);
+        });
     }
 
     // a command that just sets the motor voltage and doesn't do anything fancy with pids
