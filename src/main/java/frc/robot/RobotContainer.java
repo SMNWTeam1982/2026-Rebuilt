@@ -122,29 +122,20 @@ public class RobotContainer {
         operatorController.leftTrigger().debounce(0.1).onTrue(kicker.stopKicker());
 
         // start manual control, will be used for testing, this will be disabled for competition
-        operatorController.y().debounce(0.1).onTrue(
-            shooter.runOnce(
-                () -> shooter.setDefaultCommand(shooter.runPIDIdle())
-            )
-        );
+        operatorController
+                .y()
+                .debounce(0.1)
+                .onTrue(shooter.runOnce(() -> shooter.setDefaultCommand(shooter.runPIDIdle())));
 
         // coarse adjustment
-        operatorController.povUp().debounce(0.1).onTrue(
-            shooter.changeTargetRPM(250)
-        );
+        operatorController.povUp().debounce(0.1).onTrue(shooter.changeTargetRPM(250));
 
-        operatorController.povDown().debounce(0.1).onTrue(
-            shooter.changeTargetRPM(-250)
-        );
+        operatorController.povDown().debounce(0.1).onTrue(shooter.changeTargetRPM(-250));
 
         // fine adjustment
-        operatorController.povRight().debounce(0.1).onTrue(
-            shooter.changeTargetRPM(50)
-        );
+        operatorController.povRight().debounce(0.1).onTrue(shooter.changeTargetRPM(50));
 
-        operatorController.povLeft().debounce(0.1).onTrue(
-            shooter.changeTargetRPM(-50)
-        );
+        operatorController.povLeft().debounce(0.1).onTrue(shooter.changeTargetRPM(-50));
     }
 
     private ChassisSpeeds getJoystickSpeeds() {

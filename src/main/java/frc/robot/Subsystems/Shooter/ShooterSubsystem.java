@@ -37,7 +37,7 @@ public class ShooterSubsystem extends SubsystemBase {
                 ShooterTunables.FLYWHEEL_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         // get the follower to follow the lead motor's CANID
         followMotor.configure(
-                ShooterTunables.FLYWHEEL_MOTOR_CONFIG.follow(ShooterIDs.LEFT_MOTOR_ID,true),
+                ShooterTunables.FLYWHEEL_MOTOR_CONFIG.follow(ShooterIDs.LEFT_MOTOR_ID, true),
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
@@ -90,14 +90,14 @@ public class ShooterSubsystem extends SubsystemBase {
         return runOnce(() -> flywheelVelocityController.setSetpoint(targetRPM));
     }
 
-    public Command changeTargetRPM(double change){
+    public Command changeTargetRPM(double change) {
         return runOnce(() -> {
             double currentTargetRPM = flywheelVelocityController.getSetpoint();
             double newTargetRPM = currentTargetRPM + change;
-            if (newTargetRPM > ShooterTunables.SHOOTER_RPM_CEILING){
+            if (newTargetRPM > ShooterTunables.SHOOTER_RPM_CEILING) {
                 newTargetRPM = ShooterTunables.SHOOTER_RPM_CEILING;
             }
-            if (newTargetRPM < 0){
+            if (newTargetRPM < 0) {
                 newTargetRPM = 0;
             }
 
