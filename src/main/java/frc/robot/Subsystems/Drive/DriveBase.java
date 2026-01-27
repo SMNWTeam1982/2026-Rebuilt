@@ -127,6 +127,14 @@ public final class DriveBase {
         backRight.setDesiredState(desiredStates[3]);
     }
 
+    /** sets the rotation pid values of all the modules to the ones provided */
+    public void updateModuleTurnPIDs(double p, double i, double d) {
+        frontLeft.updateTurnPID(p, i, d);
+        frontRight.updateTurnPID(p, i, d);
+        backLeft.updateTurnPID(p, i, d);
+        backRight.updateTurnPID(p, i, d);
+    }
+
     /** Returns the heading from getEstimatedPose() */
     public Rotation2d getHeading() {
         return getEstimatedPose().getRotation();

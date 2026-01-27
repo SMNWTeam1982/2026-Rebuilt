@@ -88,6 +88,26 @@ public class IntakeSubsystem extends SubsystemBase {
         return runOnce(() -> intakeMotor.set(0));
     }
 
+    /**
+     * makes a command to change the pivot pid values to the ones provided
+     * <p> you will probably want to defer this
+     */
+    public Command updatePivotPID(double p, double i, double d) {
+        return runOnce(() -> pivotController.setPID(p, i, d));
+    }
+
+    /**
+     * makes a command to change the pivot feedforward values to the ones provided
+     * <p> you will probably want to defer this
+     */
+    public Command updatePivotFeedforward(double s, double g, double v) {
+        return runOnce(() -> {
+            pivotFeedforward.setKs(s);
+            pivotFeedforward.setKg(g);
+            pivotFeedforward.setKv(v);
+        });
+    }
+
     /** the absolute position of the intake from the throughbore encoder */
     public Rotation2d getIntakePosition() {
         return Rotation2d.fromRotations(pivotEncoder.getPosition().getValueAsDouble());

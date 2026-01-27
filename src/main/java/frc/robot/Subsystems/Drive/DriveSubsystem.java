@@ -256,4 +256,31 @@ public class DriveSubsystem extends SubsystemBase {
             }
         });
     }
+
+    /**
+     * makes a command to change the module pid values to the ones provided
+     * <p> you will probably want to defer this
+     */
+    public Command updateWheelTurnPIDs(double p, double i, double d) {
+        return runOnce(() -> driveBase.updateModuleTurnPIDs(p, i, d));
+    }
+
+    /**
+     * makes a command to change the heading pid values to the ones provided
+     * <p> you will probably want to defer this
+     */
+    public Command updateRotationPID(double p, double i, double d) {
+        return runOnce(() -> headingController.setPID(p, i, d));
+    }
+
+    /**
+     * makes a command to change the translation pid values to the ones provided
+     * <p> you will probably want to defer this
+     */
+    public Command updateTranslationPID(double p, double i, double d) {
+        return runOnce(() -> {
+            xController.setPID(p, i, d);
+            yController.setPID(p, i, d);
+        });
+    }
 }

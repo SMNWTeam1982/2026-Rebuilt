@@ -112,6 +112,26 @@ public class ShooterSubsystem extends SubsystemBase {
         });
     }
 
+    /**
+     * makes a command to change the velocity pid values to the ones provided
+     * <p> you will probably want to defer this
+     */
+    public Command updateVelocityPID(double p, double i, double d) {
+        return runOnce(() -> flywheelVelocityController.setPID(p, i, d));
+    }
+
+    /**
+     * makes a command to change the velocity feedforward values to the ones provided
+     * <p> you will probably want to defer this
+     */
+    public Command updateVelocityFeedforward(double s, double v, double a) {
+        return runOnce(() -> {
+            flywheelFeedforward.setKs(s);
+            flywheelFeedforward.setKv(v);
+            flywheelFeedforward.setKa(a);
+        });
+    }
+
     public double getFlywheelVelocity() {
         return flywheelEncoder.getVelocity();
     }
