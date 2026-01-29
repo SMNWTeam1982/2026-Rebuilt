@@ -65,8 +65,10 @@ public class Tunables {
         // the flywheels should coast when disables so the motors don't have to absorb all of the momentum
         // the rev website recommends a limit of 40A-60A for NEO 1.1
         // the total flywheel current should not exceed 80A (40A * 2 motors)
-        public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(40).idleMode(SparkBaseConfig.IdleMode.kCoast).secondaryCurrentLimit(60);
+        public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig()
+                .smartCurrentLimit(40)
+                .idleMode(SparkBaseConfig.IdleMode.kCoast)
+                .secondaryCurrentLimit(60);
     }
 
     public static final class IntakeTunables {
