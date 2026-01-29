@@ -48,4 +48,9 @@ public final class ShotCalculation {
 
         return hubPosition;
     }
+
+    /** returns the target that robot should shoot at to compensate for its velocity */
+    public static Translation2d getShotTarget(Translation2d robotPosition, ChassisSpeeds robotVelocity) {
+        return calculateHubPositionMultiStep(robotPosition, robotVelocity, ShooterTunables.SHOT_PREDICTION_ITERATIONS);
+    }
 }
