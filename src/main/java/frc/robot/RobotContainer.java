@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -13,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.FieldTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
@@ -23,6 +21,7 @@ import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import java.util.Optional;
+import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class RobotContainer {
@@ -30,49 +29,31 @@ public class RobotContainer {
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     private final DriveSubsystem drive = new DriveSubsystem(() -> Optional.empty());
-    private final IntakeSubsystem intake = new IntakeSubsystem();
-    private final ShooterSubsystem shooter = new ShooterSubsystem();
+
+    private final Supplier<Translation2d> shotTarget = () ->
+            ShotCalculation.getShotTarget(drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
+
+    private final DoubleSupplier shotRPM = () -> {
+        double targetDistance = drive.getRobotPose().getTranslation().getDistance(shotTarget.get());
+        return ShooterMeasurements.hubDistanceToFlywheelRPM(targetDistance);
+    };
+
+    private final ShooterSubsystem shooter = new ShooterSubsystem(shotRPM);
     private final KickerSubsystem kicker = new KickerSubsystem();
+    private final IntakeSubsystem intake = new IntakeSubsystem();
+
+    private final Trigger confidentShot = new Trigger(() -> {
+        Translation2d robotPosition = drive.getRobotPose().getTranslation();
+        double distanceFromHub = robotPosition.getDistance(ShotCalculation.getNearestHubPosition(robotPosition));
+        double distanceShotTarget = robotPosition.getDistance(shotTarget.get());
+        return Math.abs(distanceFromHub - distanceShotTarget) < ShooterTunables.SHOOTING_POSITION_TOLERANCE;
+    });
 
     private final boolean onBlueAlliance;
-    private final Translation2d hubCenter;
-
-    private final Supplier<Translation2d> shotTarget;
-
-    private final Trigger confidentShot;
 
     public RobotContainer() {
 
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
-
-        if (onBlueAlliance) {
-            hubCenter = FieldMeasurements.BLUE_HUB_CENTER;
-        } else {
-            hubCenter = FieldMeasurements.RED_HUB_CENTER;
-        }
-
-        confidentShot = new Trigger(() -> {
-            Pose2d robotPose = drive.getRobotPose();
-            Translation2d newHubPosition = ShotCalculation.calculateScoringTarget(
-                    robotPose.getTranslation(), hubCenter, drive.getFieldRelativeVelocity());
-
-            double futureDistanceFromHub = newHubPosition.getDistance(robotPose.getTranslation());
-            double currentDistanecFromHub = robotPose.getTranslation().getDistance(hubCenter);
-
-            // if the distance from the hub changes by a negligable amount in the future, then the shot confidence is
-            // high
-            return Math.abs(futureDistanceFromHub - currentDistanecFromHub)
-                    <= ShooterTunables.SHOOTING_POSITION_TOLERANCE;
-        });
-
-        shotTarget = () -> ShotCalculation.calculateScoringTargetMultiStep(
-                drive.getRobotPose().getTranslation(),
-                hubCenter,
-                drive.getFieldRelativeVelocity(),
-                ShooterTunables.SHOT_PREDICTION_ITERATIONS);
-
-        shooter.setDefaultCommand(shooter.runAtRPM(() -> ShooterMeasurements.hubDistanceToFlywheelRPM(
-                drive.getRobotPose().getTranslation().getDistance(shotTarget.get()))));
 
         configureDriverBindings();
         configureOperatorBindings();
@@ -85,57 +66,68 @@ public class RobotContainer {
                 .a()
                 .debounce(0.1)
                 .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveAndPointAtTarget(
-                        () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(getJoystickSpeeds(), onBlueAlliance),
-                        shotTarget::get))));
+                                () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(
+                                        getJoystickSpeeds(), onBlueAlliance),
+                                shotTarget::get)))
+                        .withName("set auto aim mode"));
 
         // sets the drive controls to standard field relative when pressed
         driverController
                 .b()
                 .debounce(0.1)
-                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveFieldRelative(() ->
-                        DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(getJoystickSpeeds(), onBlueAlliance)))));
+                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(
+                                drive.driveFieldRelative(() -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(
+                                        getJoystickSpeeds(), onBlueAlliance))))
+                        .withName("set DS relative mode"));
 
         // sets the drive controls to robot relative when pressed
         driverController
                 .x()
                 .debounce(0.1)
-                .onTrue(drive.runOnce(
-                        () -> drive.setDefaultCommand(drive.driveRobotRelative(this::getJoystickSpeeds))));
+                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveRobotRelative(this::getJoystickSpeeds)))
+                        .withName("set robot relative mode"));
 
         // a backup control method that moves the robot to a certain distance from the hub
         driverController
                 .y()
                 .debounce(0.1)
                 .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.orbitPoint(
-                        () -> -driverController.getLeftY(), hubCenter, FieldTunables.HUB_SCORING_DISTANCE))));
+                                () -> -driverController.getLeftY(),
+                                ShotCalculation.getNearestHubPosition(
+                                        drive.getRobotPose().getTranslation()),
+                                FieldTunables.HUB_SCORING_DISTANCE)))
+                        .withName("Set hub orbit mode"));
     }
 
     private void configureOperatorBindings() {
         operatorController.a().debounce(0.1).onTrue(intake.deploy());
         operatorController.b().debounce(0.1).onTrue(intake.retract());
 
-        Trigger robotReadyToShoot = drive.atTargetHeading.and(shooter.flywheelUpToSpeed);
+        Trigger robotReadyToShoot =
+                drive.atTargetHeading.and(shooter.flywheelUpToSpeed).and(shooter.inShootMode);
 
         // right trigger starts shooting
         operatorController.rightTrigger().debounce(0.1).and(robotReadyToShoot).onTrue(kicker.startKicker());
         // left trigger stops shooting
         operatorController.leftTrigger().debounce(0.1).onTrue(kicker.stopKicker());
 
-        // start manual control, will be used for testing, this will be disabled for competition
-        operatorController
-                .y()
-                .debounce(0.1)
-                .onTrue(shooter.runOnce(() -> shooter.setDefaultCommand(shooter.runPIDIdle())));
+        // start spinning up the flywheels
+        operatorController.y().debounce(0.1).onTrue(shooter.setShootMode());
+
+        // set the flywheels to an idle speed
+        operatorController.x().debounce(0.1).onTrue(shooter.setIdle());
+
+        // adjustments for testing
 
         // coarse adjustment
-        operatorController.povUp().debounce(0.1).onTrue(shooter.changeTargetRPM(250));
+        operatorController.povUp().debounce(0.1).onTrue(shooter.changeHeldRPM(250));
 
-        operatorController.povDown().debounce(0.1).onTrue(shooter.changeTargetRPM(-250));
+        operatorController.povDown().debounce(0.1).onTrue(shooter.changeHeldRPM(-250));
 
         // fine adjustment
-        operatorController.povRight().debounce(0.1).onTrue(shooter.changeTargetRPM(50));
+        operatorController.povRight().debounce(0.1).onTrue(shooter.changeHeldRPM(50));
 
-        operatorController.povLeft().debounce(0.1).onTrue(shooter.changeTargetRPM(-50));
+        operatorController.povLeft().debounce(0.1).onTrue(shooter.changeHeldRPM(-50));
     }
 
     private ChassisSpeeds getJoystickSpeeds() {
