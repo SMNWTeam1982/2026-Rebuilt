@@ -27,7 +27,7 @@ public class VisionSubsystem  {
 
     private final String cameraName;
 
-    public PhotonVisionSubsystem(Transform3d cameraRelativeToRobot, String cameraName) {
+    public VisionSubsystem(Transform3d cameraRelativeToRobot, String cameraName) {
 
         photonPoseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
@@ -37,17 +37,15 @@ public class VisionSubsystem  {
         this.cameraName = cameraName;
     }
 
-    @Override
     public String getName() {
         return cameraName;
     }
 
-    @Override
-    protected Optional<VisionData> getVisionResult() {
+    private Optional<VisionData> getVisionResult() {
         Optional<EstimatedRobotPose> lastEstimatedPose = Optional.empty();
 
         for (var result : instanceCamera.getAllUnreadResults()) {
-            lastEstimatedose = photonPoseEstimator.update(result);
+            lastEstimatedPose = photonPoseEstimator.update(result);
         } // if getAllUnreadResults() is empty then lastEstimatedPose will be Optional.empty()
         // this also accounts for results that have data but are surrounded by results without data
 
@@ -64,4 +62,6 @@ public class VisionSubsystem  {
                 // in their example code
                 ));
     }
+
+    
 }
