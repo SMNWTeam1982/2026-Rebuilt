@@ -104,7 +104,7 @@ public class RobotContainer {
         operatorController.b().debounce(0.1).onTrue(intake.retract());
 
         Trigger robotReadyToShoot =
-                drive.atTargetHeading.and(shooter.flywheelUpToSpeed).and(shooter.inShootMode);
+                drive.atTargetHeading.and(shooter.flywheelsUpToSpeed).and(shooter.inShootMode);
 
         // right trigger starts shooting
         operatorController.rightTrigger().debounce(0.1).and(robotReadyToShoot).onTrue(kicker.startKicker());
