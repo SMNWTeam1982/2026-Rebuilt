@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.math.MathUtil;
@@ -17,6 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Measured;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 
 /**
@@ -57,9 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
         yController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
 
 
-        RobotConfig config;
         try{
-            config = RobotConfig.fromGUISettings();
         } catch (Exception e) {
             e.printStackTrace();
            
@@ -74,7 +72,7 @@ public class DriveSubsystem extends SubsystemBase {
              new PIDConstants(5.0, 0.0, 0.0), 
              new PIDConstants(5.0, 0.0, 0.0)
             ),
-             config,
+             Measured.PathplannerMeasurements,
                 ()->{
                     var alliance = DriverStation.getAlliance();
                     if(alliance.isPresent()) {

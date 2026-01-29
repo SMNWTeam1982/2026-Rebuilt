@@ -1,5 +1,7 @@
 package frc.robot.Constants;
 
+import com.pathplanner.lib.config.RobotConfig;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -14,6 +16,14 @@ public class Measured {
         public static final double PHYSICAL_MAX_SPEED = 3.8;
         /** used for discretization */
         public static final double DRIVE_PERIOD = TimedRobot.kDefaultPeriod;
+    }
+
+    public static final class PathplannerMeasurements{
+        public static final double ROBOT_MASS = 0;
+        public static final double ROBOT_MOMENT_OF_INERTIA = 0;
+        public static final double MODULE_CONFIG = 0;
+        public static final double MODULE_OFFSETS = 0;
+
     }
 
     public static final class SwerveModuleMeasurements{
@@ -32,4 +42,6 @@ public class Measured {
         public static final Translation2d BLUE_HUB_CENTER = new Translation2d();
         public static final Translation2d RED_HUB_CENTER = new Translation2d();
     }
+
+    public static RobotConfig PathplannerMeasurements;
 }
