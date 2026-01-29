@@ -1,44 +1,67 @@
 package frc.robot.Subsystems.Vision;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Optional;
-import java.lang.System.Logger;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import frc.robot.Constants.CANBus.VisionConstants;
 
-public class VisionSubsystem extends SubsystemBase {
+public class VisionSubsystem  {
 
-    private Optional<VisionData> lastVisionResult;
-    private boolean isDataUpToDate = false;
+    private final PhotonCamera instanceCamera;
 
-    public Trigger recentData = new Trigger(() -> isDataUpToDate);
+    private final PhotonPoseEstimator photonPoseEstimator;
+
+    private final String cameraName;
+
+    public PhotonVisionSubsystem(Transform3d cameraRelativeToRobot, String cameraName) {
+
+        photonPoseEstimator = new PhotonPoseEstimator(
+                AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
+                PoseStrategy.LOWEST_AMBIGUITY,
+                cameraRelativeToRobot);
+        instanceCamera = new PhotonCamera(cameraName);
+        this.cameraName = cameraName;
+    }
 
     @Override
-    public void Periodic() {
-        var visionResult = getLatestVisionResults();
-        if(visionResult.isPresent()){
-            isDataUpToDate = true;
-            lastVisionResult = visionResult.get();
-            logPoseEstimation(lastVisionResult.pose());
-        } else
-    }
-    
-    public VisionSubsystem() {}
-
-    public Optional<VisionData> getLastVisionResult() {
-        return lastVisionResult;
+    public String getName() {
+        return cameraName;
     }
 
-    /** fetches the data from the limelight and then updates the internal variable */
-    public Command getLatestVisionResults() {
-        return run(() -> {});
-    }
+    @Override
+    protected Optional<VisionData> getVisionResult() {
+        Optional<EstimatedRobotPose> lastEstimatedPose = Optional.empty();
 
-    public Command getDistance(){
-        
+        for (var result : instanceCamera.getAllUnreadResults()) {
+            lastEstimatedose = photonPoseEstimator.update(result);
+        } // if getAllUnreadResults() is empty then lastEstimatedPose will be Optional.empty()
+        // this also accounts for results that have data but are surrounded by results without data
+
+        if (lastEstimatedPose.isEmpty()) {
+            return Optional.empty();
+        }
+
+        EstimatedRobotPose estimatedPose = lastEstimatedPose.get();
+
+        return Optional.of(new VisionData(
+                estimatedPose.estimatedPose.toPose2d(),
+                estimatedPose.timestampSeconds,
+                VisionConstants.PHOTON_CAM_VISION_TRUST // we should calculate this the same way photonVision does
+                // in their example code
+                ));
     }
 }
