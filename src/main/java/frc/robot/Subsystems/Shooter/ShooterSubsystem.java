@@ -61,7 +61,7 @@ public class ShooterSubsystem extends SubsystemBase {
         rightVelocityController.setSetpoint(ShooterTunables.FLYWHEEL_IDLE_RPM);
         leftVelocityController.setSetpoint(ShooterTunables.FLYWHEEL_IDLE_RPM);
 
-        setDefaultCommand(runPID());
+        setDefaultCommand(runPIDs());
     }
 
     private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
@@ -92,7 +92,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** runs the velocity control, the RPM target will change if set to shoot mode */
-    public Command runPID() {
+    public Command runPIDs() {
         return run(() -> {
             runFlywheelPID(rightVelocityController, rightMotor, rightEncoder);
             runFlywheelPID(leftVelocityController, leftMotor, leftEncoder);
@@ -146,7 +146,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** a command that just sets the motor voltage and doesn't do anything fancy with pids */
-    public Command setFlywheelMotorVoltage(double motorVoltage) {
+    public Command setFlywheelMotorVoltages(double motorVoltage) {
         return runOnce(() -> {
             rightMotor.setVoltage(motorVoltage);
             leftMotor.setVoltage(motorVoltage);
