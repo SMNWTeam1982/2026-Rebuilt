@@ -18,19 +18,25 @@ import java.util.function.DoubleSupplier;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-    private final SparkMax leadMotor = new SparkMax(ShooterIDs.LEFT_MOTOR_ID, MotorType.kBrushless);
-    private final RelativeEncoder flywheelEncoder = leadMotor.getEncoder();
-    private final SparkMax followMotor = new SparkMax(ShooterIDs.RIGHT_MOTOR_ID, MotorType.kBrushless);
+    private final SparkMax rightMotor = new SparkMax(ShooterIDs.RIGHT_MOTOR_ID, MotorType.kBrushless);
+    private final SparkMax leftMotor = new SparkMax(ShooterIDs.LEFT_MOTOR_ID, MotorType.kBrushless);
+
+    private final RelativeEncoder rightEncoder = rightMotor.getEncoder();
+    private final RelativeEncoder leftEncoder = leftMotor.getEncoder();
 
     /** input RPM, outputs volts */
-    private final PIDController flywheelVelocityController =
+    private final PIDController rightVelocityController =
             new PIDController(ShooterTunables.FLYWHEEL_P, ShooterTunables.FLYWHEEL_I, ShooterTunables.FLYWHEEL_D);
 
-    /** input RPS, outputs volts */
+    private final PIDController leftVelocityController =
+            new PIDController(ShooterTunables.FLYWHEEL_P, ShooterTunables.FLYWHEEL_I, ShooterTunables.FLYWHEEL_D);
+
+    /** input RPS, outputs volts, this feedforward can be used for both motors */
     private final SimpleMotorFeedforward flywheelFeedforward = new SimpleMotorFeedforward(
             ShooterMeasurements.FLYWHEEL_S, ShooterMeasurements.FLYWHEEL_V, ShooterMeasurements.FLYWHEEL_A);
 
-    public final Trigger flywheelUpToSpeed = new Trigger(flywheelVelocityController::atSetpoint);
+    public final Trigger flywheelsUpToSpeed =
+            new Trigger(() -> rightVelocityController.atSetpoint() && leftVelocityController.atSetpoint());
     public final Trigger inShootMode = new Trigger(this::inShootMode);
 
     /** the RPM calculated by the shot calculation system */
@@ -39,44 +45,57 @@ public class ShooterSubsystem extends SubsystemBase {
     private boolean shootMode = false;
 
     public ShooterSubsystem(DoubleSupplier shootSpeed) {
+
         this.shootSpeed = shootSpeed;
-        leadMotor.configure(
+        rightMotor.configure(
                 ShooterTunables.FLYWHEEL_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        // get the follower to follow the lead motor's CANID
-        followMotor.configure(
-                ShooterTunables.FLYWHEEL_MOTOR_CONFIG.follow(ShooterIDs.LEFT_MOTOR_ID, true),
+        // invert the left motor because it is oriented the other way
+        leftMotor.configure(
+                ShooterTunables.FLYWHEEL_MOTOR_CONFIG.inverted(true),
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
 
-        flywheelVelocityController.setTolerance(ShooterTunables.FLYWHEEL_RPM_TOLERANCE);
+        rightVelocityController.setTolerance(ShooterTunables.FLYWHEEL_RPM_TOLERANCE);
+        leftVelocityController.setTolerance(ShooterTunables.FLYWHEEL_RPM_TOLERANCE);
 
-        flywheelVelocityController.setSetpoint(ShooterTunables.FLYWHEEL_IDLE_RPM);
+        rightVelocityController.setSetpoint(ShooterTunables.FLYWHEEL_IDLE_RPM);
+        leftVelocityController.setSetpoint(ShooterTunables.FLYWHEEL_IDLE_RPM);
 
-        setDefaultCommand(runPID());
+        setDefaultCommand(runPIDs());
+    }
+
+    private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
+        // give the pid RPM
+        double pidOutput;
+
+        if (shootMode) {
+            pidOutput = pid.calculate(encoder.getVelocity(), shootSpeed.getAsDouble());
+        } else {
+            pidOutput = pid.calculate(encoder.getVelocity());
+        }
+
+        double targetRPM = pid.getSetpoint();
+
+        // convert the rpm to rps because the feedforward takes units/s not units/m
+        double feedforwardOutput = flywheelFeedforward.calculate(targetRPM / 60.0);
+
+        double totalOutput = feedforwardOutput + pidOutput;
+
+        double clampedOutput = MathUtil.clamp(totalOutput, -12.0, 12.0);
+
+        motor.setVoltage(clampedOutput);
+    }
+
+    private void setSetpoints(double setpoint) {
+        rightVelocityController.setSetpoint(setpoint);
+        leftVelocityController.setSetpoint(setpoint);
     }
 
     /** runs the velocity control, the RPM target will change if set to shoot mode */
-    public Command runPID() {
+    public Command runPIDs() {
         return run(() -> {
-            // give the pid RPM
-            double pidOutput;
-
-            if (shootMode) {
-                pidOutput = flywheelVelocityController.calculate(getFlywheelVelocity(), shootSpeed.getAsDouble());
-            } else {
-                pidOutput = flywheelVelocityController.calculate(getFlywheelVelocity());
-            }
-
-            double targetRPM = flywheelVelocityController.getSetpoint();
-
-            // convert the rpm to rps because the feedforward takes units/s not units/m
-            double feedforwardOutput = flywheelFeedforward.calculate(targetRPM / 60.0);
-
-            double totalOutput = feedforwardOutput + pidOutput;
-
-            double clampedOutput = MathUtil.clamp(totalOutput, -12.0, 12.0);
-
-            leadMotor.setVoltage(clampedOutput);
+            runFlywheelPID(rightVelocityController, rightMotor, rightEncoder);
+            runFlywheelPID(leftVelocityController, leftMotor, leftEncoder);
         });
     }
 
@@ -96,7 +115,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public Command setIdle() {
         return runOnce(() -> {
             shootMode = false;
-            flywheelVelocityController.setSetpoint(ShooterTunables.FLYWHEEL_IDLE_RPM);
+            setSetpoints(ShooterTunables.FLYWHEEL_IDLE_RPM);
         });
     }
 
@@ -104,7 +123,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public Command setHoldRPM(double targetRPM) {
         return runOnce(() -> {
             shootMode = false;
-            flywheelVelocityController.setSetpoint(targetRPM);
+            setSetpoints(targetRPM);
         });
     }
 
@@ -112,7 +131,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public Command changeHeldRPM(double change) {
         return runOnce(() -> {
             shootMode = false;
-            double currentTargetRPM = flywheelVelocityController.getSetpoint();
+            // fetch the rpm of the right one (both are the same)
+            double currentTargetRPM = rightVelocityController.getSetpoint();
             double newTargetRPM = currentTargetRPM + change;
             if (newTargetRPM > ShooterTunables.SHOOTER_RPM_CEILING) {
                 newTargetRPM = ShooterTunables.SHOOTER_RPM_CEILING;
@@ -121,20 +141,31 @@ public class ShooterSubsystem extends SubsystemBase {
                 newTargetRPM = 0;
             }
 
-            flywheelVelocityController.setSetpoint(newTargetRPM);
+            setSetpoints(newTargetRPM);
         });
     }
 
     /** a command that just sets the motor voltage and doesn't do anything fancy with pids */
-    public Command setFlywheelMotorVoltage(double motorVoltage) {
+    public Command setFlywheelMotorVoltages(double motorVoltage) {
         return runOnce(() -> {
-            leadMotor.setVoltage(motorVoltage);
+            rightMotor.setVoltage(motorVoltage);
+            leftMotor.setVoltage(motorVoltage);
         });
     }
 
-    /** returns the flywheel velocity in RPM */
-    public double getFlywheelVelocity() {
-        return flywheelEncoder.getVelocity();
+    /** returns the right flywheel velocity in RPM */
+    public double getRightFlywheelVelocity() {
+        return rightEncoder.getVelocity();
+    }
+
+    /** returns the right flywheel velocity in RPM */
+    public double getLeftFlywheelVelocity() {
+        return rightEncoder.getVelocity();
+    }
+
+    /** return the average rpm of both flywheels */
+    public double getAverageRPM() {
+        return getRightFlywheelVelocity() / 2 + getLeftFlywheelVelocity() / 2;
     }
 
     /** returns if the target RPM is following the calculation */
