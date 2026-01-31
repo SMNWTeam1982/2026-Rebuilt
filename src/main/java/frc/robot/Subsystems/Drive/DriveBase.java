@@ -127,6 +127,14 @@ public final class DriveBase {
         backRight.setDesiredState(desiredStates[3]);
     }
 
+    /** updates the turn PIDs of each of the swerve modules with new constants */
+    public void updateTurnPIDs(double p, double i, double d){
+        frontLeft.updateTurnPID(p, i, d);
+        frontRight.updateTurnPID(p, i, d);
+        backLeft.updateTurnPID(p, i, d);
+        backRight.updateTurnPID(p, i, d);
+    }
+
     /** Returns the heading from getEstimatedPose() */
     public Rotation2d getHeading() {
         return getEstimatedPose().getRotation();
