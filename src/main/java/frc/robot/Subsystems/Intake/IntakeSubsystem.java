@@ -1,6 +1,7 @@
 package frc.robot.Subsystems.Intake;
 
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.PersistMode;
@@ -48,6 +49,14 @@ public class IntakeSubsystem extends SubsystemBase {
     public Command setTargetAngle(
             Rotation2d targetAngle) { // Finds the target angle for the wrist based on button input
         return runOnce(() -> pivotController.setSetpoint(targetAngle.getRotations()));
+    }
+
+    @Override
+    public void periodic() {
+        // output
+        Logger.recordOutput("intake/TargetAngleRotations", pivotController.getSetpoint());
+        // input
+        Logger.recordOutput("intake/AngleRotations", getIntakePosition().getRotations());
     }
 
     /** runs the feedback and feedforward control and sets the motor */
