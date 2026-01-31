@@ -5,17 +5,14 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants.Tunables.VisionTunables;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import frc.robot.Constants.Measured.VisionMeasurements;
-import frc.robot.Constants.Tunables.VisionTunables;
 
 /** Optional Calling, if the target is not found, this subsystem will not be called */
-
 public class VisionSubsystem extends SubsystemBase {
 
     public static final String limeLightCameraName = "limelight-front";
@@ -28,7 +25,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     private Optional<VisionData> lastVisionResult;
 
-    public VisionSubsystem(Transform3d cameraRelativeToRobot, String cameraName) { 
+    public VisionSubsystem(Transform3d cameraRelativeToRobot, String cameraName) {
         photonPoseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
                 PoseStrategy.LOWEST_AMBIGUITY,
@@ -39,13 +36,10 @@ public class VisionSubsystem extends SubsystemBase {
         setDefaultCommand(pollVisionData());
     }
 
-
-    public Command pollVisionData(){ // Factory
-        return run(
-            () -> {
-                lastVisionResult = getVisionResult();
-            }
-        );
+    public Command pollVisionData() { // Factory
+        return run(() -> {
+            lastVisionResult = getVisionResult();
+        });
     }
 
     public Optional<VisionData> getLastVisionResult() {
@@ -61,7 +55,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         for (var result : instanceCamera.getAllUnreadResults()) {
             lastEstimatedPose = photonPoseEstimator.update(result);
-        } 
+        }
         // if getAllUnreadResults() is empty then lastEstimatedPose will be Optional.empty()
         // also accounts for results that have data but are surrounded by results without data
 
