@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Intake;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -42,6 +44,7 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /** sets the pid setpoint to the desired angle */
+    @AutoLogOutput
     public Command setTargetAngle(
             Rotation2d targetAngle) { // Finds the target angle for the wrist based on button input
         return runOnce(() -> pivotController.setSetpoint(targetAngle.getRotations()));

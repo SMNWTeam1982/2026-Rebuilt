@@ -16,6 +16,9 @@ import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
+
 public class ShooterSubsystem extends SubsystemBase {
 
     private final SparkMax rightMotor = new SparkMax(ShooterIDs.RIGHT_MOTOR_ID, MotorType.kBrushless);
@@ -62,6 +65,12 @@ public class ShooterSubsystem extends SubsystemBase {
         leftVelocityController.setSetpoint(ShooterTunables.FLYWHEEL_IDLE_RPM);
 
         setDefaultCommand(runPIDs());
+    }
+
+
+    @Override
+    public void periodic(){
+        Logger.recordOutput("flyWheelTargetRPM", rightVelocityController.getSetpoint());
     }
 
     private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
@@ -154,11 +163,13 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** returns the right flywheel velocity in RPM */
+    @AutoLogOutput
     public double getRightFlywheelVelocity() {
         return rightEncoder.getVelocity();
     }
 
     /** returns the right flywheel velocity in RPM */
+    @AutoLogOutput
     public double getLeftFlywheelVelocity() {
         return rightEncoder.getVelocity();
     }
@@ -169,6 +180,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** returns if the target RPM is following the calculation */
+    @AutoLogOutput
     public boolean inShootMode() {
         return shootMode;
     }
