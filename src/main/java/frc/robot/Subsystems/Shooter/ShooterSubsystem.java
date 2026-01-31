@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.ShooterIDs;
-import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import java.util.function.DoubleSupplier;
 
@@ -66,7 +65,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         SmartDashboard.putNumber("shooter target", rightVelocityController.getSetpoint());
         SmartDashboard.putBoolean("at target", flywheelsUpToSpeed.getAsBoolean());
         SmartDashboard.putNumber("right output", rightMotor.getAppliedOutput());
