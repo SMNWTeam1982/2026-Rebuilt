@@ -9,7 +9,6 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.numbers.N1;
@@ -17,29 +16,30 @@ import edu.wpi.first.math.numbers.N3;
 import java.util.List;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+/** To do:
+ * Bare bones vision control ( no checks, no ambiguity)
+ * pull request after
+ * Then start working on ambiguity if necessary/if have time
+ * 
+ * 
+ */
+
 /** Optional Calling, if the target is not found, this subsystem will not be called */
 public class VisionSubsystem extends SubsystemBase {
 
-    public static final String limeLightCameraName = "limelight-front";
-
     private final PhotonCamera instanceCamera;
-
     private final PhotonPoseEstimator photonPoseEstimator;
-
     private final String cameraName;
-
     private Optional<VisionData> lastVisionResult;
-    
-    private Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(0.5, 0.5, 1);
-        
+
+    private Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(0.5, 0.5, 1);   
     private Matrix<N3, N1> SINGLE_TAG_STANDARD_DEVIATION = VecBuilder.fill(4, 4, 8);
     private Matrix<N3, N1> MULTPLE_TAG_STANDARD_DEVIATION = VecBuilder.fill(0.5, 0.5, 1);
         
     public VisionSubsystem(Transform3d cameraRelativeToRobot, String cameraName) {
         photonPoseEstimator = new PhotonPoseEstimator(
-                AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
-                PoseStrategy.LOWEST_AMBIGUITY,
-                cameraRelativeToRobot);
+            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField), 
+            cameraRelativeToRobot);
         instanceCamera = new PhotonCamera(cameraName);
         this.cameraName = cameraName;
 
@@ -64,7 +64,7 @@ public class VisionSubsystem extends SubsystemBase {
         Optional<EstimatedRobotPose> lastEstimatedPose = Optional.empty();
 
         for (var result : instanceCamera.getAllUnreadResults()) {
-            lastEstimatedPose = photonPoseEstimator.update(result);
+            lastEstimatedPose = photonPoseEstimator.estimateAverageBestTargetsPose(result);
         }
 
         // if getAllUnreadResults() is empty then lastEstimatedPose will be Optional.empty()
@@ -129,14 +129,4 @@ public class VisionSubsystem extends SubsystemBase {
         }
     }
 
-    public void periodic() {
-        Optional<EstimatedRobotPose> visionEstimation = Optional.empty();
-        for (var result : instanceCamera.getAllUnreadResults()){
-            visionEstimation = photonPoseEstimator.estimateCoprocMultiTagPose(result);
-            if (visionEstimation.isEmpty()) {
-                visionEstimation = photonPoseEstimator.estimateLowestAmbiguityPose(result);
-            }
-            updateEstimationStdDevs(visionEstimation, result.getTargets());
-        }
-    }
 }
