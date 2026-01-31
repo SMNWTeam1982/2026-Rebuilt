@@ -102,4 +102,16 @@ public class Tunables {
         public static final double EXTEND_SPEED = 0.0;
         public static final double RETRACT_SPEED = 0.0;
     }
+
+    public static final class SysIDtunables {
+         public static final boolean kEncoderReversed = false;
+    public static final int kEncoderCPR = 1024;
+    public static final double kEncoderDistancePerPulse =
+        // Distance units will be rotations
+        1.0 / kEncoderCPR;
+
+    public static final double kShooterFreeRPS = 5300;
+    public static final double kShooterTargetRPS = 336000;
+    public static final double kShooterToleranceRPS = 3000;
+    }
 }

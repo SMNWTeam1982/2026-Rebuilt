@@ -41,4 +41,9 @@ public class CANBus {
     public static final class KickerIDs {
         public static final int KICKER = 14;
     }
+
+    public static final class SysIDIds{
+        public static final int[] kEncoderPorts = {11, 12};
+
+    }
 }
