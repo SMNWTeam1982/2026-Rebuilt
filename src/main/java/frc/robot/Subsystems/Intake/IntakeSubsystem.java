@@ -1,8 +1,5 @@
 package frc.robot.Subsystems.Intake;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
@@ -15,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.IntakeIDs;
 import frc.robot.Constants.Tunables.IntakeTunables;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 /** controls the pivoting of the intake and the roller bar */
 public class IntakeSubsystem extends SubsystemBase {

@@ -15,7 +15,6 @@ import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import java.util.function.DoubleSupplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -67,13 +66,12 @@ public class ShooterSubsystem extends SubsystemBase {
         setDefaultCommand(runPIDs());
     }
 
-
     @Override
-    public void periodic(){
+    public void periodic() {
         // output
         Logger.recordOutput("leftFlywheelTargetRPM", leftVelocityController.getSetpoint());
         Logger.recordOutput("rightFlywheelTargetRPM", rightVelocityController.getSetpoint());
-        
+
         // input
         Logger.recordOutput("rightFlywheelRPM", getRightFlywheelVelocity());
         Logger.recordOutput("leftFlywheelRPM", getLeftFlywheelVelocity());

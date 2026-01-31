@@ -45,12 +45,12 @@ deploy {
 
 project.compileJava.dependsOn(createVersionFile)
 gversion {
-  srcDir       = "src/main/java/"
-  classPackage = "frc.robot"
-  className    = "BuildConstants"
-  dateFormat   = "yyyy-MM-dd HH:mm:ss z"
-  timeZone     = "America/Chicago" // Use preferred time zone
-  indent       = "  "
+    srcDir       = "src/main/java/"
+    classPackage = "frc.robot"
+    className    = "BuildConstants"
+    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+    timeZone     = "America/Chicago" // Use preferred time zone
+    indent       = "  "
 }
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava
@@ -167,7 +167,7 @@ spotless {
     java {
         target fileTree('.') {
             include '**/*.java'
-            exclude '**/build/**', '**/build-*/**', '**/bin/**'
+            exclude '**/build/**', '**/build-*/**', '**/bin/**', '**/BuildConstants.java'
         }
         toggleOffOn()
         palantirJavaFormat()
