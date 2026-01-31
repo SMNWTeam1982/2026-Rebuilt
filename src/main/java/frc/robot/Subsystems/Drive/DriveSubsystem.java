@@ -56,33 +56,34 @@ public class DriveSubsystem extends SubsystemBase {
         xController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
         yController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
 
-
+            /** tries to configure */
         try{
         } catch (Exception e) {
             e.printStackTrace();
            
 
         }
+        /** configure last auto build  */
         AutoBuilder.configure(
-            this::getRobotPose,
-            this::resetEstimatedPose,
-            driveBase::getRobotRelativeSpeeds,
-            (speeds, feedforwards) -> driveBase.setModulesFromRobotRelativeSpeeds(speeds),
-            new PPHolonomicDriveController(
-             new PIDConstants(5.0, 0.0, 0.0), 
-             new PIDConstants(5.0, 0.0, 0.0)
+            this::getRobotPose, // robot supplier 
+            this::resetEstimatedPose, // 
+            driveBase::getRobotRelativeSpeeds, //
+            (speeds, feedforwards) -> driveBase.setModulesFromRobotRelativeSpeeds(speeds),//
+            new PPHolonomicDriveController(//
+             new PIDConstants(5.0, 0.0, 0.0),// translation PID Constants
+             new PIDConstants(5.0, 0.0, 0.0)// Rotation PID Constants 
             ),
-             Measured.PathplannerMeasurements,
+             Measured.PathplannerMeasurements,// robot config 
                 ()->{
                     var alliance = DriverStation.getAlliance();
                     if(alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;
+                        return alliance.get() == DriverStation.Alliance.Red;//
                     }
                     return false;
 
 
                 },
-                this
+                this // reference to this subsytem to set requirements 
          );
 
     }
