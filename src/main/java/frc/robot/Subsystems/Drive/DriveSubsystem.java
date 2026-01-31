@@ -49,7 +49,7 @@ public class DriveSubsystem extends SubsystemBase {
     );
 
     /** set pid settings and config autobuilder  */
-    @SuppressWarnings("unchecked")
+
     public DriveSubsystem(){
         headingController.setTolerance(DriveBaseTunables.AUTO_ROTATION_TOLERANCE.getRadians());
         headingController.enableContinuousInput(-Math.PI, Math.PI);
@@ -66,8 +66,8 @@ public class DriveSubsystem extends SubsystemBase {
         AutoBuilder.configure(
             this::getRobotPose,
             this::resetEstimatedPose,
-            driveBase::getRobotRelativeSpeeds, 
-            (speeds, feedforwards) -> driveRobotRelative((Supplier<ChassisSpeeds>) speeds),
+            driveBase::getRobotRelativeSpeeds,
+            (speeds, feedforwards) -> driveBase.setModulesFromRobotRelativeSpeeds(speeds),
             new PPHolonomicDriveController(
              new PIDConstants(5.0, 0.0, 0.0), 
              new PIDConstants(5.0, 0.0, 0.0)

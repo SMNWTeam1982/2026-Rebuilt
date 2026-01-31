@@ -1,8 +1,23 @@
 package frc.robot.Constants;
 
+import static edu.wpi.first.units.Units.Amps;
+
+import static edu.wpi.first.units.Units.KilogramSquareMeters;
+import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Mass;
+import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 public class Measured {
@@ -19,12 +34,36 @@ public class Measured {
     }
 
     public static final class PathplannerMeasurements{
-        public static final double ROBOT_MASS = 0;
-        public static final double ROBOT_MOMENT_OF_INERTIA = 0;
-        public static final double MODULE_CONFIG = 0;
-        public static final double MODULE_OFFSETS = 0;
+        public static final Mass ROBOT_MASS = Kilograms.of(0);
+        public static final MomentOfInertia ROBOT_MOMENT_OF_INERTIA = KilogramSquareMeters.of(0);
 
-    }
+       
+        
+        
+         public static final Distance wheelRadius = Meters.of(0);
+        public static final LinearVelocity MAX_DRIVE_VELOCITY = MetersPerSecond.of(0); 
+        public static final double WHEEL_COF = 0;
+        public static final DCMotor DRIVE_MOTOR = null; 
+        public static final Current driveCurrentLimit = Amps.of(0);
+        public static final int numMotors = 0;
+        public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(
+            wheelRadius,
+            MAX_DRIVE_VELOCITY,
+            WHEEL_COF,
+            DRIVE_MOTOR, 
+            driveCurrentLimit,
+            numMotors
+        );
+        public static final Translation2d MODULE_OFFSETS = new Translation2d();
+
+        public static final RobotConfig PATHPLANNER_CONFIG = new RobotConfig(
+            ROBOT_MASS,
+            ROBOT_MOMENT_OF_INERTIA,
+            MODULE_CONFIG,
+            MODULE_OFFSETS
+        );
+      
+    
 
     public static final class SwerveModuleMeasurements{
         /** a number that is measured every year */
@@ -42,6 +81,7 @@ public class Measured {
         public static final Translation2d BLUE_HUB_CENTER = new Translation2d();
         public static final Translation2d RED_HUB_CENTER = new Translation2d();
     }
+}
 
     public static RobotConfig PathplannerMeasurements;
 }
