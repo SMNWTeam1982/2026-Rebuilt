@@ -153,6 +153,14 @@ public class ShooterSubsystem extends SubsystemBase {
         });
     }
 
+    /** makes a command to set the velocity gains */
+    public Command setVelocityPID(double p, double i, double d) {
+        return runOnce(() -> {
+            rightVelocityController.setPID(p, i, d);
+            leftVelocityController.setPID(p, i, d);
+        });
+    }
+
     /** returns the right flywheel velocity in RPM */
     public double getRightFlywheelVelocity() {
         return rightEncoder.getVelocity();
