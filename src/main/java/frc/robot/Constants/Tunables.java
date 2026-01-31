@@ -47,15 +47,19 @@ public class Tunables {
     }
 
     public static final class ShooterTunables {
-        public static final double FLYWHEEL_P = 0.0;
+        public static final double FLYWHEEL_P = 0.0016;
         public static final double FLYWHEEL_I = 0.0;
-        public static final double FLYWHEEL_D = 0.0;
+        public static final double FLYWHEEL_D = 0.0002;
 
-        public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
+        public static final double FLYWHEEL_S = 0;
+        public static final double FLYWHEEL_V = 0.13;
+        public static final double FLYWHEEL_A = 0;
 
-        public static final double FLYWHEEL_IDLE_RPM = 500.0;
+        public static final double FLYWHEEL_RPM_TOLERANCE = 25.0;
 
-        public static final double SHOOTER_RPM_CEILING = 5000;
+        public static final double FLYWHEEL_IDLE_RPM = 2000.0;
+
+        public static final double SHOOTER_RPM_CEILING = 5600;
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;

@@ -8,6 +8,7 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -33,7 +34,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** input RPS, outputs volts, this feedforward can be used for both motors */
     private final SimpleMotorFeedforward flywheelFeedforward = new SimpleMotorFeedforward(
-            ShooterMeasurements.FLYWHEEL_S, ShooterMeasurements.FLYWHEEL_V, ShooterMeasurements.FLYWHEEL_A);
+            ShooterTunables.FLYWHEEL_S, ShooterTunables.FLYWHEEL_V, ShooterTunables.FLYWHEEL_A);
 
     public final Trigger flywheelsUpToSpeed =
             new Trigger(() -> rightVelocityController.atSetpoint() && leftVelocityController.atSetpoint());
@@ -62,6 +63,16 @@ public class ShooterSubsystem extends SubsystemBase {
         leftVelocityController.setSetpoint(ShooterTunables.FLYWHEEL_IDLE_RPM);
 
         setDefaultCommand(runPIDs());
+    }
+
+    @Override
+    public void periodic(){
+        SmartDashboard.putNumber("shooter target", rightVelocityController.getSetpoint());
+        SmartDashboard.putBoolean("at target", flywheelsUpToSpeed.getAsBoolean());
+        SmartDashboard.putNumber("right output", rightMotor.getAppliedOutput());
+        SmartDashboard.putNumber("left output", leftMotor.getAppliedOutput());
+        SmartDashboard.putNumber("right rpm", getRightFlywheelVelocity());
+        SmartDashboard.putNumber("left rpm", getLeftFlywheelVelocity());
     }
 
     private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
@@ -168,7 +179,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** returns the right flywheel velocity in RPM */
     public double getLeftFlywheelVelocity() {
-        return rightEncoder.getVelocity();
+        return leftEncoder.getVelocity();
     }
 
     /** return the average rpm of both flywheels */
