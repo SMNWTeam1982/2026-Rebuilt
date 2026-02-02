@@ -15,7 +15,6 @@ import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import java.util.function.DoubleSupplier;
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -71,6 +70,9 @@ public class ShooterSubsystem extends SubsystemBase {
         // output
         Logger.recordOutput("leftFlywheelTargetRPM", leftVelocityController.getSetpoint());
         Logger.recordOutput("rightFlywheelTargetRPM", rightVelocityController.getSetpoint());
+        Logger.recordOutput("at target", flywheelsUpToSpeed.getAsBoolean());
+        Logger.recordOutput("rightoutput", rightMotor.getAppliedOutput());
+        Logger.recordOutput("leftoutput", leftMotor.getAppliedOutput());
 
         // input
         Logger.recordOutput("rightFlywheelRPM", getRightFlywheelVelocity());
@@ -167,13 +169,11 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** returns the right flywheel velocity in RPM */
-    @AutoLogOutput
     public double getRightFlywheelVelocity() {
         return rightEncoder.getVelocity();
     }
 
     /** returns the right flywheel velocity in RPM */
-    @AutoLogOutput
     public double getLeftFlywheelVelocity() {
         return rightEncoder.getVelocity();
     }
@@ -184,7 +184,6 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** returns if the target RPM is following the calculation */
-    @AutoLogOutput
     public boolean inShootMode() {
         return shootMode;
     }
