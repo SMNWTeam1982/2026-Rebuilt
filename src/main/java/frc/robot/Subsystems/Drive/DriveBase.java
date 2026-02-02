@@ -1,7 +1,6 @@
 package frc.robot.Subsystems.Drive;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
-
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,56 +12,57 @@ import frc.robot.Constants.CANBus.DriveIDs;
 import frc.robot.Constants.Measured.DriveBaseMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Subsystems.Vision.VisionData;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 /**
  * NOT A SUBSYSTEM
- * <p> another abstraction from the swerve modules so that the Subsystem doesn't have to manage every swerve module and module telemetry
- * <p> this class only provides the bare-bones functionality of a swerve drive: robot-relative control and odometry
- * <p> this class is not designed for anything more advanced, such as pathplanner or vision
+ *
+ * <p>this class only exists so that the technical tasks of running the swerve modules wont be
+ * cluttered with the functions for driving the robot
+ *
+ * <p>an abstraction from the swerve modules so that the Subsystem doesn't have to manage every
+ * swerve module and module telemetry
+ *
+ * <p>this class only provides the bare-bones functionality of a swerve drive: robot-relative
+ * control and odometry
+ *
+ * <p>this class is not designed for anything more advanced, such as pathplanner or vision
  */
 public final class DriveBase {
-    public final SwerveModule frontLeft = new SwerveModule(
-        DriveIDs.FRONT_LEFT_DRIVE, 
-        DriveIDs.FRONT_LEFT_TURN, 
-        DriveIDs.FRONT_LEFT_ENCODER
-    );
-    public final SwerveModule frontRight = new SwerveModule(
-        DriveIDs.FRONT_RIGHT_DRIVE, 
-        DriveIDs.FRONT_RIGHT_TURN, 
-        DriveIDs.FRONT_RIGHT_ENCODER
-    );
-    public final SwerveModule backLeft = new SwerveModule(
-        DriveIDs.BACK_LEFT_DRIVE,
-        DriveIDs.BACK_LEFT_TURN, 
-        DriveIDs.BACK_LEFT_ENCODER
-    );
-    public final SwerveModule backRight = new SwerveModule(
-        DriveIDs.BACK_RIGHT_DRIVE, 
-        DriveIDs.BACK_RIGHT_TURN, 
-        DriveIDs.BACK_RIGHT_ENCODER
-    );
+    public final SwerveModule frontLeft =
+            new SwerveModule(DriveIDs.FRONT_LEFT_DRIVE, DriveIDs.FRONT_LEFT_TURN, DriveIDs.FRONT_LEFT_ENCODER);
+    public final SwerveModule frontRight =
+            new SwerveModule(DriveIDs.FRONT_RIGHT_DRIVE, DriveIDs.FRONT_RIGHT_TURN, DriveIDs.FRONT_RIGHT_ENCODER);
+    public final SwerveModule backLeft =
+            new SwerveModule(DriveIDs.BACK_LEFT_DRIVE, DriveIDs.BACK_LEFT_TURN, DriveIDs.BACK_LEFT_ENCODER);
+    public final SwerveModule backRight =
+            new SwerveModule(DriveIDs.BACK_RIGHT_DRIVE, DriveIDs.BACK_RIGHT_TURN, DriveIDs.BACK_RIGHT_ENCODER);
 
     public final Pigeon2 gyro = new Pigeon2(0);
 
+    public final Supplier<Optional<VisionData>> visionResults;
+
     /** stores data about the swerve modules and their states */
     public final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
-        DriveBaseMeasurements.FRONT_LEFT_TRANSLATION, 
-        DriveBaseMeasurements.FRONT_RIGHT_TRANSLATION, 
-        DriveBaseMeasurements.BACK_LEFT_TRANSLATION, 
-        DriveBaseMeasurements.BACK_RIGHT_TRANSLATION
-    );
+            DriveBaseMeasurements.FRONT_LEFT_TRANSLATION,
+            DriveBaseMeasurements.FRONT_RIGHT_TRANSLATION,
+            DriveBaseMeasurements.BACK_LEFT_TRANSLATION,
+            DriveBaseMeasurements.BACK_RIGHT_TRANSLATION);
 
     /** the swerve drive is initialized with a default Pose2d, (0 x, 0 y, 0 rotation) */
-    public final SwerveDrivePoseEstimator swervePoseEstimator = new SwerveDrivePoseEstimator(
-        driveKinematics, 
-        gyro.getRotation2d(), 
-        getModulePositions(), 
-        new Pose2d()
-    );
+    public final SwerveDrivePoseEstimator swervePoseEstimator =
+            new SwerveDrivePoseEstimator(driveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d());
 
-    /** 
+    public DriveBase(Supplier<Optional<VisionData>> visionResults) {
+        this.visionResults = visionResults;
+    }
+
+    /**
      * sets the pose of the pose estimator to the given pose
-     * <p> useful when you need to reset the pose to a given one
+     *
+     * <p>useful when you need to reset the pose to a given one
+     *
      * <p>anything that resets the pose estimator will be irrelavant with absolute position
      */
     public void resetEstimatedPose(Pose2d newPose) {
@@ -87,17 +87,19 @@ public final class DriveBase {
     }
 
     /**
-     * calls the update uptade method on the pose estimator, fetches the odometry data from the chassis
+     * calls the update uptade method on the pose estimator, fetches the odometry data from the
+     * chassis
      */
-    public void updatePoseEstimatorOdometry(){
+    public void updatePoseEstimatorOdometry() {
         swervePoseEstimator.update(gyro.getRotation2d(), getModulePositions());
     }
 
-    /**
-     * adds a vision measurment to the pose estimator
-     */
-    public void addVisionDataToEstimator(VisionData visionData){
-        swervePoseEstimator.addVisionMeasurement(visionData.pose, visionData.timestamp, visionData.standardDeviations);
+    /** adds a vision measurment to the pose estimator, if one is available */
+    public void updatePoseEstimatorVision() {
+        visionResults
+                .get()
+                .ifPresent(visionData -> swervePoseEstimator.addVisionMeasurement(
+                        visionData.pose, visionData.timestamp, visionData.standardDeviations));
     }
 
     /**
@@ -123,6 +125,14 @@ public final class DriveBase {
         frontRight.setDesiredState(desiredStates[1]);
         backLeft.setDesiredState(desiredStates[2]);
         backRight.setDesiredState(desiredStates[3]);
+    }
+
+    /** updates the turn PIDs of each of the swerve modules with new constants */
+    public void updateTurnPIDs(double p, double i, double d) {
+        frontLeft.updateTurnPID(p, i, d);
+        frontRight.updateTurnPID(p, i, d);
+        backLeft.updateTurnPID(p, i, d);
+        backRight.updateTurnPID(p, i, d);
     }
 
     /** Returns the heading from getEstimatedPose() */
@@ -199,5 +209,12 @@ public final class DriveBase {
      */
     public ChassisSpeeds getRobotRelativeSpeeds() {
         return driveKinematics.toChassisSpeeds(getModuleStates());
+    }
+
+    /**
+     * @return ChassisSpeeds relative to the field
+     */
+    public ChassisSpeeds getFieldRelativeSpeeds() {
+        return ChassisSpeeds.fromRobotRelativeSpeeds(getRobotRelativeSpeeds(), getHeading());
     }
 }

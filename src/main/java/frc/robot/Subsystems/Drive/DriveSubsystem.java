@@ -17,40 +17,39 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Measured.PathplannerMeasurements;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
+import frc.robot.Subsystems.Vision.VisionData;
+import java.util.Optional;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
-/**
- * The Subsystem that the other code will interface with when interacting with the drive
- */
+/** The Subsystem that the other code will interface with when interacting with the drive */
 public class DriveSubsystem extends SubsystemBase {
 
     /** abstraction of the swerve module coordination */
-    private final DriveBase driveBase = new DriveBase();
+    private final DriveBase driveBase;
 
     /** controller for the field-relative heading of the robot */
-    private final PIDController headingController = new PIDController(
-        DriveBaseTunables.HEADING_P,
-        DriveBaseTunables.HEADING_I,
-        DriveBaseTunables.HEADING_D
-    );
+    private final PIDController headingController =
+            new PIDController(DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D);
+
+    public final Trigger atTargetHeading = new Trigger(headingController::atSetpoint);
 
     /** controller for the field-relative x of the robot */
     private final PIDController xController = new PIDController(
-        DriveBaseTunables.TRANSLATION_P,
-        DriveBaseTunables.TRANSLATION_I,
-        DriveBaseTunables.TRANSLATION_D
-    );
+            DriveBaseTunables.TRANSLATION_P, DriveBaseTunables.TRANSLATION_I, DriveBaseTunables.TRANSLATION_D);
 
     /** controller for the field-relative y of the robot */
     private final PIDController yController = new PIDController(
-        DriveBaseTunables.TRANSLATION_P,
-        DriveBaseTunables.TRANSLATION_I,
-        DriveBaseTunables.TRANSLATION_D
-    );
+            DriveBaseTunables.TRANSLATION_P, DriveBaseTunables.TRANSLATION_I, DriveBaseTunables.TRANSLATION_D);
 
-    /** set pid settings and config autobuilder  */
+    public final Trigger atTargetTranslation = new Trigger(xController::atSetpoint).and(yController::atSetpoint);
 
-    public DriveSubsystem(){
+    /** set pid settings */
+    public DriveSubsystem(Supplier<Optional<VisionData>> visionResults) {
+        driveBase = new DriveBase(visionResults);
+
         headingController.setTolerance(DriveBaseTunables.AUTO_ROTATION_TOLERANCE.getRadians());
         headingController.enableContinuousInput(-Math.PI, Math.PI);
         xController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
@@ -96,10 +95,14 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /**
-     * converts joystick inputs to field relative inputs so the robot moves relative to the drivers station it is viewed from
-     * @param joystickSpeeds a chassisSpeeds with x and y being feed from the joystick values, and the theta coming from any source (usually the other stick)
+     * converts joystick inputs to field relative inputs so the robot moves relative to the drivers
+     * station it is viewed from
+     *
+     * @param joystickSpeeds a chassisSpeeds with x and y being feed from the joystick values, and the
+     *     theta coming from any source (usually the other stick)
      */
-    public static ChassisSpeeds joystickSpeedsToFieldRelativeSpeeds(ChassisSpeeds joystickSpeeds, boolean onBlueAlliance) {
+    public static ChassisSpeeds joystickSpeedsToFieldRelativeSpeeds(
+            ChassisSpeeds joystickSpeeds, boolean onBlueAlliance) {
         if (onBlueAlliance) {
             return new ChassisSpeeds(
                     -joystickSpeeds.vyMetersPerSecond,
@@ -123,110 +126,102 @@ public class DriveSubsystem extends SubsystemBase {
     /** drives the robot with chassis speeds relative to the field coordinate system */
     public Command driveFieldRelative(Supplier<ChassisSpeeds> desiredFieldSpeeds) {
         return driveRobotRelative(
-            () -> ChassisSpeeds.fromFieldRelativeSpeeds(desiredFieldSpeeds.get(), driveBase.getHeading())
-        );
+                () -> ChassisSpeeds.fromFieldRelativeSpeeds(desiredFieldSpeeds.get(), driveBase.getHeading()));
     }
 
     /**
      * drives the robot field-relative with a target rotation instead of an angular velocity
+     *
      * <p>the x & y velocities and the field rotation are relative to the field coordinate system
+     *
      * @param fieldRelativeTranlations the theta component is ignored
      */
-    public Command driveTopDown(Supplier<ChassisSpeeds> fieldRelativeTranlations, Supplier<Rotation2d> desiredFieldRotation) {
-        return driveFieldRelative(
-            () -> {
-                ChassisSpeeds fieldRelativeSpeeds = fieldRelativeTranlations.get();
+    public Command driveTopDown(
+            Supplier<ChassisSpeeds> fieldRelativeTranlations, Supplier<Rotation2d> desiredFieldRotation) {
+        return driveFieldRelative(() -> {
+                    ChassisSpeeds fieldRelativeSpeeds = fieldRelativeTranlations.get();
 
-                double angularVelocity = headingController.calculate(
-                    driveBase.getHeading().getRadians(),
-                    desiredFieldRotation.get().getRadians()
-                );
+                    double angularVelocity = headingController.calculate(
+                            driveBase.getHeading().getRadians(),
+                            desiredFieldRotation.get().getRadians());
 
-                fieldRelativeSpeeds.omegaRadiansPerSecond = angularVelocity;
+                    fieldRelativeSpeeds.omegaRadiansPerSecond = angularVelocity;
 
-                return fieldRelativeSpeeds;
-            }
-        ).finallyDo(
-            () -> {
-                headingController.reset();
-            }
-        );
+                    return fieldRelativeSpeeds;
+                })
+                .finallyDo(() -> {
+                    headingController.reset();
+                });
     }
 
-    /** 
-     * this command allows the robot to be translated while it points at a target 
+    /**
+     * this command allows the robot to be translated while it points at a target
+     *
      * @param fieldRelativeSpeeds the theta component is ignored
      */
-    public Command driveAndPointAtTarget(Supplier<ChassisSpeeds> fieldRelativeSpeeds, Supplier<Translation2d> target){
+    public Command driveAndPointAtTarget(Supplier<ChassisSpeeds> fieldRelativeSpeeds, Supplier<Translation2d> target) {
         return driveTopDown(
-            fieldRelativeSpeeds,
-            target.get().minus(getRobotPose().getTranslation())::getAngle
-        );
+                fieldRelativeSpeeds, target.get().minus(getRobotPose().getTranslation())::getAngle);
     }
 
     /** drives the robot in a circle around the orbitCenter with a radius of the orbitDistance */
-    public Command orbitPoint(Supplier<Double> orbitDirection, Translation2d orbitCenter, double orbitDistance){
+    public Command orbitPoint(Supplier<Double> orbitDirection, Translation2d orbitCenter, double orbitDistance) {
         return driveAndPointAtTarget(
-            () -> {
-                Pose2d currentRobotPose = driveBase.getEstimatedPose();
+                () -> {
+                    Pose2d currentRobotPose = driveBase.getEstimatedPose();
 
-                double distanceControllerOutput = xController.calculate(
-                    currentRobotPose.getTranslation().getDistance(orbitCenter),
-                    orbitDistance
-                );
+                    double distanceControllerOutput = xController.calculate(
+                            currentRobotPose.getTranslation().getDistance(orbitCenter), orbitDistance);
 
-                // the x coordinate will be rotated to move the robot away and towards the hub
-                // the y coordinate will be rotated to move the robot left and right relative to the center of the hub
-                return ChassisSpeeds.fromRobotRelativeSpeeds(
-                    new ChassisSpeeds(distanceControllerOutput, orbitDirection.get(), 0.0),
-                    orbitCenter.minus(currentRobotPose.getTranslation()).getAngle()
-                );
-            },
-            () -> orbitCenter
-        );
+                    // the x coordinate will be rotated to move the robot away and towards the hub
+                    // the y coordinate will be rotated to move the robot left and right relative to the
+                    // center of the hub
+                    return ChassisSpeeds.fromRobotRelativeSpeeds(
+                            new ChassisSpeeds(distanceControllerOutput, orbitDirection.get(), 0.0),
+                            orbitCenter.minus(currentRobotPose.getTranslation()).getAngle());
+                },
+                () -> orbitCenter);
     }
 
     /**
      * creates a command that moves the robot towards an updatable pose
-     * <p> will reset the position and rotation PIDs when it gets ended
+     *
+     * <p>will reset the position and rotation PIDs when it gets ended
      */
     public Command trackPose(Supplier<Pose2d> targetPose) {
-        return driveFieldRelative(
-                () -> {
+        return driveFieldRelative(() -> {
                     Pose2d currentRobotPose = driveBase.getEstimatedPose();
                     Pose2d currentTargetPose = targetPose.get();
 
                     double angularVelocity = headingController.calculate(
-                        currentRobotPose.getRotation().getRadians(),
-                        currentTargetPose.getRotation().getRadians()
-                    );
+                            currentRobotPose.getRotation().getRadians(),
+                            currentTargetPose.getRotation().getRadians());
 
-                    double xOutput = -xController.calculate(
-                            currentRobotPose.getX(), currentTargetPose.getX());
+                    double xOutput = -xController.calculate(currentRobotPose.getX(), currentTargetPose.getX());
                     double clampedXOutput = MathUtil.clamp(
                             xOutput, -DriveBaseTunables.MAX_AUTO_SPEED, DriveBaseTunables.MAX_AUTO_SPEED);
 
-                    double yOutput = -yController.calculate(
-                            currentRobotPose.getY(), currentTargetPose.getY());
+                    double yOutput = -yController.calculate(currentRobotPose.getY(), currentTargetPose.getY());
                     double clampedYOutput = MathUtil.clamp(
                             yOutput, -DriveBaseTunables.MAX_AUTO_SPEED, DriveBaseTunables.MAX_AUTO_SPEED);
 
                     return new ChassisSpeeds(clampedXOutput, clampedYOutput, angularVelocity);
-                }
-            ).finallyDo(() -> {
-                headingController.reset();
-                xController.reset();
-                yController.reset();
-            });
+                })
+                .finallyDo(() -> {
+                    headingController.reset();
+                    xController.reset();
+                    yController.reset();
+                });
     }
 
     /**
      * creates a command to move the robot to a specific pose
+     *
      * <p>note that the target pose doesnt change when the command is run multiple times
      */
     public Command moveToPose(Pose2d targetPose) {
         return trackPose(() -> targetPose)
-            .until(() -> xController.atSetpoint() && yController.atSetpoint() && headingController.atSetpoint());
+                .until(() -> xController.atSetpoint() && yController.atSetpoint() && headingController.atSetpoint());
     }
 
     public Command nudgeForward() {
@@ -245,8 +240,12 @@ public class DriveSubsystem extends SubsystemBase {
         return driveRobotRelative(() -> new ChassisSpeeds(0, DriveBaseTunables.NUDGE_SPEED, 0));
     }
 
-    public Pose2d getRobotPose(){
+    public Pose2d getRobotPose() {
         return driveBase.getEstimatedPose();
+    }
+
+    public ChassisSpeeds getFieldRelativeVelocity() {
+        return driveBase.getFieldRelativeSpeeds();
     }
 
     /**
@@ -263,7 +262,7 @@ public class DriveSubsystem extends SubsystemBase {
     /**
      * Zeroes the heading of the pose estimator
      *
-     * <p>anything that resets the pose estimator will be irrelavant with absolute position
+     * <p>anything that resets the pose estimator will be overridden by absolute position from vision
      */
     public Command zeroEstimatedHeading() {
         return runOnce(driveBase::zeroEstimatedHeading);
@@ -296,6 +295,28 @@ public class DriveSubsystem extends SubsystemBase {
             if (moduleIndex == 3) {
                 driveBase.backRight.runMotors(driveAmount.getAsDouble(), turnAmount.getAsDouble());
             }
+        });
+    }
+
+    /** makes a command to change the pid values to the ones provided, you should defer this if you want to change this multiple times */
+    public Command setWheelTurnPIDs(double p, double i, double d) {
+        return runOnce(() -> {
+            driveBase.updateTurnPIDs(p, i, d);
+        });
+    }
+
+    /** makes a command to update the heading pid to the provided values */
+    public Command setHeadingPID(double p, double i, double d) {
+        return runOnce(() -> {
+            headingController.setPID(p, i, d);
+        });
+    }
+
+    /** makes a command to update the translation pids to the provided values */
+    public Command setTranslationPIDs(double p, double i, double d) {
+        return runOnce(() -> {
+            xController.setPID(p, i, d);
+            yController.setPID(p, i, d);
         });
     }
 }
