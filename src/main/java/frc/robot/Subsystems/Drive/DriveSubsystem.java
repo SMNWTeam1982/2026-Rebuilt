@@ -16,7 +16,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Measured;
+import frc.robot.Constants.Measured.PathplannerMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 
 /**
@@ -56,24 +56,25 @@ public class DriveSubsystem extends SubsystemBase {
         xController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
         yController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
 
-            /** tries to configure */
-        try{
-        } catch (Exception e) {
-            e.printStackTrace();
-           
-
-        }
         /** configure last auto build  */
         AutoBuilder.configure(
-            this::getRobotPose, // robot supplier 
-            this::resetEstimatedPose, // 
-            driveBase::getRobotRelativeSpeeds, //
+            this::getRobotPose, // robot pose supplier 
+            driveBase::resetEstimatedPose, // drivebase function
+            driveBase::getRobotRelativeSpeeds, // drivebase function
             (speeds, feedforwards) -> driveBase.setModulesFromRobotRelativeSpeeds(speeds),//
-            new PPHolonomicDriveController(//
-             new PIDConstants(5.0, 0.0, 0.0),// translation PID Constants
-             new PIDConstants(5.0, 0.0, 0.0)// Rotation PID Constants 
+            new PPHolonomicDriveController(
+                new PIDConstants(
+                    DriveBaseTunables.TRANSLATION_P,
+                    DriveBaseTunables.TRANSLATION_I,
+                    DriveBaseTunables.TRANSLATION_D
+                ),
+                new PIDConstants(
+                    DriveBaseTunables.HEADING_P,
+                    DriveBaseTunables.HEADING_I,
+                    DriveBaseTunables.HEADING_D
+                )
             ),
-             Measured.PathplannerMeasurements,// robot config 
+            PathplannerMeasurements.PATHPLANNER_CONFIG,// robot config 
                 ()->{
                     var alliance = DriverStation.getAlliance();
                     if(alliance.isPresent()) {

@@ -34,35 +34,33 @@ public class Measured {
     }
 
     public static final class PathplannerMeasurements{
-        public static final Mass ROBOT_MASS = Kilograms.of(0);
-        public static final MomentOfInertia ROBOT_MOMENT_OF_INERTIA = KilogramSquareMeters.of(0);
-
-       
-        
-        
-         public static final Distance wheelRadius = Meters.of(0);
-        public static final LinearVelocity MAX_DRIVE_VELOCITY = MetersPerSecond.of(0); 
-        public static final double WHEEL_COF = 0;
-        public static final DCMotor DRIVE_MOTOR = null; 
-        public static final Current driveCurrentLimit = Amps.of(0);
-        public static final int numMotors = 0;
-        public static final ModuleConfig MODULE_CONFIG = new ModuleConfig(
-            wheelRadius,
+        private static final Distance WHEEL_RADIUS = Meters.of(0.04); // guess
+        private static final LinearVelocity MAX_DRIVE_VELOCITY = MetersPerSecond.of(DriveBaseMeasurements.PHYSICAL_MAX_SPEED); // set elsewhere
+        private static final double WHEEL_COF = 1.0; // guess
+        private static final DCMotor DRIVE_MOTOR = DCMotor.getNEO(1); // 1 drive neo
+        private static final Current DRIVE_CURRENT_LIMIT = Amps.of(35); // set elsewhere
+        private static final ModuleConfig MODULE_CONFIG = new ModuleConfig(
+            WHEEL_RADIUS,
             MAX_DRIVE_VELOCITY,
             WHEEL_COF,
             DRIVE_MOTOR, 
-            driveCurrentLimit,
-            numMotors
+            DRIVE_CURRENT_LIMIT,
+            1
         );
-        public static final Translation2d MODULE_OFFSETS = new Translation2d();
+
+        private static final Mass ROBOT_MASS = Kilograms.of(52); // max robot weight
+        private static final MomentOfInertia ROBOT_MOMENT_OF_INERTIA = KilogramSquareMeters.of(4.25); // uses pathplanner's moi estimate equation
 
         public static final RobotConfig PATHPLANNER_CONFIG = new RobotConfig(
             ROBOT_MASS,
             ROBOT_MOMENT_OF_INERTIA,
             MODULE_CONFIG,
-            MODULE_OFFSETS
+            DriveBaseMeasurements.FRONT_LEFT_TRANSLATION,
+            DriveBaseMeasurements.FRONT_RIGHT_TRANSLATION,
+            DriveBaseMeasurements.BACK_LEFT_TRANSLATION,
+            DriveBaseMeasurements.BACK_RIGHT_TRANSLATION
         );
-      
+    }
     
 
     public static final class SwerveModuleMeasurements{
@@ -81,7 +79,4 @@ public class Measured {
         public static final Translation2d BLUE_HUB_CENTER = new Translation2d();
         public static final Translation2d RED_HUB_CENTER = new Translation2d();
     }
-}
-
-    public static RobotConfig PathplannerMeasurements;
 }
