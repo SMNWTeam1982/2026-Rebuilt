@@ -14,15 +14,7 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-<<<<<<< HEAD
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import java.util.List;
-=======
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
->>>>>>> 21038a3480e7a2433b4dc67aa61d4d6e5a0a5ad1
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 /** To do:
@@ -41,12 +33,7 @@ public class VisionSubsystem extends SubsystemBase {
     private final String cameraName;
     private Optional<VisionData> lastVisionResult;
 
-<<<<<<< HEAD
     private Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(0.5, 0.5, 1);   
-=======
-    private Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(0.5, 0.5, 1);
-
->>>>>>> 21038a3480e7a2433b4dc67aa61d4d6e5a0a5ad1
     private Matrix<N3, N1> SINGLE_TAG_STANDARD_DEVIATION = VecBuilder.fill(4, 4, 8);
     private Matrix<N3, N1> MULTPLE_TAG_STANDARD_DEVIATION = VecBuilder.fill(0.5, 0.5, 1);
 
@@ -147,17 +134,4 @@ public class VisionSubsystem extends SubsystemBase {
         }
     }
 
-<<<<<<< HEAD
-=======
-    public void periodic() {
-        Optional<EstimatedRobotPose> visionEstimation = Optional.empty();
-        for (var result : instanceCamera.getAllUnreadResults()) {
-            visionEstimation = photonPoseEstimator.estimateCoprocMultiTagPose(result);
-            if (visionEstimation.isEmpty()) {
-                visionEstimation = photonPoseEstimator.estimateLowestAmbiguityPose(result);
-            }
-            updateEstimationStdDevs(visionEstimation, result.getTargets());
-        }
-    }
->>>>>>> 21038a3480e7a2433b4dc67aa61d4d6e5a0a5ad1
 }
