@@ -1,12 +1,8 @@
 package frc.robot.Subsystems.Drive;
 
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,8 +12,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Measured.PathplannerMeasurements;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Measured.PathplannerMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
@@ -57,35 +53,27 @@ public class DriveSubsystem extends SubsystemBase {
 
         /** configure last auto build  */
         AutoBuilder.configure(
-            this::getRobotPose, // robot pose supplier 
-            driveBase::resetEstimatedPose, // drivebase function
-            driveBase::getRobotRelativeSpeeds, // drivebase function
-            (speeds, feedforwards) -> driveBase.setModulesFromRobotRelativeSpeeds(speeds),//
-            new PPHolonomicDriveController(
-                new PIDConstants(
-                    DriveBaseTunables.TRANSLATION_P,
-                    DriveBaseTunables.TRANSLATION_I,
-                    DriveBaseTunables.TRANSLATION_D
-                ),
-                new PIDConstants(
-                    DriveBaseTunables.HEADING_P,
-                    DriveBaseTunables.HEADING_I,
-                    DriveBaseTunables.HEADING_D
-                )
-            ),
-            PathplannerMeasurements.PATHPLANNER_CONFIG,// robot config 
-                ()->{
+                this::getRobotPose, // robot pose supplier
+                driveBase::resetEstimatedPose, // drivebase function
+                driveBase::getRobotRelativeSpeeds, // drivebase function
+                (speeds, feedforwards) -> driveBase.setModulesFromRobotRelativeSpeeds(speeds), //
+                new PPHolonomicDriveController(
+                        new PIDConstants(
+                                DriveBaseTunables.TRANSLATION_P,
+                                DriveBaseTunables.TRANSLATION_I,
+                                DriveBaseTunables.TRANSLATION_D),
+                        new PIDConstants(
+                                DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D)),
+                PathplannerMeasurements.PATHPLANNER_CONFIG, // robot config
+                () -> {
                     var alliance = DriverStation.getAlliance();
-                    if(alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red;//
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red; //
                     }
                     return false;
-
-
                 },
-                this // reference to this subsytem to set requirements 
-         );
-
+                this // reference to this subsytem to set requirements
+                );
     }
 
     /** update telemetry and pose estimation here */

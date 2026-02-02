@@ -1,7 +1,6 @@
 package frc.robot.Constants;
 
 import static edu.wpi.first.units.Units.Amps;
-
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
@@ -9,10 +8,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -34,37 +31,31 @@ public class Measured {
         public static final double DRIVE_PERIOD = TimedRobot.kDefaultPeriod;
     }
 
-    public static final class PathplannerMeasurements{
+    public static final class PathplannerMeasurements {
         private static final Distance WHEEL_RADIUS = Meters.of(0.04); // guess
-        private static final LinearVelocity MAX_DRIVE_VELOCITY = MetersPerSecond.of(DriveBaseMeasurements.PHYSICAL_MAX_SPEED); // set elsewhere
+        private static final LinearVelocity MAX_DRIVE_VELOCITY =
+                MetersPerSecond.of(DriveBaseMeasurements.PHYSICAL_MAX_SPEED); // set elsewhere
         private static final double WHEEL_COF = 1.0; // guess
         private static final DCMotor DRIVE_MOTOR = DCMotor.getNEO(1); // 1 drive neo
         private static final Current DRIVE_CURRENT_LIMIT = Amps.of(35); // set elsewhere
-        private static final ModuleConfig MODULE_CONFIG = new ModuleConfig(
-            WHEEL_RADIUS,
-            MAX_DRIVE_VELOCITY,
-            WHEEL_COF,
-            DRIVE_MOTOR, 
-            DRIVE_CURRENT_LIMIT,
-            1
-        );
+        private static final ModuleConfig MODULE_CONFIG =
+                new ModuleConfig(WHEEL_RADIUS, MAX_DRIVE_VELOCITY, WHEEL_COF, DRIVE_MOTOR, DRIVE_CURRENT_LIMIT, 1);
 
         private static final Mass ROBOT_MASS = Kilograms.of(52); // max robot weight
-        private static final MomentOfInertia ROBOT_MOMENT_OF_INERTIA = KilogramSquareMeters.of(4.25); // uses pathplanner's moi estimate equation
+        private static final MomentOfInertia ROBOT_MOMENT_OF_INERTIA =
+                KilogramSquareMeters.of(4.25); // uses pathplanner's moi estimate equation
 
         public static final RobotConfig PATHPLANNER_CONFIG = new RobotConfig(
-            ROBOT_MASS,
-            ROBOT_MOMENT_OF_INERTIA,
-            MODULE_CONFIG,
-            DriveBaseMeasurements.FRONT_LEFT_TRANSLATION,
-            DriveBaseMeasurements.FRONT_RIGHT_TRANSLATION,
-            DriveBaseMeasurements.BACK_LEFT_TRANSLATION,
-            DriveBaseMeasurements.BACK_RIGHT_TRANSLATION
-        );
+                ROBOT_MASS,
+                ROBOT_MOMENT_OF_INERTIA,
+                MODULE_CONFIG,
+                DriveBaseMeasurements.FRONT_LEFT_TRANSLATION,
+                DriveBaseMeasurements.FRONT_RIGHT_TRANSLATION,
+                DriveBaseMeasurements.BACK_LEFT_TRANSLATION,
+                DriveBaseMeasurements.BACK_RIGHT_TRANSLATION);
     }
-    
 
-    public static final class SwerveModuleMeasurements{
+    public static final class SwerveModuleMeasurements {
         /** a number that is measured every year */
         public static final double POSITION_TO_METERS_MULTIPLIER = -0.31927 / 6.75;
 
