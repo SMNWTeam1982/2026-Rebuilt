@@ -5,11 +5,11 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.Tunables.VisionTunables;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import frc.robot.Constants.Tunables.VisionTunables;
 
 /** To do:
  * Bare bones vision control ( no checks, no ambiguity)
@@ -25,13 +25,12 @@ public class VisionSubsystem extends SubsystemBase {
     private final String cameraName;
     private Optional<VisionData> lastVisionResult;
 
-    /** 
+    /**
      * @param cameraName = VisionConstants.limeLightCameraName
      */
     public VisionSubsystem(Transform3d cameraRelativeToRobot, String cameraName) {
         photonPoseEstimator = new PhotonPoseEstimator(
-            AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField), 
-            cameraRelativeToRobot);
+                AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField), cameraRelativeToRobot);
         instanceCamera = new PhotonCamera(cameraName);
         this.cameraName = cameraName;
         setDefaultCommand(pollVisionData());
@@ -51,20 +50,19 @@ public class VisionSubsystem extends SubsystemBase {
         return cameraName;
     }
 
-    /** When called, this gets the last Estimated Position of the Robot and estimates the average position of the targets. 
-     *  If there are no more targets it will return Empty. 
-     *  Then it gets the last estimated pose before replacing VisionData. 
+    /** When called, this gets the last Estimated Position of the Robot and estimates the average position of the targets.
+     *  If there are no more targets it will return Empty.
+     *  Then it gets the last estimated pose before replacing VisionData.
      */
-    
     private Optional<VisionData> getVisionResult() {
         Optional<EstimatedRobotPose> lastEstimatedPose = Optional.empty();
 
         for (var result : instanceCamera.getAllUnreadResults()) {
             // Estimates the average position of the targets based on the targets last position
             lastEstimatedPose = photonPoseEstimator.estimateCoprocMultiTagPose(result);
-            if (lastEstimatedPose.isEmpty()) { 
+            if (lastEstimatedPose.isEmpty()) {
                 /** If the last estimated position is empty the last estimated pose will be used to estimate the position
-                 * with the lowest ambiguity. 
+                 * with the lowest ambiguity.
                  */
                 lastEstimatedPose = photonPoseEstimator.estimateLowestAmbiguityPose(result);
             }

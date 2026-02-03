@@ -2,7 +2,6 @@ package frc.robot.Constants;
 
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
-
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -122,6 +121,5 @@ public class Tunables {
                 new Rotation3d(0.0, 10.0, 0.0));
 
         public static final Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(0.5, 0.5, 1);
-        
     }
 }
