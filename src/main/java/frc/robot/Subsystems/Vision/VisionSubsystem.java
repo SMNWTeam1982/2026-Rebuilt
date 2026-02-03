@@ -30,7 +30,7 @@ public class VisionSubsystem extends SubsystemBase {
         setDefaultCommand(pollVisionData());
     }
 
-    public Command pollVisionData() { 
+    public Command pollVisionData() {
         return run(() -> {
             lastVisionResult = getVisionResult();
         });
