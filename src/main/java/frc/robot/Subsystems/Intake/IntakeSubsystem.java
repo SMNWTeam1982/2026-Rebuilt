@@ -36,8 +36,8 @@ public class IntakeSubsystem extends SubsystemBase {
         pivotMotor.configure(
                 IntakeTunables.PIVOT_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-        pivotController.setTolerance(IntakeTunables.PIVOT_TOLERANCE.getRotations());
-        pivotController.setSetpoint(IntakeTunables.STOW_POSITION.getRotations());
+        pivotController.setTolerance(IntakeTunables.PIVOT_TOLERANCE.getRadians());
+        pivotController.setSetpoint(IntakeTunables.STOW_POSITION.getRadians());
 
         setDefaultCommand(runPID());
     }
@@ -45,22 +45,23 @@ public class IntakeSubsystem extends SubsystemBase {
     /** sets the pid setpoint to the desired angle */
     public Command setTargetAngle(
             Rotation2d targetAngle) { // Finds the target angle for the wrist based on button input
-        return runOnce(() -> pivotController.setSetpoint(targetAngle.getRotations()));
+        return runOnce(() -> pivotController.setSetpoint(targetAngle.getRadians()));
     }
 
     @Override
     public void periodic() {
         // output
-        Logger.recordOutput("intake/Target Angle Rotations", pivotController.getSetpoint());
+        Logger.recordOutput("intake/Target Angle (Radians)", pivotController.getSetpoint());
         // input
-        Logger.recordOutput("intake/Angle Rotations", getIntakePosition().getRotations());
+        Logger.recordOutput(
+                "intake/Current Angle (Radians)", getIntakePosition().getRadians());
     }
 
     /** runs the feedback and feedforward control and sets the motor */
     public Command runPID() {
         return runEnd(
                 () -> {
-                    double intakeRotation = getIntakePosition().getRotations();
+                    double intakeRotation = getIntakePosition().getRadians();
 
                     // pid loop tuned to output in volts
                     double pidOutput = pivotController.calculate(intakeRotation);
