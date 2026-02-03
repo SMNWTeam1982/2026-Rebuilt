@@ -25,6 +25,9 @@ public class VisionSubsystem extends SubsystemBase {
     private final String cameraName;
     private Optional<VisionData> lastVisionResult;
 
+    /** 
+     * @param cameraName = VisionConstants.limeLightCameraName
+     */
     public VisionSubsystem(Transform3d cameraRelativeToRobot, String cameraName) {
         photonPoseEstimator = new PhotonPoseEstimator(
             AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField), 
@@ -48,12 +51,23 @@ public class VisionSubsystem extends SubsystemBase {
         return cameraName;
     }
 
+    /** When called, this gets the last Estimated Position of the Robot and estimates the average position of the targets. 
+     *  If there are no more targets it will return Empty. 
+     *  Then it gets the last estimated pose before replacing VisionData. 
+     */
+    
     private Optional<VisionData> getVisionResult() {
         Optional<EstimatedRobotPose> lastEstimatedPose = Optional.empty();
 
         for (var result : instanceCamera.getAllUnreadResults()) {
             // Estimates the average position of the targets based on the targets last position
-            lastEstimatedPose = photonPoseEstimator.estimateAverageBestTargetsPose(result);
+            lastEstimatedPose = photonPoseEstimator.estimateCoprocMultiTagPose(result);
+            if (lastEstimatedPose.isEmpty()) { 
+                /** If the last estimated position is empty the last estimated pose will be used to estimate the position
+                 * with the lowest ambiguity. 
+                 */
+                lastEstimatedPose = photonPoseEstimator.estimateLowestAmbiguityPose(result);
+            }
         }
         // if getAllUnreadResults() is empty then lastEstimatedPose will be Optional.empty()
         // also accounts for results that have data but are surrounded by results without data
