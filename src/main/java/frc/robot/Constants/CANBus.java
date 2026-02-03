@@ -41,4 +41,8 @@ public class CANBus {
     public static final class KickerIDs {
         public static final int KICKER = 14;
     }
+
+    public static final class VisionConstants {
+        public static final String limeLightCameraName = "limelight-front";
+    }
 }
