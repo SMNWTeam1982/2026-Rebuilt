@@ -2,7 +2,6 @@ package frc.robot.Subsystems.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.Tunables.VisionTunables;
@@ -10,6 +9,7 @@ import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import frc.robot.Constants.CANBus.VisionConstants;
 
 /** To do:
  * Bare bones vision control ( no checks, no ambiguity)
@@ -22,17 +22,15 @@ public class VisionSubsystem extends SubsystemBase {
 
     private final PhotonCamera instanceCamera;
     private final PhotonPoseEstimator photonPoseEstimator;
-    private final String cameraName;
     private Optional<VisionData> lastVisionResult;
 
     /**
      * @param cameraName = VisionConstants.limeLightCameraName
      */
-    public VisionSubsystem(Transform3d cameraRelativeToRobot, String cameraName) {
+    public VisionSubsystem() {
         photonPoseEstimator = new PhotonPoseEstimator(
-                AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField), cameraRelativeToRobot);
-        instanceCamera = new PhotonCamera(cameraName);
-        this.cameraName = cameraName;
+                AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField), VisionTunables.PHOTON_CAM_RELATIVE_TO_ROBOT);
+        instanceCamera = new PhotonCamera(VisionConstants.limeLightCameraName);
         setDefaultCommand(pollVisionData());
     }
 
@@ -47,7 +45,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public String getName() {
-        return cameraName;
+        return VisionConstants.limeLightCameraName;
     }
 
     /** When called, this gets the last Estimated Position of the Robot and estimates the average position of the targets.
