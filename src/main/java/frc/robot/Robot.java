@@ -20,10 +20,8 @@ public class Robot extends LoggedRobot {
 
         if (isReal()) {
             Logger.addDataReceiver(new NT4Publisher()); // Publish Data exclusively to NetworkTables
-        }
- 
-        else {
-            setUseTiming(false); 
+        } else {
+            setUseTiming(false);
             Logger.addDataReceiver(new NT4Publisher());
         }
         Logger.start();
