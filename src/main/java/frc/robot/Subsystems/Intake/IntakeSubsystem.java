@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.IntakeIDs;
 import frc.robot.Constants.Tunables.IntakeTunables;
+import org.littletonrobotics.junction.Logger;
 
 /** controls the pivoting of the intake and the roller bar */
 public class IntakeSubsystem extends SubsystemBase {
@@ -45,6 +46,14 @@ public class IntakeSubsystem extends SubsystemBase {
     public Command setTargetAngle(
             Rotation2d targetAngle) { // Finds the target angle for the wrist based on button input
         return runOnce(() -> pivotController.setSetpoint(targetAngle.getRotations()));
+    }
+
+    @Override
+    public void periodic() {
+        // output
+        Logger.recordOutput("intake/Target Angle Rotations", pivotController.getSetpoint());
+        // input
+        Logger.recordOutput("intake/Angle Rotations", getIntakePosition().getRotations());
     }
 
     /** runs the feedback and feedforward control and sets the motor */

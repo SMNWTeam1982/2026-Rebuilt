@@ -14,6 +14,7 @@ import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 /** The Subsystem that the other code will interface with when interacting with the drive */
 public class DriveSubsystem extends SubsystemBase {
@@ -51,6 +52,8 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         driveBase.updatePoseEstimatorOdometry();
+        Logger.recordOutput("Drive/Field Reletive Velocity", getFieldRelativeVelocity());
+        Logger.recordOutput("Drive/Robot Pose", getRobotPose());
     }
 
     /**

@@ -8,13 +8,13 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import java.util.function.DoubleSupplier;
+import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -66,12 +66,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("shooter target", rightVelocityController.getSetpoint());
-        SmartDashboard.putBoolean("at target", flywheelsUpToSpeed.getAsBoolean());
-        SmartDashboard.putNumber("right output", rightMotor.getAppliedOutput());
-        SmartDashboard.putNumber("left output", leftMotor.getAppliedOutput());
-        SmartDashboard.putNumber("right rpm", getRightFlywheelVelocity());
-        SmartDashboard.putNumber("left rpm", getLeftFlywheelVelocity());
+        Logger.recordOutput("Shooter/Left Flywheel Target RPM", leftVelocityController.getSetpoint());
+        Logger.recordOutput("Shooter/Right Flywheel Target RPM", rightVelocityController.getSetpoint());
+        Logger.recordOutput("Shooter/At target", flywheelsUpToSpeed.getAsBoolean());
+        Logger.recordOutput("Shooter/Right output", rightMotor.getAppliedOutput());
+        Logger.recordOutput("Shooter/Left output", leftMotor.getAppliedOutput());
+        Logger.recordOutput("Shooter/Right Flywheel RPM", getRightFlywheelVelocity());
+        Logger.recordOutput("Shooter/Left Flywheel RPM", getLeftFlywheelVelocity());
     }
 
     private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
