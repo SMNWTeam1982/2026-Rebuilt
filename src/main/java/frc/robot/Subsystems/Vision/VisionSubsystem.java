@@ -17,7 +17,6 @@ import frc.robot.Constants.CANBus.VisionConstants;
  * Then start working on ambiguity if necessary/if have time
  */
 
-/** Optional Calling, if the target is not found, this subsystem will not be called */
 public class VisionSubsystem extends SubsystemBase {
 
     private final PhotonCamera instanceCamera;
