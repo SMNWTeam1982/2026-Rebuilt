@@ -8,29 +8,13 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.ShooterIDs;
-import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.ShooterTunables;
-
 import java.util.function.DoubleSupplier;
-
-
-import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
-
-import edu.wpi.first.units.measure.MutAngle;
-import edu.wpi.first.units.measure.MutAngularVelocity;
-import edu.wpi.first.units.measure.MutVoltage;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
-
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -49,7 +33,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** input RPS, outputs volts, this feedforward can be used for both motors */
     private final SimpleMotorFeedforward flywheelFeedforward = new SimpleMotorFeedforward(
-            ShooterMeasurements.FLYWHEEL_S, ShooterMeasurements.FLYWHEEL_V, ShooterMeasurements.FLYWHEEL_A);
+            ShooterTunables.FLYWHEEL_S, ShooterTunables.FLYWHEEL_V, ShooterTunables.FLYWHEEL_A);
 
     public final Trigger flywheelsUpToSpeed =
             new Trigger(() -> rightVelocityController.atSetpoint() && leftVelocityController.atSetpoint());
@@ -59,15 +43,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private final DoubleSupplier shootSpeed;
 
     private boolean shootMode = false;
-
-    //SysId variables 
-
-          // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
-  private final MutVoltage m_appliedVoltage = Volts.mutable(0);
-  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
-  private final MutAngle m_angle = Radians.mutable(0);
-  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
-  private final MutAngularVelocity m_velocity = RadiansPerSecond.mutable(0);
 
     public ShooterSubsystem(DoubleSupplier shootSpeed) {
 
@@ -87,6 +62,16 @@ public class ShooterSubsystem extends SubsystemBase {
         leftVelocityController.setSetpoint(ShooterTunables.FLYWHEEL_IDLE_RPM);
 
         setDefaultCommand(runPIDs());
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("shooter target", rightVelocityController.getSetpoint());
+        SmartDashboard.putBoolean("at target", flywheelsUpToSpeed.getAsBoolean());
+        SmartDashboard.putNumber("right output", rightMotor.getAppliedOutput());
+        SmartDashboard.putNumber("left output", leftMotor.getAppliedOutput());
+        SmartDashboard.putNumber("right rpm", getRightFlywheelVelocity());
+        SmartDashboard.putNumber("left rpm", getLeftFlywheelVelocity());
     }
 
     private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
@@ -193,7 +178,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** returns the right flywheel velocity in RPM */
     public double getLeftFlywheelVelocity() {
-        return rightEncoder.getVelocity();
+        return leftEncoder.getVelocity();
     }
 
     /** return the average rpm of both flywheels */
@@ -205,52 +190,4 @@ public class ShooterSubsystem extends SubsystemBase {
     public boolean inShootMode() {
         return shootMode;
     }
-
-    private final SysIdRoutine m_sysIdRoutine =
-      new SysIdRoutine(
-          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
-          new SysIdRoutine.Config(),
-          new SysIdRoutine.Mechanism(
-              // Tell SysId how to plumb the driving voltage to the motor(s).
-              rightMotor::setVoltage,
-              // Tell SysId how to record a frame of data for each motor on the mechanism being
-              // characterized.
-              log -> {
-                // Record a frame for the shooter motor.
-                log.motor("Right Shooter Motor")
-                    .voltage(
-                        m_appliedVoltage.mut_replace(
-                            rightMotor.get() * RobotController.getBatteryVoltage(), Volts))
-                    .angularPosition(m_angle.mut_replace(rightEncoder.getPosition(), Rotations))
-                    .angularVelocity(
-                        m_velocity.mut_replace(rightEncoder.getVelocity(), RotationsPerSecond));
-                log.motor("Left Shooter Motor")
-                    .voltage(
-                        m_appliedVoltage.mut_replace(
-                            leftMotor.get() * RobotController.getBatteryVoltage(), Volts))
-                    .angularPosition(m_angle.mut_replace(leftEncoder.getPosition(), Rotations))
-                    .angularVelocity(
-                        m_velocity.mut_replace(leftEncoder.getVelocity(), RotationsPerSecond));
-              },
-              // Tell SysId to make generated commands require this subsystem, suffix test state in
-              // WPILog with this subsystem's name ("shooter")
-              this));
-
-    /**
-   * Returns a command that will execute a quasistatic test in the given direction.
-   *
-   * @param direction The direction (forward or reverse) to run the test in
-   */
-  public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutine.quasistatic(direction);
-  }
-
-  /**
-   * Returns a command that will execute a dynamic test in the given direction.
-   *
-   * @param direction The direction (forward or reverse) to run the test in
-   */
-  public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    return m_sysIdRoutine.dynamic(direction);
-  }
 }

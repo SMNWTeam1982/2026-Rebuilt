@@ -56,22 +56,32 @@ public class Tunables {
     }
 
     public static final class ShooterTunables {
-        public static final double FLYWHEEL_P = 0.0;
+        public static final double FLYWHEEL_P = 0.0016;
         public static final double FLYWHEEL_I = 0.0;
-        public static final double FLYWHEEL_D = 0.0;
+        public static final double FLYWHEEL_D = 0.0002;
 
-        public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
+        public static final double FLYWHEEL_S = 0;
+        public static final double FLYWHEEL_V = 0.13;
+        public static final double FLYWHEEL_A = 0;
 
-        public static final double FLYWHEEL_IDLE_RPM = 500.0;
+        public static final double FLYWHEEL_RPM_TOLERANCE = 25.0;
+
+        public static final double FLYWHEEL_IDLE_RPM = 2000.0;
 
         public static final double SHOOTER_RPM_CEILING = 5600;
+
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
 
+        public static final int SHOT_PREDICTION_ITERATIONS = 2;
+
         // the flywheels should coast when disables so the motors don't have to absorb all of the momentum
-        // the total flywheel current should not exceed 50A (25A * 2 motors)
-        public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(25).idleMode(SparkBaseConfig.IdleMode.kCoast);
+        // the rev website recommends a limit of 40A-60A for NEO 1.1
+        // the total flywheel current should not exceed 80A (40A * 2 motors)
+        public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig()
+                .smartCurrentLimit(40)
+                .idleMode(SparkBaseConfig.IdleMode.kCoast)
+                .secondaryCurrentLimit(60);
     }
 
     public static final class IntakeTunables {
