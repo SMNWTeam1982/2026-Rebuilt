@@ -21,17 +21,9 @@ public class Robot extends LoggedRobot {
         if (isReal()) {
             Logger.addDataReceiver(new NT4Publisher()); // Publish Data exclusively to NetworkTables
         }
-        //  else if (false) {
-        //     setUseTiming(false); // Run as fast as possible
-        //     String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope
-        //     Logger.setReplaySource(new WPILOGReader(logPath)); // Read the replay log
-        //     Logger.addDataReceiver(new WPILOGWriter(
-        //             LogFileUtil.addPathSuffix(logPath, "_replay"))); // Save Sim outputs to seperate log file
-        // }
+ 
         else {
-            setUseTiming(false); // Run as fast as possible
-            // By default, we will not save logs in simulation.
-            // Instead, logs are pushed directly to NetworkTables
+            setUseTiming(false); 
             Logger.addDataReceiver(new NT4Publisher());
         }
         Logger.start();
