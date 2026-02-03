@@ -8,11 +8,11 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.ShooterIDs;
-import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -34,7 +34,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** input RPS, outputs volts, this feedforward can be used for both motors */
     private final SimpleMotorFeedforward flywheelFeedforward = new SimpleMotorFeedforward(
-            ShooterMeasurements.FLYWHEEL_S, ShooterMeasurements.FLYWHEEL_V, ShooterMeasurements.FLYWHEEL_A);
+            ShooterTunables.FLYWHEEL_S, ShooterTunables.FLYWHEEL_V, ShooterTunables.FLYWHEEL_A);
 
     public final Trigger flywheelsUpToSpeed =
             new Trigger(() -> rightVelocityController.atSetpoint() && leftVelocityController.atSetpoint());
@@ -168,6 +168,14 @@ public class ShooterSubsystem extends SubsystemBase {
         });
     }
 
+    /** makes a command to set the velocity gains */
+    public Command setVelocityPID(double p, double i, double d) {
+        return runOnce(() -> {
+            rightVelocityController.setPID(p, i, d);
+            leftVelocityController.setPID(p, i, d);
+        });
+    }
+
     /** returns the right flywheel velocity in RPM */
     public double getRightFlywheelVelocity() {
         return rightEncoder.getVelocity();
@@ -175,7 +183,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** returns the right flywheel velocity in RPM */
     public double getLeftFlywheelVelocity() {
-        return rightEncoder.getVelocity();
+        return leftEncoder.getVelocity();
     }
 
     /** return the average rpm of both flywheels */

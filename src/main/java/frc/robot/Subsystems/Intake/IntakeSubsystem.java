@@ -77,6 +77,13 @@ public class IntakeSubsystem extends SubsystemBase {
                 });
     }
 
+    /** sets the pivot pid to the constants */
+    public Command setPIDValues(double p, double i, double d) {
+        return runOnce(() -> {
+            pivotController.setPID(p, i, d);
+        });
+    }
+
     /** sets the intake to start intaking and the intake target to the deploy position */
     public Command deploy() {
         return startIntaking().andThen(setTargetAngle(IntakeTunables.DEPLOY_POSITION));
