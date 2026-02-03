@@ -16,7 +16,6 @@ import org.photonvision.PhotonPoseEstimator;
  * pull request after
  * Then start working on ambiguity if necessary/if have time
  */
-
 public class VisionSubsystem extends SubsystemBase {
 
     private final PhotonCamera instanceCamera;
