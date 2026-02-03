@@ -23,9 +23,6 @@ public class VisionSubsystem extends SubsystemBase {
     private final PhotonPoseEstimator photonPoseEstimator;
     private Optional<VisionData> lastVisionResult;
 
-    /**
-     * @param cameraName = VisionConstants.limeLightCameraName
-     */
     public VisionSubsystem() {
         photonPoseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
@@ -34,7 +31,7 @@ public class VisionSubsystem extends SubsystemBase {
         setDefaultCommand(pollVisionData());
     }
 
-    public Command pollVisionData() { // Factory
+    public Command pollVisionData() { 
         return run(() -> {
             lastVisionResult = getVisionResult();
         });
