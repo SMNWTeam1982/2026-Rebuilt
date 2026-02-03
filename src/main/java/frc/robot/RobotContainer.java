@@ -13,14 +13,14 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Measured.ShooterMeasurements;
-import frc.robot.Constants.Tunables.FieldTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
-import java.util.Optional;
+import frc.robot.Subsystems.Vision.VisionSubsystem;
+
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -28,7 +28,8 @@ public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
-    private final DriveSubsystem drive = new DriveSubsystem(() -> Optional.empty());
+    private final VisionSubsystem vision = new VisionSubsystem();
+    private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult);
 
     private final Supplier<Translation2d> shotTarget = () ->
             ShotCalculation.getShotTarget(drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
@@ -86,17 +87,6 @@ public class RobotContainer {
                 .debounce(0.1)
                 .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveRobotRelative(this::getJoystickSpeeds)))
                         .withName("set robot relative mode"));
-
-        // a backup control method that moves the robot to a certain distance from the hub
-        driverController
-                .y()
-                .debounce(0.1)
-                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.orbitPoint(
-                                () -> -driverController.getLeftY(),
-                                ShotCalculation.getNearestHubPosition(
-                                        drive.getRobotPose().getTranslation()),
-                                FieldTunables.HUB_SCORING_DISTANCE)))
-                        .withName("Set hub orbit mode"));
     }
 
     private void configureOperatorBindings() {
@@ -106,6 +96,8 @@ public class RobotContainer {
         Trigger robotReadyToShoot =
                 drive.atTargetHeading.and(shooter.flywheelsUpToSpeed).and(shooter.inShootMode);
 
+        // manually start the kicker
+        operatorController.rightBumper().debounce(0.1).onTrue(kicker.startKicker());
         // right trigger starts shooting
         operatorController.rightTrigger().debounce(0.1).and(robotReadyToShoot).onTrue(kicker.startKicker());
         // left trigger stops shooting
