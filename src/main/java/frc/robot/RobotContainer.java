@@ -20,7 +20,6 @@ import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
-
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
