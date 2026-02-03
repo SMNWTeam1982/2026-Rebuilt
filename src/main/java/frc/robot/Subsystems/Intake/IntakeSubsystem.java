@@ -51,9 +51,9 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // output
-        Logger.recordOutput("intake/TargetAngleRotations", pivotController.getSetpoint());
+        Logger.recordOutput("intake/Target Angle Rotations", pivotController.getSetpoint());
         // input
-        Logger.recordOutput("intake/AngleRotations", getIntakePosition().getRotations());
+        Logger.recordOutput("intake/Angle Rotations", getIntakePosition().getRotations());
     }
 
     /** runs the feedback and feedforward control and sets the motor */

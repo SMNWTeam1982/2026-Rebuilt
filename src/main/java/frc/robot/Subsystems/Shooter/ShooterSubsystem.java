@@ -67,16 +67,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // output
-        Logger.recordOutput("leftFlywheelTargetRPM", leftVelocityController.getSetpoint());
-        Logger.recordOutput("rightFlywheelTargetRPM", rightVelocityController.getSetpoint());
-        Logger.recordOutput("at target", flywheelsUpToSpeed.getAsBoolean());
-        Logger.recordOutput("rightoutput", rightMotor.getAppliedOutput());
-        Logger.recordOutput("leftoutput", leftMotor.getAppliedOutput());
-
-        // input
-        Logger.recordOutput("rightFlywheelRPM", getRightFlywheelVelocity());
-        Logger.recordOutput("leftFlywheelRPM", getLeftFlywheelVelocity());
+        Logger.recordOutput("Shooter/Left Flywheel Target RPM", leftVelocityController.getSetpoint());
+        Logger.recordOutput("Shooter/Right Flywheel Target RPM", rightVelocityController.getSetpoint());
+        Logger.recordOutput("Shooter/At target", flywheelsUpToSpeed.getAsBoolean());
+        Logger.recordOutput("Shooter/Right output", rightMotor.getAppliedOutput());
+        Logger.recordOutput("Shooter/Left output", leftMotor.getAppliedOutput());
+        Logger.recordOutput("Shooter/Right Flywheel RPM", getRightFlywheelVelocity());
+        Logger.recordOutput("Shooter/Left Flywheel RPM", getLeftFlywheelVelocity());
     }
 
     private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
