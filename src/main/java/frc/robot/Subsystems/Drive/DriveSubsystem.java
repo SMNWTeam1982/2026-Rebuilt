@@ -54,6 +54,7 @@ public class DriveSubsystem extends SubsystemBase {
         driveBase.updatePoseEstimatorOdometry();
         Logger.recordOutput("Drive/Field Reletive Velocity", getFieldRelativeVelocity());
         Logger.recordOutput("Drive/Robot Pose", getRobotPose());
+        Logger.recordOutput("Drive/drive command", this.getCurrentCommand().getName());
     }
 
     /**
