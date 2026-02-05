@@ -13,9 +13,9 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.PIDHelper;
 import frc.robot.Constants.Measured.PathplannerMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
+import frc.robot.HotPIDTuner;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
@@ -86,6 +86,11 @@ public class DriveSubsystem extends SubsystemBase {
         Logger.recordOutput("Drive/Field Reletive Velocity", getFieldRelativeVelocity());
         Logger.recordOutput("Drive/Robot Pose", getRobotPose());
         Logger.recordOutput("Drive/drive command", this.getCurrentCommand().getName());
+
+        HotPIDTuner.logPIDErrors("Drive", "heading controller", headingController);
+        HotPIDTuner.logPIDErrors("Drive", "x translation controller", xController);
+        HotPIDTuner.logPIDErrors("Drive", "y translation controller", yController);
+        driveBase.logTurnPIDErrors();
     }
 
     /**
@@ -299,20 +304,6 @@ public class DriveSubsystem extends SubsystemBase {
         });
     }
 
-    public Command publishWheelTurnPIDGains(){
-        return runOnce(() -> {
-            // all modules have the same PID gains
-            PIDHelper.getInstance().publishGains(driveBase.frontLeft.turnPIDController);
-        });
-    }
-
-    public Command setWheelTurnPIDsFromNetworkTables(){
-        return runOnce(() -> {
-            double[] gains = PIDHelper.getInstance().getGains();
-            driveBase.updateTurnPIDs(gains[0], gains[1], gains[2]);
-        });
-    }
-
     /** makes a command to update the heading pid to the provided values */
     public Command setHeadingPID(double p, double i, double d) {
         return runOnce(() -> {
@@ -326,5 +317,37 @@ public class DriveSubsystem extends SubsystemBase {
             xController.setPID(p, i, d);
             yController.setPID(p, i, d);
         });
+    }
+
+    public Command publishHeadingGains() {
+        // x & y controllers should have the same gains
+        return HotPIDTuner.publishGainsToNetworkTables(this, headingController);
+    }
+
+    public Command updateHeadingPID() {
+        return HotPIDTuner.setGainsFromNetworkTables(this, headingController);
+    }
+
+    public Command publishTranslationGains() {
+        // x & y controllers should have the same gains
+        return HotPIDTuner.publishGainsToNetworkTables(this, xController);
+    }
+
+    public Command updateTranslationPIDs() {
+        return HotPIDTuner.setGainsFromNetworkTables(this, xController, yController);
+    }
+
+    public Command publishModuleTurnGains() {
+        // all modules should have the same gains
+        return HotPIDTuner.publishGainsToNetworkTables(this, driveBase.frontLeft.turnPIDController);
+    }
+
+    public Command updateModuleTurnGains() {
+        return HotPIDTuner.setGainsFromNetworkTables(
+                this,
+                driveBase.frontRight.turnPIDController,
+                driveBase.frontLeft.turnPIDController,
+                driveBase.backRight.turnPIDController,
+                driveBase.backLeft.turnPIDController);
     }
 }
