@@ -66,9 +66,10 @@ public class RobotContainer {
                 .a()
                 .debounce(0.1)
                 .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveAndPointAtTarget(
-                                () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(
-                                        getJoystickSpeeds(), onBlueAlliance),
-                                shotTarget::get)))
+                                        () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(
+                                                getJoystickSpeeds(), onBlueAlliance),
+                                        shotTarget::get)
+                                .withName("Hub aim")))
                         .withName("set auto aim mode"));
 
         // sets the drive controls to standard field relative when pressed
@@ -77,14 +78,16 @@ public class RobotContainer {
                 .debounce(0.1)
                 .onTrue(drive.runOnce(() -> drive.setDefaultCommand(
                                 drive.driveFieldRelative(() -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(
-                                        getJoystickSpeeds(), onBlueAlliance))))
+                                                getJoystickSpeeds(), onBlueAlliance))
+                                        .withName("DS relative")))
                         .withName("set DS relative mode"));
 
         // sets the drive controls to robot relative when pressed
         driverController
                 .x()
                 .debounce(0.1)
-                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveRobotRelative(this::getJoystickSpeeds)))
+                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveRobotRelative(this::getJoystickSpeeds)
+                                .withName("robot relative")))
                         .withName("set robot relative mode"));
     }
 

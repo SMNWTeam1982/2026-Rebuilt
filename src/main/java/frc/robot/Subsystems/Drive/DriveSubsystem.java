@@ -81,8 +81,10 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         driveBase.updatePoseEstimatorOdometry();
+        driveBase.updatePoseEstimatorVision();
         Logger.recordOutput("Drive/Field Reletive Velocity", getFieldRelativeVelocity());
         Logger.recordOutput("Drive/Robot Pose", getRobotPose());
+        Logger.recordOutput("Drive/drive command", this.getCurrentCommand().getName());
     }
 
     /**
