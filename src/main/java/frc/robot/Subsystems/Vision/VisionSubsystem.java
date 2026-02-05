@@ -23,7 +23,7 @@ public class VisionSubsystem extends SubsystemBase {
     private final PhotonPoseEstimator photonPoseEstimator;
     private Optional<VisionData> lastVisionResult;
 
-    private static int NumTargets;
+    private static int NumTargets = 0;
 
     public VisionSubsystem() {
         photonPoseEstimator = new PhotonPoseEstimator(
