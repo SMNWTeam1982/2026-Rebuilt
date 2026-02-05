@@ -84,12 +84,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     @Override
-<<<<<<< Updated upstream
-    public void periodic() {
-        Logger.recordOutput("Num Targets", instanceCamera.getAllUnreadResults().size());
-=======
     public void periodic(){
         Logger.recordOutput("Num Targets", NumTargets);
->>>>>>> Stashed changes
     }
 }
