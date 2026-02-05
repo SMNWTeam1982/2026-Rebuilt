@@ -7,10 +7,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.VisionConstants;
 import frc.robot.Constants.Tunables.VisionTunables;
 import java.util.Optional;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.littletonrobotics.junction.Logger;
 
 /** To do:
  * Bare bones vision control ( no checks, no ambiguity)
@@ -77,9 +77,9 @@ public class VisionSubsystem extends SubsystemBase {
                 // in their example code
                 ));
     }
-    
+
     @Override
-    public void periodic(){
+    public void periodic() {
         Logger.recordOutput("Num Targets", instanceCamera.getAllUnreadResults().size());
     }
 }
