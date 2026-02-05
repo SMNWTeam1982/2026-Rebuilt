@@ -23,8 +23,6 @@ public class VisionSubsystem extends SubsystemBase {
     private final PhotonPoseEstimator photonPoseEstimator;
     private Optional<VisionData> lastVisionResult;
 
-    private static int NumTargets = 0;
-
     public VisionSubsystem() {
         photonPoseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
@@ -53,10 +51,7 @@ public class VisionSubsystem extends SubsystemBase {
      */
     private Optional<VisionData> getVisionResult() {
         Optional<EstimatedRobotPose> lastEstimatedPose = Optional.empty();
-
         for (var result : instanceCamera.getAllUnreadResults()) {
-            NumTargets++;
-
             // Estimates the average position of the targets based on the targets last position
             lastEstimatedPose = photonPoseEstimator.estimateCoprocMultiTagPose(result);
 
@@ -74,6 +69,8 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         EstimatedRobotPose estimatedPose = lastEstimatedPose.get();
+        
+        Logger.recordOutput("Num Targets", lastEstimatedPose.get().toString());
 
         return Optional.of(new VisionData(
                 estimatedPose.estimatedPose.toPose2d(),
@@ -81,10 +78,5 @@ public class VisionSubsystem extends SubsystemBase {
                 VisionTunables.PHOTON_CAM_VISION_TRUST // we should calculate this the same way photonVision does
                 // in their example code
                 ));
-    }
-
-    @Override
-    public void periodic() {
-        Logger.recordOutput("Num Targets", NumTargets);
     }
 }
