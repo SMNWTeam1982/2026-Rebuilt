@@ -56,10 +56,10 @@ public class VisionSubsystem extends SubsystemBase {
 
         for (var result : instanceCamera.getAllUnreadResults()) {
             NumTargets++;
-            
+
             // Estimates the average position of the targets based on the targets last position
             lastEstimatedPose = photonPoseEstimator.estimateCoprocMultiTagPose(result);
-            
+
             if (lastEstimatedPose.isEmpty()) {
                 /** If the last estimated position is empty the last estimated pose will be used to estimate the position
                  * with the lowest ambiguity.
@@ -84,7 +84,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         Logger.recordOutput("Num Targets", NumTargets);
     }
 }
