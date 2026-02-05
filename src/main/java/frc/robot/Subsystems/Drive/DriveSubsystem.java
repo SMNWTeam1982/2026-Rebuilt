@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.PIDHelper;
 import frc.robot.Constants.Measured.PathplannerMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Subsystems.Vision.VisionData;
@@ -295,6 +296,20 @@ public class DriveSubsystem extends SubsystemBase {
     public Command setWheelTurnPIDs(double p, double i, double d) {
         return runOnce(() -> {
             driveBase.updateTurnPIDs(p, i, d);
+        });
+    }
+
+    public Command publishWheelTurnPIDGains(){
+        return runOnce(() -> {
+            // all modules have the same PID gains
+            PIDHelper.getInstance().publishGains(driveBase.frontLeft.turnPIDController);
+        });
+    }
+
+    public Command setWheelTurnPIDsFromNetworkTables(){
+        return runOnce(() -> {
+            double[] gains = PIDHelper.getInstance().getGains();
+            driveBase.updateTurnPIDs(gains[0], gains[1], gains[2]);
         });
     }
 
