@@ -70,7 +70,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         EstimatedRobotPose estimatedPose = lastEstimatedPose.get();
 
-        Logger.recordOutput("Num Targets", lastEstimatedPose.get().toString());
+        Logger.recordOutput("Num Targets", estimatedPose.targetsUsed.size());
 
         return Optional.of(new VisionData(
                 estimatedPose.estimatedPose.toPose2d(),
