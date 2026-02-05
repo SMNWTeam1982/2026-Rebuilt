@@ -84,10 +84,9 @@ public class DriveSubsystem extends SubsystemBase {
         driveBase.updatePoseEstimatorVision();
         Logger.recordOutput("Drive/Field Reletive Velocity", getFieldRelativeVelocity());
         Logger.recordOutput("Drive/Robot Pose", getRobotPose());
-        if (getCurrentCommand().equals(null)){
+        if (getCurrentCommand().equals(null)) {
             Logger.recordOutput("Drive/drive command", "no active command");
-        }
-        else {
+        } else {
             Logger.recordOutput("Drive/drive command", this.getCurrentCommand().getName());
         }
     }
