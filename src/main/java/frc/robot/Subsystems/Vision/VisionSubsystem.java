@@ -23,6 +23,8 @@ public class VisionSubsystem extends SubsystemBase {
     private final PhotonPoseEstimator photonPoseEstimator;
     private Optional<VisionData> lastVisionResult;
 
+    private static int NumTargets;
+
     public VisionSubsystem() {
         photonPoseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
@@ -53,8 +55,11 @@ public class VisionSubsystem extends SubsystemBase {
         Optional<EstimatedRobotPose> lastEstimatedPose = Optional.empty();
 
         for (var result : instanceCamera.getAllUnreadResults()) {
+            NumTargets++;
+            
             // Estimates the average position of the targets based on the targets last position
             lastEstimatedPose = photonPoseEstimator.estimateCoprocMultiTagPose(result);
+            
             if (lastEstimatedPose.isEmpty()) {
                 /** If the last estimated position is empty the last estimated pose will be used to estimate the position
                  * with the lowest ambiguity.
@@ -79,7 +84,12 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     @Override
+<<<<<<< Updated upstream
     public void periodic() {
         Logger.recordOutput("Num Targets", instanceCamera.getAllUnreadResults().size());
+=======
+    public void periodic(){
+        Logger.recordOutput("Num Targets", NumTargets);
+>>>>>>> Stashed changes
     }
 }
