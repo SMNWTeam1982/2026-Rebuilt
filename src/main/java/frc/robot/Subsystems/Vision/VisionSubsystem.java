@@ -69,7 +69,7 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         EstimatedRobotPose estimatedPose = lastEstimatedPose.get();
-        
+
         Logger.recordOutput("Num Targets", lastEstimatedPose.get().toString());
 
         return Optional.of(new VisionData(
