@@ -62,8 +62,8 @@ public final class HotPIDTuner {
 
     /** uses the logger to put the controller p, i, and d errors onto the dashboard for visualizing response behavior */
     public static void logPIDErrors(String subsystemName, String controllerName, PIDController controller) {
-        Logger.recordOutput(subsystemName + "/" + controllerName + " p error", controller.getError());
-        Logger.recordOutput(subsystemName + "/" + controllerName + " i error", controller.getAccumulatedError());
-        Logger.recordOutput(subsystemName + "/" + controllerName + " d error", controller.getErrorDerivative());
+        Logger.recordOutput(subsystemName + "/" + controllerName + "/p error", controller.getError());
+        Logger.recordOutput(subsystemName + "/" + controllerName + "/i error", controller.getAccumulatedError());
+        Logger.recordOutput(subsystemName + "/" + controllerName + "/d error", controller.getErrorDerivative());
     }
 }
