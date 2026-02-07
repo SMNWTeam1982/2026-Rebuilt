@@ -104,6 +104,11 @@ public class DriveSubsystem extends SubsystemBase {
         autoField.setRobotPose(getRobotPose());
 
         
+        if (getCurrentCommand() == null) {
+            Logger.recordOutput("Drive/drive command", "no active command");
+        } else {
+            Logger.recordOutput("Drive/drive command", this.getCurrentCommand().getName());
+        }
     }
 
     /**
