@@ -115,7 +115,7 @@ public class RobotContainer {
 
         operatorController.start().debounce(0.1).onTrue(shooter.updateVelocityPIDs());
         operatorController.back().debounce(0.1).onTrue(shooter.publishVelocityGains());
-        
+
         // coarse adjustment
         operatorController.povUp().debounce(0.1).onTrue(shooter.changeHeldRPM(250));
 
