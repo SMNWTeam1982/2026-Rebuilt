@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.PIDTools.HotPIDTuner;
-
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
