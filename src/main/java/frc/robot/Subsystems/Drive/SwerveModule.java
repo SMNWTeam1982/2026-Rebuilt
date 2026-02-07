@@ -26,7 +26,7 @@ public final class SwerveModule {
     private final CANcoder turnEncoder;
     private final RelativeEncoder driveEncoder;
 
-    private final PIDController turnPIDController;
+    public final PIDController turnPIDController;
 
     /** see the wpilib docs on Feedforward */
     private final SimpleMotorFeedforward driveFeedforward;
