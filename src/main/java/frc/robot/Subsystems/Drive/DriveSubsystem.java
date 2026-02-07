@@ -83,8 +83,6 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putData("Drive/Teleop Field", teleopField);
         SmartDashboard.putData("Drive/Auto Field", autoField);
         initPathPlannerLogging();
-
-        
     }
 
     /*
@@ -140,8 +138,6 @@ public class DriveSubsystem extends SubsystemBase {
                     joystickSpeeds.omegaRadiansPerSecond);
         }
     }
-
-
 
     /** drives the robot with chassis speeds relative to the robot coordinate system */
     public Command driveRobotRelative(Supplier<ChassisSpeeds> desiredRobotSpeeds) {
