@@ -14,11 +14,11 @@ public final class HotPIDTuner {
     private static final NetworkTable table = NetworkTableInstance.getDefault().getTable("PID helper");
 
     private static final DoubleEntry pEntry =
-            table.getDoubleTopic("/PID helper/p gain").getEntry(0);
+            table.getDoubleTopic("p gain").getEntry(0);
     private static final DoubleEntry iEntry =
-            table.getDoubleTopic("/PID helper/i gain").getEntry(0);
+            table.getDoubleTopic("i gain").getEntry(0);
     private static final DoubleEntry dEntry =
-            table.getDoubleTopic("/PID helper/d gain").getEntry(0);
+            table.getDoubleTopic("d gain").getEntry(0);
 
     /** put default values onto the dashboard */
     private HotPIDTuner() {
