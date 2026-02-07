@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.IntakeIDs;
 import frc.robot.Constants.Tunables.IntakeTunables;
+import frc.robot.PIDTools.PIDCommandGenerator;
+
 import org.littletonrobotics.junction.Logger;
 
 /** controls the pivoting of the intake and the roller bar */
@@ -27,6 +29,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private final PIDController pivotController =
             new PIDController(IntakeTunables.PIVOT_P, IntakeTunables.PIVOT_I, IntakeTunables.PIVOT_D);
+    
+    public final PIDCommandGenerator<Rotation2d> pivotControllerCommands = new PIDCommandGenerator<Rotation2d>(
+        (target) -> {pivotController.setSetpoint(target.getRadians());},
+        this,
+        pivotController
+    );
 
     /** for gravity compensation */
     public final ArmFeedforward pivotFeedforward =
