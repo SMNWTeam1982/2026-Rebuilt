@@ -114,7 +114,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /*
-     * This sets the PID setpoint for the X, Y and Heading for the robot. It will update the setPoint so the robot moves to the target translation. 
+     * This sets the PID setpoint for the X, Y and Heading for the robot. It will update the setPoint so the robot moves to the target translation.
      */
     public Command DriveSetPoint(Translation2d targetTranslation) {
         return runOnce(() -> {
@@ -123,10 +123,6 @@ public class DriveSubsystem extends SubsystemBase {
             headingController.setSetpoint(targetTranslation.getAngle().getRadians());
         });
     }
-
-
-
-   
 
     /** drives the robot with chassis speeds relative to the robot coordinate system */
     public Command driveRobotRelative(Supplier<ChassisSpeeds> desiredRobotSpeeds) {
