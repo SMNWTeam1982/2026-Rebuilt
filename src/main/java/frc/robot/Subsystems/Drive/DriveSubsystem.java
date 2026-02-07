@@ -120,22 +120,16 @@ public class DriveSubsystem extends SubsystemBase {
         return runOnce(() -> {
             xController.setSetpoint(targetTranslation.getX());
             yController.setSetpoint(targetTranslation.getY());
-            
         });
-
     }
-    //** This sets the PID setpoint for the heading. It will update the setpoint so the robot points in the target direction.*/
+    // ** This sets the PID setpoint for the heading. It will update the setpoint so the robot points in the target
+    // direction.*/
     public Command DriveHeadSetPoint(Rotation2d targetRotation) {
         return runOnce(() -> {
             headingController.setSetpoint(targetRotation.getRadians());
         });
     }
-    
-              
 
-
-
-    
     /** drives the robot with chassis speeds relative to the robot coordinate system */
     public Command driveRobotRelative(Supplier<ChassisSpeeds> desiredRobotSpeeds) {
         return run(() -> {
