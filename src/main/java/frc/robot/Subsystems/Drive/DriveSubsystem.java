@@ -3,6 +3,7 @@ package frc.robot.Subsystems.Drive;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.logging.PathPlannerLogging;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Measured.PathplannerMeasurements;
-import com.pathplanner.lib.logging.PathPlannerLogging;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
@@ -25,12 +25,9 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 /** The Subsystem that the other code will interface with when interacting with the drive */
-   
-
 public class DriveSubsystem extends SubsystemBase {
     private Field2d teleopField = new Field2d();
     private Field2d autoField = new Field2d();
-    
 
     /** abstraction of the swerve module coordination */
     private final DriveBase driveBase;
@@ -84,10 +81,9 @@ public class DriveSubsystem extends SubsystemBase {
                 this // reference to this subsytem to set requirements
                 );
 
-            configurePathPlanner();
-            SmartDashboard.putData("Drive/Teleop Field", teleopField);
-            SmartDashboard.putData("Drive/Auto Field", autoField);
-
+        configurePathPlanner();
+        SmartDashboard.putData("Drive/Teleop Field", teleopField);
+        SmartDashboard.putData("Drive/Auto Field", autoField);
     }
 
     /** update telemetry and pose estimation here */
@@ -99,11 +95,10 @@ public class DriveSubsystem extends SubsystemBase {
         Logger.recordOutput("Drive/Robot Pose", getRobotPose());
         Logger.recordOutput("Drive/drive command", this.getCurrentCommand().getName());
 
-        //Field2D logging
+        // Field2D logging
         teleopField.setRobotPose(getRobotPose());
         autoField.setRobotPose(getRobotPose());
 
-        
         if (getCurrentCommand() == null) {
             Logger.recordOutput("Drive/drive command", "no active command");
         } else {
@@ -133,10 +128,10 @@ public class DriveSubsystem extends SubsystemBase {
         }
     }
 
-/*
- * Gives the trajectory and current path for the Robot during auto. 
- */
-      private void configurePathPlanner() {
+    /*
+     * Gives the trajectory and current path for the Robot during auto.
+     */
+    private void configurePathPlanner() {
         // Log pathplanner poses and trajectories to custom Field2d object for visualization
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
             autoField.getObject("Target").setPose(pose);
