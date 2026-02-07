@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Measured.PathplannerMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.PIDTools.HotPIDTuner;
+import frc.robot.PIDTools.PIDCommandGenerator;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
@@ -28,9 +29,14 @@ public class DriveSubsystem extends SubsystemBase {
     /** abstraction of the swerve module coordination */
     private final DriveBase driveBase;
 
+    public final PIDCommandGenerator<Rotation2d> swerveModuleRotationCommands;
+
     /** controller for the field-relative heading of the robot */
     private final PIDController headingController =
             new PIDController(DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D);
+
+    public final PIDCommandGenerator<Rotation2d> headingControllerCommands = new PIDCommandGenerator<Rotation2d>(
+            (target) -> headingController.setSetpoint(target.getRadians()), this, headingController);
 
     public final Trigger atTargetHeading = new Trigger(headingController::atSetpoint);
 
@@ -42,11 +48,33 @@ public class DriveSubsystem extends SubsystemBase {
     private final PIDController yController = new PIDController(
             DriveBaseTunables.TRANSLATION_P, DriveBaseTunables.TRANSLATION_I, DriveBaseTunables.TRANSLATION_D);
 
+    public final PIDCommandGenerator<Translation2d> translationControllerCommands =
+            new PIDCommandGenerator<Translation2d>(
+                    (target) -> {
+                        xController.setSetpoint(target.getX());
+                        yController.setSetpoint(target.getY());
+                    },
+                    this,
+                    xController,
+                    yController);
+
     public final Trigger atTargetTranslation = new Trigger(xController::atSetpoint).and(yController::atSetpoint);
 
     /** set pid settings */
     public DriveSubsystem(Supplier<Optional<VisionData>> visionResults) {
         driveBase = new DriveBase(visionResults);
+        swerveModuleRotationCommands = new PIDCommandGenerator<Rotation2d>(
+                (target) -> {
+                    driveBase.frontLeft.turnPIDController.setSetpoint(target.getRadians());
+                    driveBase.frontRight.turnPIDController.setSetpoint(target.getRadians());
+                    driveBase.backRight.turnPIDController.setSetpoint(target.getRadians());
+                    driveBase.backLeft.turnPIDController.setSetpoint(target.getRadians());
+                },
+                this,
+                driveBase.frontLeft.turnPIDController,
+                driveBase.frontRight.turnPIDController,
+                driveBase.backLeft.turnPIDController,
+                driveBase.backRight.turnPIDController);
 
         headingController.setTolerance(DriveBaseTunables.AUTO_ROTATION_TOLERANCE.getRadians());
         headingController.enableContinuousInput(-Math.PI, Math.PI);
@@ -299,59 +327,5 @@ public class DriveSubsystem extends SubsystemBase {
                 driveBase.backRight.runMotors(driveAmount.getAsDouble(), turnAmount.getAsDouble());
             }
         });
-    }
-
-    /** makes a command to change the pid values to the ones provided, you should defer this if you want to change this multiple times */
-    public Command setWheelTurnPIDs(double p, double i, double d) {
-        return runOnce(() -> {
-            driveBase.updateTurnPIDs(p, i, d);
-        });
-    }
-
-    /** makes a command to update the heading pid to the provided values */
-    public Command setHeadingPID(double p, double i, double d) {
-        return runOnce(() -> {
-            headingController.setPID(p, i, d);
-        });
-    }
-
-    /** makes a command to update the translation pids to the provided values */
-    public Command setTranslationPIDs(double p, double i, double d) {
-        return runOnce(() -> {
-            xController.setPID(p, i, d);
-            yController.setPID(p, i, d);
-        });
-    }
-
-    public Command publishHeadingGains() {
-        // x & y controllers should have the same gains
-        return HotPIDTuner.publishGainsToNetworkTables(this, headingController);
-    }
-
-    public Command updateHeadingPID() {
-        return HotPIDTuner.setGainsFromNetworkTables(this, headingController);
-    }
-
-    public Command publishTranslationGains() {
-        // x & y controllers should have the same gains
-        return HotPIDTuner.publishGainsToNetworkTables(this, xController);
-    }
-
-    public Command updateTranslationPIDs() {
-        return HotPIDTuner.setGainsFromNetworkTables(this, xController, yController);
-    }
-
-    public Command publishModuleTurnGains() {
-        // all modules should have the same gains
-        return HotPIDTuner.publishGainsToNetworkTables(this, driveBase.frontLeft.turnPIDController);
-    }
-
-    public Command updateModuleTurnGains() {
-        return HotPIDTuner.setGainsFromNetworkTables(
-                this,
-                driveBase.frontRight.turnPIDController,
-                driveBase.frontLeft.turnPIDController,
-                driveBase.backRight.turnPIDController,
-                driveBase.backLeft.turnPIDController);
     }
 }
