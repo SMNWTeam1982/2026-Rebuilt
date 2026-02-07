@@ -84,8 +84,6 @@ public class IntakeSubsystem extends SubsystemBase {
         });
     }
 
-    public Command setTarget
-
     /** sets the intake to start intaking and the intake target to the deploy position */
     public Command deploy() {
         return startIntaking().andThen(setTargetAngle(IntakeTunables.DEPLOY_POSITION));
