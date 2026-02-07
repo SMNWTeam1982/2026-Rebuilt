@@ -52,8 +52,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // output
-        Logger.recordOutput("intake/TargetAngleRotations", pivotController.getSetpoint());
         // input
         Logger.recordOutput("intake/AngleRotations", getIntakePosition().getRotations());
     }

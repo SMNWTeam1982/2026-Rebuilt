@@ -15,6 +15,8 @@ import java.util.Optional;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 /** The Subsystem that the other code will interface with when interacting with the drive */
 public class DriveSubsystem extends SubsystemBase {
 
@@ -51,6 +53,18 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         driveBase.updatePoseEstimatorOdometry();
+
+        Logger.recordOutput("drive/ModuleLastDesiredStates", driveBase.getModuleLastDesiredStates());
+        Logger.recordOutput("drive/ModulePositions", driveBase.getModulePositions());
+        Logger.recordOutput("drive/Heading", driveBase.getHeading());
+        Logger.recordOutput("drive/PoseFromRobot", driveBase.getEstimatedPose());
+        Logger.recordOutput("drive/RobotRelativeSpeeds", driveBase.getRobotRelativeSpeeds());
+        Logger.recordOutput("drive/FieldRelativeSpeeds", driveBase.getFieldRelativeSpeeds());
+        Logger.recordOutput("drive/PID/xError", xController.getPositionError());
+        Logger.recordOutput("drive/PID/yError", yController.getPositionError());
+        Logger.recordOutput("drive/PID/headingError", headingController.getPositionError());
+        Logger.recordOutput("drive/linearVelocity", getLinearVelocity());
+
     }
 
     /**
@@ -73,6 +87,12 @@ public class DriveSubsystem extends SubsystemBase {
                     joystickSpeeds.vxMetersPerSecond,
                     joystickSpeeds.omegaRadiansPerSecond);
         }
+    }
+
+    /** returns the linear velocity of the robot in meters per second */
+    public double getLinearVelocity() {
+        ChassisSpeeds relativeSpeeds = driveBase.getRobotRelativeSpeeds();
+        return Math.hypot(relativeSpeeds.vxMetersPerSecond, relativeSpeeds.vyMetersPerSecond);
     }
 
     /** drives the robot with chassis speeds relative to the robot coordinate system */
