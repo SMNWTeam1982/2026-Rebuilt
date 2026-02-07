@@ -114,25 +114,19 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /*
-     * This sets the PID setpoint for the X direction used with Pose2D from vision or other odometry
+     * This sets the PID setpoint for the X, Y and Heading for the robot. It will update the setPoint so the robot moves to the target translation. 
      */
-    public Command setXPIDControlSetPoint(double targetX) {
-        return runOnce(() -> xController.setSetpoint(targetX));
+    public Command DriveSetPoint(Translation2d targetTranslation) {
+        return runOnce(() -> {
+            xController.setSetpoint(targetTranslation.getX());
+            yController.setSetpoint(targetTranslation.getY());
+            headingController.setSetpoint(targetTranslation.getAngle().getRadians());
+        });
     }
 
-    /*
-     * This sets the PID setpoint for the Y direction used with Pose2D from vision or other odometry
-     */
-    public Command setYPIDControlSetPoint(double targetY) {
-        return runOnce(() -> yController.setSetpoint(targetY));
-    }
 
-    /*
-     * This sets the PID setpoint for the heading
-     */
-    public Command setHeadingPIDControlSetPoint(Rotation2d targetHeading) {
-        return runOnce(() -> headingController.setSetpoint(targetHeading.getRadians()));
-    }
+
+   
 
     /** drives the robot with chassis speeds relative to the robot coordinate system */
     public Command driveRobotRelative(Supplier<ChassisSpeeds> desiredRobotSpeeds) {
