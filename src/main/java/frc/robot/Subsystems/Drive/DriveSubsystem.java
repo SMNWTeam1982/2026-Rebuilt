@@ -116,21 +116,21 @@ public class DriveSubsystem extends SubsystemBase {
     /*
      * This sets the PID setpoint for the X direction used with Pose2D from vision or other odometry
      */
-    public Command setXPIDControlSetPoint (double targetX) {
+    public Command setXPIDControlSetPoint(double targetX) {
         return runOnce(() -> xController.setSetpoint(targetX));
     }
 
     /*
      * This sets the PID setpoint for the Y direction used with Pose2D from vision or other odometry
      */
-    public Command setYPIDControlSetPoint (double targetY) {
+    public Command setYPIDControlSetPoint(double targetY) {
         return runOnce(() -> yController.setSetpoint(targetY));
     }
-    
-     /*
+
+    /*
      * This sets the PID setpoint for the heading
      */
-    public Command setHeadingPIDControlSetPoint (Rotation2d targetHeading) {
+    public Command setHeadingPIDControlSetPoint(Rotation2d targetHeading) {
         return runOnce(() -> headingController.setSetpoint(targetHeading.getRadians()));
     }
 
