@@ -80,10 +80,23 @@ public class DriveSubsystem extends SubsystemBase {
                 },
                 this // reference to this subsytem to set requirements
                 );
-
-        configurePathPlanner();
         SmartDashboard.putData("Drive/Teleop Field", teleopField);
         SmartDashboard.putData("Drive/Auto Field", autoField);
+        initPathPlannerLogging();
+
+        
+    }
+
+    /*
+     * Gives the trajectory for the Robot during auto so we can replay it in advantageKit
+     */
+    private void initPathPlannerLogging() {
+        PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+            autoField.getObject("Target").setPose(pose);
+            Logger.recordOutput("Drive/Auto/TargetX", pose.getX());
+            Logger.recordOutput("Drive/Auto/TargetY", pose.getY());
+            Logger.recordOutput("Drive/Auto/TargetTheta", pose.getRotation().getRadians());
+        });
     }
 
     /** update telemetry and pose estimation here */
@@ -128,23 +141,7 @@ public class DriveSubsystem extends SubsystemBase {
         }
     }
 
-    /*
-     * Gives the trajectory and current path for the Robot during auto.
-     */
-    private void configurePathPlanner() {
-        // Log pathplanner poses and trajectories to custom Field2d object for visualization
-        PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-            autoField.getObject("Target").setPose(pose);
-            Logger.recordOutput("Drive/Auto/TargetPose", pose);
-        });
-        PathPlannerLogging.setLogActivePathCallback((poseList) -> {
-            Pose2d[] poses = poseList.toArray(new Pose2d[poseList.size()]);
-            if (poses.length != 0) {
-                autoField.getObject("trajectory").setPoses(poses);
-                Logger.recordOutput("Drive/Auto/Trajectory", poses);
-            }
-        });
-    }
+
 
     /** drives the robot with chassis speeds relative to the robot coordinate system */
     public Command driveRobotRelative(Supplier<ChassisSpeeds> desiredRobotSpeeds) {
