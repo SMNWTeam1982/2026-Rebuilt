@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Drive;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -144,5 +146,10 @@ public final class SwerveModule {
         return new SwerveModulePosition(
                 driveEncoder.getPosition() * SwerveModuleMeasurements.POSITION_TO_METERS_MULTIPLIER,
                 Rotation2d.fromRotations(turnEncoder.getPosition().getValueAsDouble()));
+    }
+
+    public void logModuleData(String moduleName){
+        Logger.recordOutput("DriveBase/" + moduleName + "/state", getState());
+        Logger.recordOutput("DriveBase/" + moduleName + "/driveCurrent", getDriveMotorOutputCurrent());
     }
 }

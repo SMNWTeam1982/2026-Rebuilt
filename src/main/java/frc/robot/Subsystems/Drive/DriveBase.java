@@ -135,6 +135,14 @@ public final class DriveBase {
         backRight.updateTurnPID(p, i, d);
     }
 
+    /** logs some telemetry from each module under DriveBase/(module name) */
+    public void logModuleData(){
+        frontLeft.logModuleData("front left");
+        frontRight.logModuleData("front right");
+        backLeft.logModuleData("back left");
+        backRight.logModuleData("back right");
+    }
+
     /** Returns the heading from getEstimatedPose() */
     public Rotation2d getHeading() {
         return getEstimatedPose().getRotation();
