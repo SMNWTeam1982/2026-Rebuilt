@@ -30,6 +30,7 @@ import org.littletonrobotics.junction.Logger;
 public class DriveSubsystem extends SubsystemBase {
     private Field2d teleopField = new Field2d();
     private Field2d autoField = new Field2d();
+    
 
     /** abstraction of the swerve module coordination */
     private final DriveBase driveBase;
@@ -82,8 +83,10 @@ public class DriveSubsystem extends SubsystemBase {
                 },
                 this // reference to this subsytem to set requirements
                 );
-            SmartDashboard.putData(teleopField);
-            SmartDashboard.putData(autoField);
+
+            configurePathPlanner();
+            SmartDashboard.putData("Drive/Teleop Field", teleopField);
+            SmartDashboard.putData("Drive/Auto Field", autoField);
 
     }
 
@@ -125,6 +128,9 @@ public class DriveSubsystem extends SubsystemBase {
         }
     }
 
+/*
+ * Gives the trajectory and current path for the Robot during auto. 
+ */
       private void configurePathPlanner() {
         // Log pathplanner poses and trajectories to custom Field2d object for visualization
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
