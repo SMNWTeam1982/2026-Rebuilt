@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.Measured.SwerveModuleMeasurements;
 import frc.robot.Constants.Tunables.SwerveModuleTunables;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * this is NOT its own subsystem, this is only an abstraction for the drive subsystem that manages
@@ -144,5 +145,10 @@ public final class SwerveModule {
         return new SwerveModulePosition(
                 driveEncoder.getPosition() * SwerveModuleMeasurements.POSITION_TO_METERS_MULTIPLIER,
                 Rotation2d.fromRotations(turnEncoder.getPosition().getValueAsDouble()));
+    }
+
+    public void logModuleData(String moduleName) {
+        Logger.recordOutput("DriveBase/" + moduleName + "/state", getState());
+        Logger.recordOutput("DriveBase/" + moduleName + "/driveCurrent", getDriveMotorOutputCurrent());
     }
 }

@@ -135,13 +135,20 @@ public final class DriveBase {
         backLeft.updateTurnPID(p, i, d);
         backRight.updateTurnPID(p, i, d);
     }
-
     /** uses the PIDHelper to log the turn controller errors of each module */
     public void logTurnPIDErrors() {
         HotPIDTuner.logPIDErrors("DriveBase", "FL turn controller", frontLeft.turnPIDController);
         HotPIDTuner.logPIDErrors("DriveBase", "FR turn controller", frontRight.turnPIDController);
         HotPIDTuner.logPIDErrors("DriveBase", "BL turn controller", backLeft.turnPIDController);
         HotPIDTuner.logPIDErrors("DriveBase", "BR turn controller", backRight.turnPIDController);
+    }
+
+    /** logs some telemetry from each module under DriveBase/(module name) */
+    public void logModuleData() {
+        frontLeft.logModuleData("front left");
+        frontRight.logModuleData("front right");
+        backLeft.logModuleData("back left");
+        backRight.logModuleData("back right");
     }
 
     /** Returns the heading from getEstimatedPose() */
