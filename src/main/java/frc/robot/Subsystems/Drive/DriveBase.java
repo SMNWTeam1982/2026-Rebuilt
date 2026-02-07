@@ -136,7 +136,7 @@ public final class DriveBase {
     }
 
     /** logs some telemetry from each module under DriveBase/(module name) */
-    public void logModuleData(){
+    public void logModuleData() {
         frontLeft.logModuleData("front left");
         frontRight.logModuleData("front right");
         backLeft.logModuleData("back left");
