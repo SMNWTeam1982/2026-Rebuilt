@@ -10,10 +10,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Measured.PathplannerMeasurements;
+import com.pathplanner.lib.logging.PathPlannerLogging;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
@@ -22,7 +25,11 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 /** The Subsystem that the other code will interface with when interacting with the drive */
+   
+
 public class DriveSubsystem extends SubsystemBase {
+    private Field2d teleopField = new Field2d();
+    private Field2d autoField = new Field2d();
 
     /** abstraction of the swerve module coordination */
     private final DriveBase driveBase;
@@ -75,6 +82,9 @@ public class DriveSubsystem extends SubsystemBase {
                 },
                 this // reference to this subsytem to set requirements
                 );
+            SmartDashboard.putData(teleopField);
+            SmartDashboard.putData(autoField);
+
     }
 
     /** update telemetry and pose estimation here */
@@ -85,6 +95,12 @@ public class DriveSubsystem extends SubsystemBase {
         Logger.recordOutput("Drive/Field Reletive Velocity", getFieldRelativeVelocity());
         Logger.recordOutput("Drive/Robot Pose", getRobotPose());
         Logger.recordOutput("Drive/drive command", this.getCurrentCommand().getName());
+
+        //Field2D logging
+        teleopField.setRobotPose(getRobotPose());
+        autoField.setRobotPose(getRobotPose());
+
+        
     }
 
     /**
@@ -107,6 +123,21 @@ public class DriveSubsystem extends SubsystemBase {
                     joystickSpeeds.vxMetersPerSecond,
                     joystickSpeeds.omegaRadiansPerSecond);
         }
+    }
+
+      private void configurePathPlanner() {
+        // Log pathplanner poses and trajectories to custom Field2d object for visualization
+        PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+            autoField.getObject("Target").setPose(pose);
+            Logger.recordOutput("Drive/Auto/TargetPose", pose);
+        });
+        PathPlannerLogging.setLogActivePathCallback((poseList) -> {
+            Pose2d[] poses = poseList.toArray(new Pose2d[poseList.size()]);
+            if (poses.length != 0) {
+                autoField.getObject("trajectory").setPoses(poses);
+                Logger.recordOutput("Drive/Auto/Trajectory", poses);
+            }
+        });
     }
 
     /** drives the robot with chassis speeds relative to the robot coordinate system */
