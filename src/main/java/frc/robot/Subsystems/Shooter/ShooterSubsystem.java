@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Tunables.ShooterTunables;
+import frc.robot.HotPIDTuner;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -170,6 +171,15 @@ public class ShooterSubsystem extends SubsystemBase {
             rightVelocityController.setPID(p, i, d);
             leftVelocityController.setPID(p, i, d);
         });
+    }
+
+    public Command publishVelocityGains() {
+        // both controllers should have the same gains
+        return HotPIDTuner.publishGainsToNetworkTables(this, leftVelocityController);
+    }
+
+    public Command updateVelocityPIDs() {
+        return HotPIDTuner.setGainsFromNetworkTables(this, leftVelocityController, rightVelocityController);
     }
 
     /** returns the right flywheel velocity in RPM */

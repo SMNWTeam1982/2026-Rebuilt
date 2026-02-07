@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.CANBus.DriveIDs;
 import frc.robot.Constants.Measured.DriveBaseMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
+import frc.robot.HotPIDTuner;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -133,6 +134,14 @@ public final class DriveBase {
         frontRight.updateTurnPID(p, i, d);
         backLeft.updateTurnPID(p, i, d);
         backRight.updateTurnPID(p, i, d);
+    }
+
+    /** uses the PIDHelper to log the turn controller errors of each module */
+    public void logTurnPIDErrors() {
+        HotPIDTuner.logPIDErrors("DriveBase", "FL turn controller", frontLeft.turnPIDController);
+        HotPIDTuner.logPIDErrors("DriveBase", "FR turn controller", frontRight.turnPIDController);
+        HotPIDTuner.logPIDErrors("DriveBase", "BL turn controller", backLeft.turnPIDController);
+        HotPIDTuner.logPIDErrors("DriveBase", "BR turn controller", backRight.turnPIDController);
     }
 
     /** Returns the heading from getEstimatedPose() */
