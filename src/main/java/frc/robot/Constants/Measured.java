@@ -35,7 +35,7 @@ public class Measured {
         private static final Distance WHEEL_RADIUS = Meters.of(0.04); // guess
         private static final LinearVelocity MAX_DRIVE_VELOCITY =
                 MetersPerSecond.of(DriveBaseMeasurements.PHYSICAL_MAX_SPEED); // set elsewhere
-        private static final double WHEEL_COF = 1.0; // guess
+        private static final double WHEEL_COF = .4; // guess
         private static final DCMotor DRIVE_MOTOR = DCMotor.getNEO(1); // 1 drive neo
         private static final Current DRIVE_CURRENT_LIMIT = Amps.of(35); // set elsewhere
         private static final ModuleConfig MODULE_CONFIG =
