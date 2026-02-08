@@ -20,7 +20,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     private final PhotonCamera instanceCamera;
     private final PhotonPoseEstimator photonPoseEstimator;
-    private Optional<VisionData> lastVisionResult;
+    private Optional<VisionData> lastVisionResult = Optional.empty();
 
     public VisionSubsystem() {
         photonPoseEstimator = new PhotonPoseEstimator(
