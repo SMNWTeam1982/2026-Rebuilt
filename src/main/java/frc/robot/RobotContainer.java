@@ -113,18 +113,18 @@ public class RobotContainer {
 
         // adjustments for testing
 
-        operatorController.start().debounce(0.1).onTrue(shooter.updateVelocityPIDs());
-        operatorController.back().debounce(0.1).onTrue(shooter.publishVelocityGains());
+        operatorController.back().debounce(0.1).onTrue(shooter.velocityControllerCommands.publishPIDGains());
+        operatorController.start().debounce(0.1).onTrue(shooter.velocityControllerCommands.updatePIDGains());
 
         // coarse adjustment
-        operatorController.povUp().debounce(0.1).onTrue(shooter.changeHeldRPM(250));
+        operatorController.povUp().debounce(0.1).onTrue(shooter.nudgeRPM(250));
 
-        operatorController.povDown().debounce(0.1).onTrue(shooter.changeHeldRPM(-250));
+        operatorController.povDown().debounce(0.1).onTrue(shooter.nudgeRPM(-250));
 
         // fine adjustment
-        operatorController.povRight().debounce(0.1).onTrue(shooter.changeHeldRPM(50));
+        operatorController.povRight().debounce(0.1).onTrue(shooter.nudgeRPM(50));
 
-        operatorController.povLeft().debounce(0.1).onTrue(shooter.changeHeldRPM(-50));
+        operatorController.povLeft().debounce(0.1).onTrue(shooter.nudgeRPM(-50));
     }
 
     private ChassisSpeeds getJoystickSpeeds() {
