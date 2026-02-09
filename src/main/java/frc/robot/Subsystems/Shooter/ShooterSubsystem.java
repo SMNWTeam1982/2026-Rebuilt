@@ -93,8 +93,8 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("Shooter/Right Flywheel RPM", getRightFlywheelVelocity());
         Logger.recordOutput("Shooter/Left Flywheel RPM", getLeftFlywheelVelocity());
 
-        HotPIDTuner.logPIDErrors("Shooter", "left RPM controller", leftVelocityController);
-        HotPIDTuner.logPIDErrors("Shooter", "right RPM controller", rightVelocityController);
+        HotPIDTuner.logPIDDetails("Shooter", "left RPM controller", leftVelocityController);
+        HotPIDTuner.logPIDDetails("Shooter", "right RPM controller", rightVelocityController);
     }
 
     private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {

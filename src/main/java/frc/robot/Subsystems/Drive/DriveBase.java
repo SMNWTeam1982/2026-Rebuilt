@@ -137,10 +137,10 @@ public final class DriveBase {
     }
     /** uses the PIDHelper to log the turn controller errors of each module */
     public void logTurnPIDErrors() {
-        HotPIDTuner.logPIDErrors("DriveBase", "FL turn controller", frontLeft.turnPIDController);
-        HotPIDTuner.logPIDErrors("DriveBase", "FR turn controller", frontRight.turnPIDController);
-        HotPIDTuner.logPIDErrors("DriveBase", "BL turn controller", backLeft.turnPIDController);
-        HotPIDTuner.logPIDErrors("DriveBase", "BR turn controller", backRight.turnPIDController);
+        HotPIDTuner.logPIDDetails("DriveBase", "FL turn controller", frontLeft.turnPIDController);
+        HotPIDTuner.logPIDDetails("DriveBase", "FR turn controller", frontRight.turnPIDController);
+        HotPIDTuner.logPIDDetails("DriveBase", "BL turn controller", backLeft.turnPIDController);
+        HotPIDTuner.logPIDDetails("DriveBase", "BR turn controller", backRight.turnPIDController);
     }
 
     /** logs some telemetry from each module under DriveBase/(module name) */
