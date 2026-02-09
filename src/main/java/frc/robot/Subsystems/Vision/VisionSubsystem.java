@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.VisionConstants;
 import frc.robot.Constants.Tunables.VisionTunables;
 import java.util.Optional;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -50,10 +51,10 @@ public class VisionSubsystem extends SubsystemBase {
      */
     private Optional<VisionData> getVisionResult() {
         Optional<EstimatedRobotPose> lastEstimatedPose = Optional.empty();
-
         for (var result : instanceCamera.getAllUnreadResults()) {
             // Estimates the average position of the targets based on the targets last position
             lastEstimatedPose = photonPoseEstimator.estimateCoprocMultiTagPose(result);
+
             if (lastEstimatedPose.isEmpty()) {
                 /** If the last estimated position is empty the last estimated pose will be used to estimate the position
                  * with the lowest ambiguity.
@@ -68,6 +69,8 @@ public class VisionSubsystem extends SubsystemBase {
         }
 
         EstimatedRobotPose estimatedPose = lastEstimatedPose.get();
+
+        Logger.recordOutput("Vision/visible targets", estimatedPose.targetsUsed.size());
 
         return Optional.of(new VisionData(
                 estimatedPose.estimatedPose.toPose2d(),
