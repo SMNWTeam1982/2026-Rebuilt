@@ -119,9 +119,9 @@ public class DriveSubsystem extends SubsystemBase {
         } else {
             Logger.recordOutput("Drive/drive command", this.getCurrentCommand().getName());
         }
-        HotPIDTuner.logPIDErrors("Drive", "heading controller", headingController);
-        HotPIDTuner.logPIDErrors("Drive", "x translation controller", xController);
-        HotPIDTuner.logPIDErrors("Drive", "y translation controller", yController);
+        HotPIDTuner.logPIDDetails("Drive", "heading controller", headingController);
+        HotPIDTuner.logPIDDetails("Drive", "x translation controller", xController);
+        HotPIDTuner.logPIDDetails("Drive", "y translation controller", yController);
         driveBase.logTurnPIDErrors();
     }
 

@@ -13,14 +13,14 @@ import java.util.function.Consumer;
 public class PIDCommandGenerator<T> {
     private final PIDController[] controllers;
     private final Consumer<T> setTarget;
-    private final Subsystem requirementReference;
+    private final Subsystem requirement;
 
     public final Trigger atSetpoint;
 
     public PIDCommandGenerator(Consumer<T> setTarget, Subsystem requirement, PIDController... controllers) {
         this.controllers = controllers;
         this.setTarget = setTarget;
-        requirementReference = requirement;
+        this.requirement = requirement;
 
         atSetpoint = new Trigger(() -> {
             for (PIDController controller : controllers) {
@@ -34,19 +34,19 @@ public class PIDCommandGenerator<T> {
 
     /** creates a command to set the target of the pid loop to this target */
     public Command setTarget(T target) {
-        return requirementReference.runOnce(() -> setTarget.accept(target));
+        return requirement.runOnce(() -> setTarget.accept(target));
     }
 
     /** put the gains of the pid loop(s) onto the dashboard */
     public Command publishPIDGains() {
-        return requirementReference.runOnce(() -> {
+        return requirement.runOnce(() -> {
             HotPIDTuner.getInstance().publishGains(controllers[0]);
         });
     }
 
     /** update the pid loop(s) with the gains on the dashboard */
     public Command updatePIDGains() {
-        return requirementReference.runOnce(() -> {
+        return requirement.runOnce(() -> {
             double[] newGains = HotPIDTuner.getInstance().getGains();
             for (PIDController controller : controllers) {
                 controller.setPID(newGains[0], newGains[1], newGains[2]);
