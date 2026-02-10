@@ -1,11 +1,9 @@
-package frc.robot;
+package frc.robot.PIDTools;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import org.littletonrobotics.junction.Logger;
 
 /** while PIDController does implement Sendable, it does not have the functionality to wrap its setters in a Command */
@@ -43,27 +41,21 @@ public final class HotPIDTuner {
         return new double[] {pEntry.get(), iEntry.get(), dEntry.get()};
     }
 
-    /** pulls the gains from the network tables and then sets the gains of the supplied controllers to those */
-    public static Command setGainsFromNetworkTables(Subsystem controllerOwner, PIDController... controllers) {
-        return controllerOwner.runOnce(() -> {
-            double[] newGains = getInstance().getGains();
-            for (PIDController controller : controllers) {
-                controller.setPID(newGains[0], newGains[1], newGains[2]);
-            }
-        });
-    }
+    /** logs the position of the pid, the target of the pid, the pid errors, and the last output of the controller  */
+    public static void logPIDDetails(String subsystemName, String controllerName, PIDController controller) {
+        String path = subsystemName + "/" + controllerName;
 
-    /** takes the gains from a pid controller and puts them onto the network tables */
-    public static Command publishGainsToNetworkTables(Subsystem controllerOwner, PIDController controller) {
-        return controllerOwner.runOnce(() -> {
-            getInstance().publishGains(controller);
-        });
-    }
+        Logger.recordOutput(path + "/position", controller.getSetpoint() - controller.getError());
+        Logger.recordOutput(path + "/target", controller.getSetpoint());
 
-    /** uses the logger to put the controller p, i, and d errors onto the dashboard for visualizing response behavior */
-    public static void logPIDErrors(String subsystemName, String controllerName, PIDController controller) {
-        Logger.recordOutput(subsystemName + "/" + controllerName + " p error", controller.getError());
-        Logger.recordOutput(subsystemName + "/" + controllerName + " i error", controller.getAccumulatedError());
-        Logger.recordOutput(subsystemName + "/" + controllerName + " d error", controller.getErrorDerivative());
+        Logger.recordOutput(path + "/p error", controller.getError());
+        Logger.recordOutput(path + "/i error", controller.getAccumulatedError());
+        Logger.recordOutput(path + "/d error", controller.getErrorDerivative());
+
+        double lastOutput = controller.getP() * controller.getError()
+                + controller.getI() * controller.getAccumulatedError()
+                + controller.getD() * controller.getErrorDerivative();
+
+        Logger.recordOutput(path + "/last output", lastOutput);
     }
 }

@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Shooter;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -8,12 +10,14 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Tunables.ShooterTunables;
-import frc.robot.HotPIDTuner;
+import frc.robot.PIDTools.HotPIDTuner;
+import frc.robot.PIDTools.PIDCommandGenerator;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -29,8 +33,22 @@ public class ShooterSubsystem extends SubsystemBase {
     private final PIDController rightVelocityController =
             new PIDController(ShooterTunables.FLYWHEEL_P, ShooterTunables.FLYWHEEL_I, ShooterTunables.FLYWHEEL_D);
 
+    /** input RPM, outputs volts */
     private final PIDController leftVelocityController =
             new PIDController(ShooterTunables.FLYWHEEL_P, ShooterTunables.FLYWHEEL_I, ShooterTunables.FLYWHEEL_D);
+
+    /** setting the target velocity will also set the shooter to hold velocity */
+    public final PIDCommandGenerator<AngularVelocity> velocityControllerCommands =
+            new PIDCommandGenerator<AngularVelocity>(
+                    (target) -> {
+                        double targetRPM = target.in(RotationsPerSecond);
+                        shootMode = false;
+                        rightVelocityController.setSetpoint(targetRPM);
+                        leftVelocityController.setSetpoint(targetRPM);
+                    },
+                    this,
+                    rightVelocityController,
+                    leftVelocityController);
 
     /** input RPS, outputs volts, this feedforward can be used for both motors */
     private final SimpleMotorFeedforward flywheelFeedforward = new SimpleMotorFeedforward(
@@ -74,6 +92,9 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("Shooter/Left output", leftMotor.getAppliedOutput());
         Logger.recordOutput("Shooter/Right Flywheel RPM", getRightFlywheelVelocity());
         Logger.recordOutput("Shooter/Left Flywheel RPM", getLeftFlywheelVelocity());
+
+        HotPIDTuner.logPIDDetails("Shooter", "left RPM controller", leftVelocityController);
+        HotPIDTuner.logPIDDetails("Shooter", "right RPM controller", rightVelocityController);
     }
 
     private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
@@ -98,11 +119,6 @@ public class ShooterSubsystem extends SubsystemBase {
         motor.setVoltage(clampedOutput);
     }
 
-    private void setSetpoints(double setpoint) {
-        rightVelocityController.setSetpoint(setpoint);
-        leftVelocityController.setSetpoint(setpoint);
-    }
-
     /** runs the velocity control, the RPM target will change if set to shoot mode */
     public Command runPIDs() {
         return run(() -> {
@@ -125,36 +141,16 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** sets the RPM target to the idle rpm */
     public Command setIdle() {
-        return runOnce(() -> {
-            shootMode = false;
-            setSetpoints(ShooterTunables.FLYWHEEL_IDLE_RPM);
-        });
+        return velocityControllerCommands.setTarget(
+                AngularVelocity.ofBaseUnits(ShooterTunables.FLYWHEEL_IDLE_RPM, RotationsPerSecond));
     }
 
-    /** sets the RPM target */
-    public Command setHoldRPM(double targetRPM) {
-        return runOnce(() -> {
-            shootMode = false;
-            setSetpoints(targetRPM);
-        });
-    }
-
-    /** changes the RPM target by the amount */
-    public Command changeHeldRPM(double change) {
-        return runOnce(() -> {
-            shootMode = false;
-            // fetch the rpm of the right one (both are the same)
-            double currentTargetRPM = rightVelocityController.getSetpoint();
-            double newTargetRPM = currentTargetRPM + change;
-            if (newTargetRPM > ShooterTunables.SHOOTER_RPM_CEILING) {
-                newTargetRPM = ShooterTunables.SHOOTER_RPM_CEILING;
-            }
-            if (newTargetRPM < 0) {
-                newTargetRPM = 0;
-            }
-
-            setSetpoints(newTargetRPM);
-        });
+    /** changes the held RPM by the amount */
+    public Command nudgeRPM(double rpmNudge) {
+        return defer(() -> velocityControllerCommands.setTarget(AngularVelocity.ofBaseUnits(
+                MathUtil.clamp(
+                        (rpmNudge + rightVelocityController.getSetpoint()), 0, ShooterTunables.SHOOTER_RPM_CEILING),
+                RotationsPerSecond)));
     }
 
     /** a command that just sets the motor voltage and doesn't do anything fancy with pids */
@@ -163,23 +159,6 @@ public class ShooterSubsystem extends SubsystemBase {
             rightMotor.setVoltage(motorVoltage);
             leftMotor.setVoltage(motorVoltage);
         });
-    }
-
-    /** makes a command to set the velocity gains */
-    public Command setVelocityPID(double p, double i, double d) {
-        return runOnce(() -> {
-            rightVelocityController.setPID(p, i, d);
-            leftVelocityController.setPID(p, i, d);
-        });
-    }
-
-    public Command publishVelocityGains() {
-        // both controllers should have the same gains
-        return HotPIDTuner.publishGainsToNetworkTables(this, leftVelocityController);
-    }
-
-    public Command updateVelocityPIDs() {
-        return HotPIDTuner.setGainsFromNetworkTables(this, leftVelocityController, rightVelocityController);
     }
 
     /** returns the right flywheel velocity in RPM */
