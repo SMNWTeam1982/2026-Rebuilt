@@ -5,19 +5,19 @@ public class CANBus {
     public static final class DriveIDs {
         public static final int FRONT_LEFT_DRIVE = 1;
         public static final int FRONT_LEFT_TURN = 2;
-        public static final int FRONT_LEFT_ENCODER = 4;
+        public static final int FRONT_LEFT_ENCODER = 17;
 
         public static final int FRONT_RIGHT_DRIVE = 3;
         public static final int FRONT_RIGHT_TURN = 4;
-        public static final int FRONT_RIGHT_ENCODER = 3;
+        public static final int FRONT_RIGHT_ENCODER = 16;
 
         public static final int BACK_LEFT_DRIVE = 5;
         public static final int BACK_LEFT_TURN = 6;
-        public static final int BACK_LEFT_ENCODER = 1;
+        public static final int BACK_LEFT_ENCODER = 15;
 
         public static final int BACK_RIGHT_DRIVE = 7;
         public static final int BACK_RIGHT_TURN = 8;
-        public static final int BACK_RIGHT_ENCODER = 2;
+        public static final int BACK_RIGHT_ENCODER = 18;
     }
 
     public static final class IntakeIDs {
