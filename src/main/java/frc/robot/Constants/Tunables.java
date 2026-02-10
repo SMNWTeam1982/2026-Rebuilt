@@ -36,9 +36,9 @@ public class Tunables {
 
     public static final class SwerveModuleTunables {
         // pid gains for the turn motor
-        public static final double TURN_P = 0.73;
+        public static final double TURN_P = 0.85;
         public static final double TURN_I = 0.0;
-        public static final double TURN_D = 0.01;
+        public static final double TURN_D = 0.02;
 
         /** config for the drive motor on the module */
         public static final SparkBaseConfig DRIVE_MOTOR_CONFIG =
