@@ -90,7 +90,8 @@ public class DriveSubsystem extends SubsystemBase {
      */
     private void initPathPlannerLogging() {
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-            autoField.getObject("Target").setPose(pose);
+            // i'd keep this just in case. 
+            // autoField.getObject("Target").setPose(pose);
             Logger.recordOutput("Drive/Auto/TargetX", pose.getX());
             Logger.recordOutput("Drive/Auto/TargetY", pose.getY());
             Logger.recordOutput("Drive/Auto/TargetTheta", pose.getRotation().getRadians());
@@ -104,7 +105,6 @@ public class DriveSubsystem extends SubsystemBase {
         driveBase.updatePoseEstimatorVision();
         Logger.recordOutput("Drive/Field Reletive Velocity", getFieldRelativeVelocity());
         Logger.recordOutput("Drive/Robot Pose", getRobotPose());
-        Logger.recordOutput("Drive/drive command", this.getCurrentCommand().getName());
 
         // Field2D logging
         teleopField.setRobotPose(getRobotPose());
