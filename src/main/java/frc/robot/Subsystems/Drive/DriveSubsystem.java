@@ -90,7 +90,7 @@ public class DriveSubsystem extends SubsystemBase {
      */
     private void initPathPlannerLogging() {
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
-            // i'd keep this just in case. 
+            // i'd keep this just in case.
             // autoField.getObject("Target").setPose(pose);
             Logger.recordOutput("Drive/Auto/TargetX", pose.getX());
             Logger.recordOutput("Drive/Auto/TargetY", pose.getY());
