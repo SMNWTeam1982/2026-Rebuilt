@@ -17,7 +17,6 @@ import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
-import frc.robot.Subsystems.Drive.DriveBase;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Kicker.KickerSubsystem;
@@ -55,17 +54,18 @@ public class RobotContainer {
 
     /** make sure that we are in the corret area for at least 1 second */
     private final Trigger inShootingArea = new Trigger(() -> {
-        Translation2d robotPosition = drive.getRobotPose().getTranslation();
-        Translation2d nearestHub = ShotCalculation.getNearestHubPosition(robotPosition);
+                Translation2d robotPosition = drive.getRobotPose().getTranslation();
+                Translation2d nearestHub = ShotCalculation.getNearestHubPosition(robotPosition);
 
-        if (nearestHub == FieldMeasurements.BLUE_HUB_CENTER){
-            // are we to the left of the blue hub
-            return robotPosition.getX() < FieldMeasurements.BLUE_HUB_CENTER.getX();
-        }else{
-            // are we to the right of the red hub
-            return robotPosition.getX() > FieldMeasurements.RED_HUB_CENTER.getX();
-        }
-    }).debounce(1);
+                if (nearestHub == FieldMeasurements.BLUE_HUB_CENTER) {
+                    // are we to the left of the blue hub
+                    return robotPosition.getX() < FieldMeasurements.BLUE_HUB_CENTER.getX();
+                } else {
+                    // are we to the right of the red hub
+                    return robotPosition.getX() > FieldMeasurements.RED_HUB_CENTER.getX();
+                }
+            })
+            .debounce(1);
 
     /**
      * is the drive at the target heading?
@@ -73,8 +73,7 @@ public class RobotContainer {
      * <p> is the shooter in shoot mode? (is it calculating the velocity from the equations?)
      * <p> are we in the zone that we are allowed to shoot in?
      */
-    private final Trigger robotReadyToShoot =
-            drive.atTargetHeading
+    private final Trigger robotReadyToShoot = drive.atTargetHeading
             .and(shooter.velocityControllerCommands.atSetpoint)
             .and(shooter.inShootMode)
             .and(inShootingArea);
@@ -160,10 +159,12 @@ public class RobotContainer {
 
     private ChassisSpeeds getJoystickSpeeds() {
         return new ChassisSpeeds(
-            MathUtil.applyDeadband(driverController.getLeftX(), DriveBaseTunables.INPUT_DEADZONE) * DriveBaseTunables.DRIVE_SPEED,
-            MathUtil.applyDeadband(driverController.getLeftY(), DriveBaseTunables.INPUT_DEADZONE) * DriveBaseTunables.DRIVE_SPEED,
-            MathUtil.applyDeadband(driverController.getRightX(), DriveBaseTunables.INPUT_DEADZONE) * DriveBaseTunables.TURN_SPEED
-        );
+                MathUtil.applyDeadband(driverController.getLeftX(), DriveBaseTunables.INPUT_DEADZONE)
+                        * DriveBaseTunables.DRIVE_SPEED,
+                MathUtil.applyDeadband(driverController.getLeftY(), DriveBaseTunables.INPUT_DEADZONE)
+                        * DriveBaseTunables.DRIVE_SPEED,
+                MathUtil.applyDeadband(driverController.getRightX(), DriveBaseTunables.INPUT_DEADZONE)
+                        * DriveBaseTunables.TURN_SPEED);
     }
 
     public Command getAutonomousCommand() {
