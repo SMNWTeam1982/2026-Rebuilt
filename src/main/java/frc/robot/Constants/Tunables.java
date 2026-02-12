@@ -18,6 +18,10 @@ public class Tunables {
         /** the speed we limit the drive to, this MUST be below the physical max speed */
         public static final double ARTIFICIAL_MAX_SPEED = 3.0;
 
+        public static final double DRIVE_SPEED = 1.0; // 1 m/s
+        public static final double TURN_SPEED = 3.0; // 3 rad/s
+        public static final double INPUT_DEADZONE = 0.1;
+
         /** a speed for the commands that fine tune the robot position robot-relative */
         public static final double NUDGE_SPEED = 0.25;
 
