@@ -40,14 +40,14 @@ public class PIDCommandGenerator<T> {
     /** put the gains of the pid loop(s) onto the dashboard */
     public Command publishPIDGains() {
         return requirement.runOnce(() -> {
-            HotPIDTuner.getInstance().publishGains(controllers[0]);
+            HotPIDFTuner.getInstance().publishPIDGains(controllers[0]);
         });
     }
 
     /** update the pid loop(s) with the gains on the dashboard */
     public Command updatePIDGains() {
         return requirement.runOnce(() -> {
-            double[] newGains = HotPIDTuner.getInstance().getGains();
+            double[] newGains = HotPIDFTuner.getInstance().getPIDGains();
             for (PIDController controller : controllers) {
                 controller.setPID(newGains[0], newGains[1], newGains[2]);
             }

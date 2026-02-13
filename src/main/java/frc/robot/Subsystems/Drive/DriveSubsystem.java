@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.Measured.PathplannerMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
-import frc.robot.PIDTools.HotPIDTuner;
+import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
@@ -119,9 +119,9 @@ public class DriveSubsystem extends SubsystemBase {
         } else {
             Logger.recordOutput("Drive/drive command", this.getCurrentCommand().getName());
         }
-        HotPIDTuner.logPIDDetails("Drive", "heading controller", headingController);
-        HotPIDTuner.logPIDDetails("Drive", "x translation controller", xController);
-        HotPIDTuner.logPIDDetails("Drive", "y translation controller", yController);
+        HotPIDFTuner.logPIDDetails("Drive", "heading controller", headingController);
+        HotPIDFTuner.logPIDDetails("Drive", "x translation controller", xController);
+        HotPIDFTuner.logPIDDetails("Drive", "y translation controller", yController);
         driveBase.logTurnPIDErrors();
     }
 

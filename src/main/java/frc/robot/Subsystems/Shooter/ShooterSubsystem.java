@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Tunables.ShooterTunables;
-import frc.robot.PIDTools.HotPIDTuner;
+import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
@@ -93,8 +93,8 @@ public class ShooterSubsystem extends SubsystemBase {
         Logger.recordOutput("Shooter/Right Flywheel RPM", getRightFlywheelVelocity());
         Logger.recordOutput("Shooter/Left Flywheel RPM", getLeftFlywheelVelocity());
 
-        HotPIDTuner.logPIDDetails("Shooter", "left RPM controller", leftVelocityController);
-        HotPIDTuner.logPIDDetails("Shooter", "right RPM controller", rightVelocityController);
+        HotPIDFTuner.logPIDDetails("Shooter", "left RPM controller", leftVelocityController);
+        HotPIDFTuner.logPIDDetails("Shooter", "right RPM controller", rightVelocityController);
     }
 
     private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
