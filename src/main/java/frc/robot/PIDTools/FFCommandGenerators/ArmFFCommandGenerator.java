@@ -17,18 +17,16 @@ public class ArmFFCommandGenerator {
      * @param requirement the subsystem that the generated commands with require
      * @param feedforwards a set of feedforwards that will have the same gains
      */
-    public ArmFFCommandGenerator(Subsystem requirement, ArmFeedforward... feedforwards){
+    public ArmFFCommandGenerator(Subsystem requirement, ArmFeedforward... feedforwards) {
         this.requirement = requirement;
         this.feedforwards = feedforwards;
     }
 
     /** put the gains from these feedforwards onto the dashboard */
-    public Command publishGains(){
-        return requirement.runOnce(
-            () -> {
-                HotPIDFTuner.getInstance().publishArmFeedforwardGains(feedforwards[0]);
-            }
-        );
+    public Command publishGains() {
+        return requirement.runOnce(() -> {
+            HotPIDFTuner.getInstance().publishArmFeedforwardGains(feedforwards[0]);
+        });
     }
 
     /** update the feedforward gains with the ones from the dashboard */

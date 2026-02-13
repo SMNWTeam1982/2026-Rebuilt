@@ -13,18 +13,16 @@ public class ElevatorFFCommandGenerator {
      * @param requirement the subsystem that the generated commands with require
      * @param feedforwards a set of feedforwards that will have the same gains
      */
-    public ElevatorFFCommandGenerator(Subsystem requirement, ElevatorFeedforward... feedforwards){
+    public ElevatorFFCommandGenerator(Subsystem requirement, ElevatorFeedforward... feedforwards) {
         this.requirement = requirement;
         this.feedforwards = feedforwards;
     }
 
     /** put the gains from these feedforwards onto the dashboard */
-    public Command publishGains(){
-        return requirement.runOnce(
-            () -> {
-                HotPIDFTuner.getInstance().publishElevatorFeedforwardGains(feedforwards[0]);
-            }
-        );
+    public Command publishGains() {
+        return requirement.runOnce(() -> {
+            HotPIDFTuner.getInstance().publishElevatorFeedforwardGains(feedforwards[0]);
+        });
     }
 
     /** update the feedforward gains with the ones from the dashboard */

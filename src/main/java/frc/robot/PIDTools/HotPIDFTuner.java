@@ -49,21 +49,21 @@ public final class HotPIDFTuner {
         return new double[] {pEntry.get(), iEntry.get(), dEntry.get()};
     }
 
-    public void publishSimpleMotorFeedforwardGains(SimpleMotorFeedforward feedforward){
+    public void publishSimpleMotorFeedforwardGains(SimpleMotorFeedforward feedforward) {
         sEntry.set(feedforward.getKs());
         // no g entry for a simple motor feedforward
         vEntry.set(feedforward.getKv());
         aEntry.set(feedforward.getKa());
     }
 
-    public void publishArmFeedforwardGains(ArmFeedforward feedforward){
+    public void publishArmFeedforwardGains(ArmFeedforward feedforward) {
         sEntry.set(feedforward.getKs());
         gEntry.set(feedforward.getKg());
         vEntry.set(feedforward.getKv());
         aEntry.set(feedforward.getKa());
     }
 
-    public void publishElevatorFeedforwardGains(ElevatorFeedforward feedforward){
+    public void publishElevatorFeedforwardGains(ElevatorFeedforward feedforward) {
         sEntry.set(feedforward.getKs());
         gEntry.set(feedforward.getKg());
         vEntry.set(feedforward.getKv());
@@ -71,13 +71,8 @@ public final class HotPIDFTuner {
     }
 
     /** returns a double array of [Ks, Kg, Kv, Ka] */
-    public double[] getFeedforwardGains(){
-        return new double[] {
-            sEntry.get(),
-            gEntry.get(),
-            vEntry.get(),
-            aEntry.get()
-        };
+    public double[] getFeedforwardGains() {
+        return new double[] {sEntry.get(), gEntry.get(), vEntry.get(), aEntry.get()};
     }
 
     /** logs the position of the pid, the target of the pid, the pid errors, and the last output of the controller  */
