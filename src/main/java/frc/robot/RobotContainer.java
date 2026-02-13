@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -12,7 +13,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Measured.ShooterMeasurements;
+import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
@@ -49,19 +52,48 @@ public class RobotContainer {
         return Math.abs(distanceFromHub - distanceShotTarget) < ShooterTunables.SHOOTING_POSITION_TOLERANCE;
     });
 
+    /** make sure that we are in the corret area for at least 1 second */
+    private final Trigger inShootingArea = new Trigger(() -> {
+                Translation2d robotPosition = drive.getRobotPose().getTranslation();
+                Translation2d nearestHub = ShotCalculation.getNearestHubPosition(robotPosition);
+
+                if (nearestHub == FieldMeasurements.BLUE_HUB_CENTER) {
+                    // are we to the left of the blue hub
+                    return robotPosition.getX() < FieldMeasurements.BLUE_HUB_CENTER.getX();
+                } else {
+                    // are we to the right of the red hub
+                    return robotPosition.getX() > FieldMeasurements.RED_HUB_CENTER.getX();
+                }
+            })
+            .debounce(1);
+
+    /**
+     * is the drive at the target heading?
+     * <p> are the flywheels at the target speed?
+     * <p> is the shooter in shoot mode? (is it calculating the velocity from the equations?)
+     * <p> are we in the zone that we are allowed to shoot in?
+     */
+    private final Trigger robotReadyToShoot = drive.atTargetHeading
+            .and(shooter.velocityControllerCommands.atSetpoint)
+            .and(shooter.inShootMode)
+            .and(inShootingArea);
+
     private final boolean onBlueAlliance;
 
     public RobotContainer() {
-
+        /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
 
         configureDriverBindings();
         configureOperatorBindings();
+
+        // temporary, will not be called during comp code
+        configureTestingBindings();
     }
 
     private void configureDriverBindings() {
 
-        // set the drive controls to aim mode when pressed
+        // set the drive controls to aim mode when pressed, and set the shooter to shoot mode (spin up)
         driverController
                 .a()
                 .debounce(0.1)
@@ -95,24 +127,22 @@ public class RobotContainer {
         operatorController.a().debounce(0.1).onTrue(intake.deploy());
         operatorController.b().debounce(0.1).onTrue(intake.retract());
 
-        Trigger robotReadyToShoot =
-                drive.atTargetHeading.and(shooter.flywheelsUpToSpeed).and(shooter.inShootMode);
-
-        // manually start the kicker
+        // manually start/stop the kicker
         operatorController.rightBumper().debounce(0.1).onTrue(kicker.startKicker());
-        // right trigger starts shooting
-        operatorController.rightTrigger().debounce(0.1).and(robotReadyToShoot).onTrue(kicker.startKicker());
-        // left trigger stops shooting
-        operatorController.leftTrigger().debounce(0.1).onTrue(kicker.stopKicker());
+        operatorController.leftBumper().debounce(0.1).onTrue(kicker.stopKicker());
 
-        // start spinning up the flywheels
-        operatorController.y().debounce(0.1).onTrue(shooter.setShootMode());
+        // set the flywheels to spin up when right trigger is pressed
+        operatorController.rightTrigger().onTrue(shooter.setShootMode());
 
-        // set the flywheels to an idle speed
-        operatorController.x().debounce(0.1).onTrue(shooter.setIdle());
+        // set the flywheels to their idle speed
+        operatorController.leftTrigger().onTrue(shooter.setIdle());
 
+        // if the robot is ready to shoot then start the kicker
+        robotReadyToShoot.onTrue(kicker.startKicker()).onFalse(kicker.stopKicker());
+    }
+
+    private void configureTestingBindings() {
         // adjustments for testing
-
         operatorController.back().debounce(0.1).onTrue(shooter.velocityControllerCommands.publishPIDGains());
         operatorController.start().debounce(0.1).onTrue(shooter.velocityControllerCommands.updatePIDGains());
 
@@ -129,7 +159,12 @@ public class RobotContainer {
 
     private ChassisSpeeds getJoystickSpeeds() {
         return new ChassisSpeeds(
-                driverController.getLeftX(), driverController.getLeftY(), driverController.getRightX());
+                MathUtil.applyDeadband(driverController.getLeftX(), DriveBaseTunables.INPUT_DEADZONE)
+                        * DriveBaseTunables.DRIVE_SPEED,
+                MathUtil.applyDeadband(driverController.getLeftY(), DriveBaseTunables.INPUT_DEADZONE)
+                        * DriveBaseTunables.DRIVE_SPEED,
+                MathUtil.applyDeadband(driverController.getRightX(), DriveBaseTunables.INPUT_DEADZONE)
+                        * DriveBaseTunables.TURN_SPEED);
     }
 
     public Command getAutonomousCommand() {
