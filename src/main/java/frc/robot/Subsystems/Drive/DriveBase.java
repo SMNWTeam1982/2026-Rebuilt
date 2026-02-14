@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.ADIS16448_IMU;
 import frc.robot.Constants.CANBus.DriveIDs;
 import frc.robot.Constants.Measured.DriveBaseMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
@@ -40,7 +41,7 @@ public final class DriveBase {
     public final SwerveModule backRight =
             new SwerveModule(DriveIDs.BACK_RIGHT_DRIVE, DriveIDs.BACK_RIGHT_TURN, DriveIDs.BACK_RIGHT_ENCODER);
 
-    public final Pigeon2 gyro = new Pigeon2(0);
+    public final ADIS16448_IMU gyro = new ADIS16448_IMU();
 
     public final Supplier<Optional<VisionData>> visionResults;
 
@@ -53,7 +54,7 @@ public final class DriveBase {
 
     /** the swerve drive is initialized with a default Pose2d, (0 x, 0 y, 0 rotation) */
     public final SwerveDrivePoseEstimator swervePoseEstimator =
-            new SwerveDrivePoseEstimator(driveKinematics, gyro.getRotation2d(), getModulePositions(), new Pose2d());
+            new SwerveDrivePoseEstimator(driveKinematics, getGyroHeading(), getModulePositions(), new Pose2d());
 
     public DriveBase(Supplier<Optional<VisionData>> visionResults) {
         this.visionResults = visionResults;
@@ -67,7 +68,7 @@ public final class DriveBase {
      * <p>anything that resets the pose estimator will be irrelavant with absolute position
      */
     public void resetEstimatedPose(Pose2d newPose) {
-        swervePoseEstimator.resetPosition(gyro.getRotation2d(), getModulePositions(), newPose);
+        swervePoseEstimator.resetPosition(getGyroHeading(), getModulePositions(), newPose);
     }
 
     /**
@@ -92,7 +93,7 @@ public final class DriveBase {
      * chassis
      */
     public void updatePoseEstimatorOdometry() {
-        swervePoseEstimator.update(gyro.getRotation2d(), getModulePositions());
+        swervePoseEstimator.update(getGyroHeading(), getModulePositions());
     }
 
     /** adds a vision measurment to the pose estimator, if one is available */
@@ -154,6 +155,10 @@ public final class DriveBase {
     /** Returns the heading from getEstimatedPose() */
     public Rotation2d getHeading() {
         return getEstimatedPose().getRotation();
+    }
+
+    public Rotation2d getGyroHeading(){
+        return Rotation2d.fromDegrees(gyro.getGyroAngleX());
     }
 
     /**
