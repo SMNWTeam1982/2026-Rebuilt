@@ -17,6 +17,7 @@ import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
+import frc.robot.Subsystems.Climber.ClimberSubsystem;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Kicker.KickerSubsystem;
@@ -44,6 +45,7 @@ public class RobotContainer {
     private final ShooterSubsystem shooter = new ShooterSubsystem(shotRPM);
     private final KickerSubsystem kicker = new KickerSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
+    private final ClimberSubsystem climber = new ClimberSubsystem();
 
     private final Trigger confidentShot = new Trigger(() -> {
         Translation2d robotPosition = drive.getRobotPose().getTranslation();
@@ -93,6 +95,10 @@ public class RobotContainer {
 
     private void configureDriverBindings() {
 
+        // use right/left bumbers to extend/retract the climber
+        driverController.rightBumper().debounce(0.1).whileTrue(climber.moveClimberOut());
+        driverController.leftBumper().debounce(0.1).whileTrue(climber.moveClimberIn());
+
         // set the drive controls to aim mode when pressed, and set the shooter to shoot mode (spin up)
         driverController
                 .a()
@@ -124,6 +130,7 @@ public class RobotContainer {
     }
 
     private void configureOperatorBindings() {
+        // deploy/retract the intake with a & b
         operatorController.a().debounce(0.1).onTrue(intake.deploy());
         operatorController.b().debounce(0.1).onTrue(intake.retract());
 
@@ -137,8 +144,8 @@ public class RobotContainer {
         // set the flywheels to their idle speed
         operatorController.leftTrigger().onTrue(shooter.setIdle());
 
-        // if the robot is ready to shoot then start the kicker
-        robotReadyToShoot.onTrue(kicker.startKicker()).onFalse(kicker.stopKicker());
+        // automatically start/stop the kicker when the robot is ready/not ready
+        robotReadyToShoot.whileTrue(kicker.kick());
     }
 
     private void configureTestingBindings() {
@@ -159,12 +166,12 @@ public class RobotContainer {
 
     private ChassisSpeeds getJoystickSpeeds() {
         return new ChassisSpeeds(
-                MathUtil.applyDeadband(driverController.getLeftX(), DriveBaseTunables.INPUT_DEADZONE)
-                        * DriveBaseTunables.DRIVE_SPEED,
-                MathUtil.applyDeadband(driverController.getLeftY(), DriveBaseTunables.INPUT_DEADZONE)
-                        * DriveBaseTunables.DRIVE_SPEED,
-                MathUtil.applyDeadband(driverController.getRightX(), DriveBaseTunables.INPUT_DEADZONE)
-                        * DriveBaseTunables.TURN_SPEED);
+                MathUtil.applyDeadband(
+                        driverController.getLeftX(), DriveBaseTunables.INPUT_DEADZONE, DriveBaseTunables.DRIVE_SPEED),
+                MathUtil.applyDeadband(
+                        driverController.getLeftY(), DriveBaseTunables.INPUT_DEADZONE, DriveBaseTunables.DRIVE_SPEED),
+                MathUtil.applyDeadband(
+                        driverController.getRightX(), DriveBaseTunables.INPUT_DEADZONE, DriveBaseTunables.TURN_SPEED));
     }
 
     public Command getAutonomousCommand() {
