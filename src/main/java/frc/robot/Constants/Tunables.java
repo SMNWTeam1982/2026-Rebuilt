@@ -7,10 +7,12 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants.Measured.FieldMeasurements;
 
 public class Tunables {
     /** speeds are in meters per second */
@@ -56,6 +58,26 @@ public class Tunables {
     public static final class FieldTunables {
         /** the distance from the hub that we have to be in order to score */
         public static final double HUB_SCORING_DISTANCE = 2.5;
+
+        public static final Translation2d BLUE_BOTTOM_PASSING_TARGET = new Translation2d(3, 2);
+
+        private static Translation2d flipX(Translation2d position) {
+            // subtract the position from the other side of the field to get the flipped position
+            double new_x = FieldMeasurements.FIELD_CENTER.getX() * 2 - position.getX();
+            return new Translation2d(new_x, position.getY());
+        }
+
+        private static Translation2d flipY(Translation2d position) {
+            // subtract the position from the other side of the field to get the flipped position
+            double new_y = FieldMeasurements.FIELD_CENTER.getY() * 2 - position.getY();
+            return new Translation2d(position.getX(), new_y);
+        }
+
+        public static final Translation2d RED_BOTTOM_PASSING_TARGET = flipX(BLUE_BOTTOM_PASSING_TARGET);
+
+        public static final Translation2d BLUE_TOP_PASSING_TARGET = flipY(BLUE_BOTTOM_PASSING_TARGET);
+
+        public static final Translation2d RED_TOP_PASSING_TARGET = flipY(RED_BOTTOM_PASSING_TARGET);
     }
 
     public static final class ShooterTunables {
@@ -75,6 +97,8 @@ public class Tunables {
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
+
+        public static final Rotation2d SHOOTING_ANGLE_TOLERANCE = Rotation2d.fromDegrees(15);
 
         public static final int SHOT_PREDICTION_ITERATIONS = 2;
 

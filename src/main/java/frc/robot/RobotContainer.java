@@ -13,10 +13,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Commands.DriverCommands;
 import frc.robot.Constants.Measured.FieldMeasurements;
-import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
-import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Climber.ClimberSubsystem;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
@@ -24,8 +23,9 @@ import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
-import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(0);
@@ -34,28 +34,19 @@ public class RobotContainer {
     private final VisionSubsystem vision = new VisionSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult);
 
-    private final Supplier<Translation2d> shotTarget = () ->
-            ShotCalculation.getShotTarget(drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
+    private final Supplier<Translation2d> calculatedHubTarget =
+            () -> ShotCalculation.getHubTarget(drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
 
-    private final DoubleSupplier shotRPM = () -> {
-        double targetDistance = drive.getRobotPose().getTranslation().getDistance(shotTarget.get());
-        return ShooterMeasurements.hubDistanceToFlywheelRPM(targetDistance);
-    };
+    private final Supplier<Translation2d> calculatedPassTarget = () ->
+            ShotCalculation.getPassTarget(drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
 
-    private final ShooterSubsystem shooter = new ShooterSubsystem(shotRPM);
+    private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final KickerSubsystem kicker = new KickerSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
     private final ClimberSubsystem climber = new ClimberSubsystem();
 
-    private final Trigger confidentShot = new Trigger(() -> {
-        Translation2d robotPosition = drive.getRobotPose().getTranslation();
-        double distanceFromHub = robotPosition.getDistance(ShotCalculation.getNearestHubPosition(robotPosition));
-        double distanceShotTarget = robotPosition.getDistance(shotTarget.get());
-        return Math.abs(distanceFromHub - distanceShotTarget) < ShooterTunables.SHOOTING_POSITION_TOLERANCE;
-    });
-
     /** make sure that we are in the corret area for at least 1 second */
-    private final Trigger inShootingArea = new Trigger(() -> {
+    private final Trigger inAllianceZone = new Trigger(() -> {
                 Translation2d robotPosition = drive.getRobotPose().getTranslation();
                 Translation2d nearestHub = ShotCalculation.getNearestHubPosition(robotPosition);
 
@@ -73,12 +64,11 @@ public class RobotContainer {
      * is the drive at the target heading?
      * <p> are the flywheels at the target speed?
      * <p> is the shooter in shoot mode? (is it calculating the velocity from the equations?)
-     * <p> are we in the zone that we are allowed to shoot in?
      */
+    @AutoLogOutput
     private final Trigger robotReadyToShoot = drive.atTargetHeading
             .and(shooter.velocityControllerCommands.atSetpoint)
-            .and(shooter.inShootMode)
-            .and(inShootingArea);
+            .and(shooter.inShootMode);
 
     private final boolean onBlueAlliance;
 
@@ -99,30 +89,26 @@ public class RobotContainer {
         driverController.rightBumper().debounce(0.1).whileTrue(climber.moveClimberOut());
         driverController.leftBumper().debounce(0.1).whileTrue(climber.moveClimberIn());
 
-        // set the drive controls to aim mode when pressed, and set the shooter to shoot mode (spin up)
+        // set the drive controls to hub aim mode when pressed, and set the shooter rpm calculation
         driverController
                 .a()
                 .debounce(0.1)
-                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveAndPointAtTarget(
-                                        () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(
-                                                getJoystickSpeeds(), onBlueAlliance),
-                                        shotTarget::get)
-                                .withName("Hub aim")))
-                        .withName("set auto aim mode"));
+                .onTrue(DriverCommands.readyAimAtTarget(
+                        drive, shooter, onBlueAlliance, this::getJoystickSpeeds, calculatedHubTarget));
+
+        // set the drive controls to pass aim mode when pressed, and set the shooter rpm calculation
+        driverController
+                .x()
+                .debounce(0.1)
+                .onTrue(DriverCommands.readyAimAtTarget(
+                        drive, shooter, onBlueAlliance, this::getJoystickSpeeds, calculatedPassTarget));
 
         // sets the drive controls to standard field relative when pressed
-        driverController
-                .b()
-                .debounce(0.1)
-                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(
-                                drive.driveFieldRelative(() -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(
-                                                getJoystickSpeeds(), onBlueAlliance))
-                                        .withName("DS relative")))
-                        .withName("set DS relative mode"));
+        driverController.b().debounce(0.1).onTrue(DriverCommands.setNormalMode(drive, shooter, onBlueAlliance, this::getJoystickSpeeds));
 
         // sets the drive controls to robot relative when pressed
         driverController
-                .x()
+                .y()
                 .debounce(0.1)
                 .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveRobotRelative(this::getJoystickSpeeds)
                                 .withName("robot relative")))
@@ -138,14 +124,8 @@ public class RobotContainer {
         operatorController.rightBumper().debounce(0.1).onTrue(kicker.startKicker());
         operatorController.leftBumper().debounce(0.1).onTrue(kicker.stopKicker());
 
-        // set the flywheels to spin up when right trigger is pressed
-        operatorController.rightTrigger().onTrue(shooter.setShootMode());
-
-        // set the flywheels to their idle speed
-        operatorController.leftTrigger().onTrue(shooter.setIdle());
-
         // automatically start/stop the kicker when the robot is ready/not ready
-        robotReadyToShoot.whileTrue(kicker.kick());
+        //robotReadyToShoot.whileTrue(kicker.kick());
     }
 
     private void configureTestingBindings() {

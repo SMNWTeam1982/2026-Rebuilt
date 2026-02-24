@@ -10,6 +10,7 @@ import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -71,6 +72,9 @@ public class Measured {
     }
 
     public static final class FieldMeasurements {
+        public static final Translation2d FIELD_CENTER =
+                new Translation2d(Units.inchesToMeters(325.06), Units.inchesToMeters(158.32));
+
         public static final Translation2d BLUE_HUB_CENTER = new Translation2d();
         public static final Translation2d RED_HUB_CENTER = new Translation2d();
 
@@ -84,7 +88,7 @@ public class Measured {
          * the equation will be derived from a best fit of a data table that will be measured, expected
          * to be quadratic or cubic
          */
-        public static double hubDistanceToFlywheelRPM(double distanceFromHub) {
+        public static double distanceToFlywheelRPM(double distanceFromHub) {
             return 0.0;
         }
 
@@ -92,7 +96,7 @@ public class Measured {
          * the equation will be derived from a best fit of a data table that will be measured, expected
          * to be linear
          */
-        public static double hubDistanceToFlightTime(double distanceFromHub) {
+        public static double distanceToFlightTime(double distanceFromHub) {
             return 0.0;
         }
     }

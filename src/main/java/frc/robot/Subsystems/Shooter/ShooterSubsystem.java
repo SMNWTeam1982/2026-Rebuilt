@@ -42,7 +42,7 @@ public class ShooterSubsystem extends SubsystemBase {
             new PIDCommandGenerator<AngularVelocity>(
                     (target) -> {
                         double targetRPM = target.in(RotationsPerSecond);
-                        shootMode = false;
+                        idle = true;
                         rightVelocityController.setSetpoint(targetRPM);
                         leftVelocityController.setSetpoint(targetRPM);
                     },
@@ -54,18 +54,14 @@ public class ShooterSubsystem extends SubsystemBase {
     private final SimpleMotorFeedforward flywheelFeedforward = new SimpleMotorFeedforward(
             ShooterTunables.FLYWHEEL_S, ShooterTunables.FLYWHEEL_V, ShooterTunables.FLYWHEEL_A);
 
-    public final Trigger flywheelsUpToSpeed =
-            new Trigger(() -> rightVelocityController.atSetpoint() && leftVelocityController.atSetpoint());
     public final Trigger inShootMode = new Trigger(this::inShootMode);
 
     /** the RPM calculated by the shot calculation system */
-    private final DoubleSupplier shootSpeed;
+    private DoubleSupplier rpmCalculation = () -> 0.0;
 
-    private boolean shootMode = false;
+    private boolean idle = true;
 
-    public ShooterSubsystem(DoubleSupplier shootSpeed) {
-
-        this.shootSpeed = shootSpeed;
+    public ShooterSubsystem() {
         rightMotor.configure(
                 ShooterTunables.FLYWHEEL_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         // invert the left motor because it is oriented the other way
@@ -85,11 +81,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput("Shooter/Left Flywheel Target RPM", leftVelocityController.getSetpoint());
-        Logger.recordOutput("Shooter/Right Flywheel Target RPM", rightVelocityController.getSetpoint());
-        Logger.recordOutput("Shooter/At target", flywheelsUpToSpeed.getAsBoolean());
-        Logger.recordOutput("Shooter/Right output", rightMotor.getAppliedOutput());
-        Logger.recordOutput("Shooter/Left output", leftMotor.getAppliedOutput());
+        Logger.recordOutput("Shooter/At target", velocityControllerCommands.atSetpoint.getAsBoolean());
+        Logger.recordOutput("Shooter/Right current", rightMotor.getOutputCurrent());
+        Logger.recordOutput("Shooter/Left current", leftMotor.getOutputCurrent());
         Logger.recordOutput("Shooter/Right Flywheel RPM", getRightFlywheelVelocity());
         Logger.recordOutput("Shooter/Left Flywheel RPM", getLeftFlywheelVelocity());
 
@@ -101,10 +95,10 @@ public class ShooterSubsystem extends SubsystemBase {
         // give the pid RPM
         double pidOutput;
 
-        if (shootMode) {
-            pidOutput = pid.calculate(encoder.getVelocity(), shootSpeed.getAsDouble());
-        } else {
+        if (idle) {
             pidOutput = pid.calculate(encoder.getVelocity());
+        } else {
+            pidOutput = pid.calculate(encoder.getVelocity(), rpmCalculation.getAsDouble());
         }
 
         double targetRPM = pid.getSetpoint();
@@ -128,14 +122,14 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** sets the RPM target to follow calculated RPM */
-    public Command setShootMode() {
-        return runOnce(() -> shootMode = true);
+    public Command stopIdling() {
+        return runOnce(() -> idle = false);
     }
 
     /** sets the RPM target to not change */
     public Command holdSpeed() {
         return runOnce(() -> {
-            shootMode = false;
+            idle = true;
         });
     }
 
@@ -143,6 +137,13 @@ public class ShooterSubsystem extends SubsystemBase {
     public Command setIdle() {
         return velocityControllerCommands.setTarget(
                 AngularVelocity.ofBaseUnits(ShooterTunables.FLYWHEEL_IDLE_RPM, RotationsPerSecond));
+    }
+
+    /** a command that sets the rpm supplier to the one provided */
+    public Command setRPMSupplier(DoubleSupplier calculatedRPM) {
+        return runOnce(() -> {
+            this.rpmCalculation = calculatedRPM;
+        });
     }
 
     /** changes the held RPM by the amount */
@@ -178,6 +179,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** returns if the target RPM is following the calculation */
     public boolean inShootMode() {
-        return shootMode;
+        return !idle;
     }
 }
