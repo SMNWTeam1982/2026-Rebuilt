@@ -24,7 +24,6 @@ import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class RobotContainer {
@@ -65,7 +64,7 @@ public class RobotContainer {
      * <p> are the flywheels at the target speed?
      * <p> is the shooter in shoot mode? (is it calculating the velocity from the equations?)
      */
-    @AutoLogOutput
+    @AutoLogOutput(key = "Driver info/robot ready to shoot")
     private final Trigger robotReadyToShoot = drive.atTargetHeading
             .and(shooter.velocityControllerCommands.atSetpoint)
             .and(shooter.inShootMode);
@@ -93,26 +92,27 @@ public class RobotContainer {
         driverController
                 .a()
                 .debounce(0.1)
-                .onTrue(DriverCommands.readyAimAtTarget(
+                .onTrue(DriverCommands.setAimAtTarget(
                         drive, shooter, onBlueAlliance, this::getJoystickSpeeds, calculatedHubTarget));
 
         // set the drive controls to pass aim mode when pressed, and set the shooter rpm calculation
         driverController
                 .x()
                 .debounce(0.1)
-                .onTrue(DriverCommands.readyAimAtTarget(
+                .onTrue(DriverCommands.setAimAtTarget(
                         drive, shooter, onBlueAlliance, this::getJoystickSpeeds, calculatedPassTarget));
 
         // sets the drive controls to standard field relative when pressed
-        driverController.b().debounce(0.1).onTrue(DriverCommands.setNormalMode(drive, shooter, onBlueAlliance, this::getJoystickSpeeds));
+        driverController
+                .b()
+                .debounce(0.1)
+                .onTrue(DriverCommands.setNormalMode(drive, shooter, onBlueAlliance, this::getJoystickSpeeds));
 
         // sets the drive controls to robot relative when pressed
         driverController
                 .y()
                 .debounce(0.1)
-                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(drive.driveRobotRelative(this::getJoystickSpeeds)
-                                .withName("robot relative")))
-                        .withName("set robot relative mode"));
+                .onTrue(DriverCommands.setRobotRelativeMode(drive, shooter, this::getJoystickSpeeds));
     }
 
     private void configureOperatorBindings() {
@@ -125,7 +125,7 @@ public class RobotContainer {
         operatorController.leftBumper().debounce(0.1).onTrue(kicker.stopKicker());
 
         // automatically start/stop the kicker when the robot is ready/not ready
-        //robotReadyToShoot.whileTrue(kicker.kick());
+        // robotReadyToShoot.whileTrue(kicker.kick());
     }
 
     private void configureTestingBindings() {

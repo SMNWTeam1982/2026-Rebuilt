@@ -120,7 +120,7 @@ public class DriveSubsystem extends SubsystemBase {
     private void initPathPlannerLogging() {
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
             // i'd keep this just in case.
-            // autoField.getObject("Target").setPose(pose);
+            autoField.getObject("Pathplanner Target").setPose(pose);
             Logger.recordOutput("Drive/Auto/TargetX", pose.getX());
             Logger.recordOutput("Drive/Auto/TargetY", pose.getY());
             Logger.recordOutput("Drive/Auto/TargetTheta", pose.getRotation().getRadians());
@@ -133,6 +133,7 @@ public class DriveSubsystem extends SubsystemBase {
         driveBase.updatePoseEstimatorOdometry();
         driveBase.updatePoseEstimatorVision();
         driveBase.logModuleData();
+
         Logger.recordOutput("Drive/Field Reletive Velocity", getFieldRelativeVelocity());
         Logger.recordOutput("Drive/Robot Pose", getRobotPose());
 
@@ -171,23 +172,6 @@ public class DriveSubsystem extends SubsystemBase {
                     joystickSpeeds.vxMetersPerSecond,
                     joystickSpeeds.omegaRadiansPerSecond);
         }
-    }
-
-    /*
-     * This sets the PID setpoint for the X, Y. It will update the setPoint so the robot moves to the target translation.
-     */
-    public Command DriveSetPoint(Translation2d targetTranslation) {
-        return runOnce(() -> {
-            xController.setSetpoint(targetTranslation.getX());
-            yController.setSetpoint(targetTranslation.getY());
-        });
-    }
-    // ** This sets the PID setpoint for the heading. It will update the setpoint so the robot points in the target
-    // direction.*/
-    public Command DriveHeadSetPoint(Rotation2d targetRotation) {
-        return runOnce(() -> {
-            headingController.setSetpoint(targetRotation.getRadians());
-        });
     }
 
     /** drives the robot with chassis speeds relative to the robot coordinate system */
@@ -234,8 +218,17 @@ public class DriveSubsystem extends SubsystemBase {
      * @param fieldRelativeSpeeds the theta component is ignored
      */
     public Command driveAndPointAtTarget(Supplier<ChassisSpeeds> fieldRelativeSpeeds, Supplier<Translation2d> target) {
+        Supplier<Rotation2d> targetAngle = () -> {
+            Translation2d currentTarget = target.get();
+            teleopField.getObject("Pointing Target").setPose(
+                currentTarget.getX(),
+                currentTarget.getY(),
+                new Rotation2d()
+            );
+            return currentTarget.minus(getRobotPose().getTranslation()).getAngle();
+        };
         return driveTopDown(
-                fieldRelativeSpeeds, target.get().minus(getRobotPose().getTranslation())::getAngle);
+                fieldRelativeSpeeds, targetAngle);
     }
 
     /** drives the robot in a circle around the orbitCenter with a radius of the orbitDistance */
