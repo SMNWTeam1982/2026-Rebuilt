@@ -136,7 +136,7 @@ public class RobotContainer {
 
         // manually start/stop the kicker
         operatorController.rightBumper().debounce(0.1).onTrue(kicker.startKicker());
-        operatorController.leftBumper().debounce(0.1).onTrue(kicker.stopKicker());
+        operatorController.leftBumper().debounce(0.1).onTrue(kicker.idleKicker());
 
         // set the flywheels to spin up when right trigger is pressed
         operatorController.rightTrigger().onTrue(shooter.setShootMode());

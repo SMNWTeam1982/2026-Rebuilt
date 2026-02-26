@@ -111,7 +111,8 @@ public class Tunables {
     }
 
     public static final class KickerTunables {
-        public static final double KICKER_SPEED = 0.0;
+        public static final double KICKER_SPEED = 0.3;
+        public static final double KICKER_IDLE_SPEED = -0.1;
     }
 
     public static final class ClimberTunables {
