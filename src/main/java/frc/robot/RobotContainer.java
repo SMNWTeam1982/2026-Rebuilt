@@ -75,8 +75,8 @@ public class RobotContainer {
         /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
 
-        configureDriverBindings();
-        configureOperatorBindings();
+        //configureDriverBindings();
+        //configureOperatorBindings();
 
         // temporary, will not be called during comp code
         configureTestingBindings();
@@ -130,8 +130,8 @@ public class RobotContainer {
 
     private void configureTestingBindings() {
         // adjustments for testing
-        operatorController.back().debounce(0.1).onTrue(shooter.velocityControllerCommands.publishPIDGains());
-        operatorController.start().debounce(0.1).onTrue(shooter.velocityControllerCommands.updatePIDGains());
+        operatorController.back().debounce(0.1).onTrue(shooter.velocityControllerCommands.publishPIDGains().andThen(shooter.flywheelFFCommands.publishGains()));
+        operatorController.start().debounce(0.1).onTrue(shooter.velocityControllerCommands.updatePIDGains().andThen(shooter.flywheelFFCommands.updateGains()));
 
         // coarse adjustment
         operatorController.povUp().debounce(0.1).onTrue(shooter.nudgeRPM(250));

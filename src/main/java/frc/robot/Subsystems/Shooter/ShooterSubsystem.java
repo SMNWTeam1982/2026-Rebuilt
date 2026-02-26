@@ -1,6 +1,6 @@
 package frc.robot.Subsystems.Shooter;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.RPM;
 
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
@@ -18,6 +18,8 @@ import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
+import frc.robot.PIDTools.FFCommandGenerators.SimpleMotorFFCommandGenerator;
+
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
@@ -41,7 +43,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public final PIDCommandGenerator<AngularVelocity> velocityControllerCommands =
             new PIDCommandGenerator<AngularVelocity>(
                     (target) -> {
-                        double targetRPM = target.in(RotationsPerSecond);
+                        double targetRPM = target.in(RPM);
                         idle = true;
                         rightVelocityController.setSetpoint(targetRPM);
                         leftVelocityController.setSetpoint(targetRPM);
@@ -53,6 +55,8 @@ public class ShooterSubsystem extends SubsystemBase {
     /** input RPS, outputs volts, this feedforward can be used for both motors */
     private final SimpleMotorFeedforward flywheelFeedforward = new SimpleMotorFeedforward(
             ShooterTunables.FLYWHEEL_S, ShooterTunables.FLYWHEEL_V, ShooterTunables.FLYWHEEL_A);
+
+    public final SimpleMotorFFCommandGenerator flywheelFFCommands = new SimpleMotorFFCommandGenerator(this, flywheelFeedforward);
 
     public final Trigger inShootMode = new Trigger(this::inShootMode);
 
@@ -136,7 +140,7 @@ public class ShooterSubsystem extends SubsystemBase {
     /** sets the RPM target to the idle rpm */
     public Command setIdle() {
         return velocityControllerCommands.setTarget(
-                AngularVelocity.ofBaseUnits(ShooterTunables.FLYWHEEL_IDLE_RPM, RotationsPerSecond));
+                RPM.of(ShooterTunables.FLYWHEEL_IDLE_RPM));
     }
 
     /** a command that sets the rpm supplier to the one provided */
@@ -148,10 +152,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** changes the held RPM by the amount */
     public Command nudgeRPM(double rpmNudge) {
-        return defer(() -> velocityControllerCommands.setTarget(AngularVelocity.ofBaseUnits(
+        return defer(() -> velocityControllerCommands.setTarget(RPM.of(
                 MathUtil.clamp(
-                        (rpmNudge + rightVelocityController.getSetpoint()), 0, ShooterTunables.SHOOTER_RPM_CEILING),
-                RotationsPerSecond)));
+                        (rpmNudge + rightVelocityController.getSetpoint()), 0, ShooterTunables.SHOOTER_RPM_CEILING))));
     }
 
     /** a command that just sets the motor voltage and doesn't do anything fancy with pids */
