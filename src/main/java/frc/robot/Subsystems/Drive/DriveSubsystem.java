@@ -16,10 +16,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Measured.PathplannerMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
+import frc.robot.Constants.Tunables.FieldTunables;
 import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
+import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
@@ -109,8 +112,22 @@ public class DriveSubsystem extends SubsystemBase {
                 },
                 this // reference to this subsytem to set requirements
                 );
+
         SmartDashboard.putData("Drive/Teleop Field", teleopField);
         SmartDashboard.putData("Drive/Auto Field", autoField);
+
+        teleopField.getObject("Passing Targets").setPoses(
+            new Pose2d(FieldTunables.BLUE_BOTTOM_PASSING_TARGET, new Rotation2d()),
+            new Pose2d(FieldTunables.BLUE_TOP_PASSING_TARGET, new Rotation2d()),
+            new Pose2d(FieldTunables.RED_BOTTOM_PASSING_TARGET, new Rotation2d()),
+            new Pose2d(FieldTunables.RED_TOP_PASSING_TARGET, new Rotation2d())
+        );
+
+        teleopField.getObject("Hub Targets").setPoses(
+            new Pose2d(FieldMeasurements.BLUE_HUB_CENTER, new Rotation2d()),
+            new Pose2d(FieldMeasurements.RED_HUB_CENTER, new Rotation2d())
+        );
+
         initPathPlannerLogging();
     }
 
@@ -140,6 +157,14 @@ public class DriveSubsystem extends SubsystemBase {
         // Field2D logging
         teleopField.setRobotPose(getRobotPose());
         autoField.setRobotPose(getRobotPose());
+
+        teleopField.getObject("Nearest passing target").setPose(
+            new Pose2d(ShotCalculation.getNearestPassTargetPosition(getRobotPose().getTranslation()),new Rotation2d())
+        );
+
+        teleopField.getObject("Nearest hub").setPose(
+            new Pose2d(ShotCalculation.getNearestHubPosition(getRobotPose().getTranslation()),new Rotation2d())
+        );
 
         if (getCurrentCommand() == null) {
             Logger.recordOutput("Drive/drive command", "no active command");
