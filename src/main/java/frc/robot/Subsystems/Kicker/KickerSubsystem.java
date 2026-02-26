@@ -18,10 +18,12 @@ public class KickerSubsystem extends SubsystemBase {
 
     /** runs the kicker while active the stops it when it ends */
     public Command kick() {
-        return startEnd(() -> kickerMotor.set(KickerTunables.KICKER_SPEED), () -> kickerMotor.set(0));
+        return startEnd(
+                () -> kickerMotor.set(KickerTunables.KICKER_SPEED),
+                () -> kickerMotor.set(KickerTunables.KICKER_IDLE_SPEED));
     }
 
-    public Command stopKicker() {
-        return runOnce(() -> kickerMotor.set(0));
+    public Command idleKicker() {
+        return runOnce(() -> kickerMotor.set(KickerTunables.KICKER_IDLE_SPEED));
     }
 }
