@@ -85,15 +85,15 @@ public class Tunables {
     }
 
     public static final class ShooterTunables {
-        public static final double FLYWHEEL_P = 0.000;
+        public static final double FLYWHEEL_P = 0.0008;
         public static final double FLYWHEEL_I = 0.0;
-        public static final double FLYWHEEL_D = 0.000;
+        public static final double FLYWHEEL_D = 0.00007;
 
         public static final double FLYWHEEL_S = 0;
-        public static final double FLYWHEEL_V = 0.128; // 26 Feb 2026
+        public static final double FLYWHEEL_V = 0.1285; // 26 Feb 2026
         public static final double FLYWHEEL_A = 0;
 
-        public static final double FLYWHEEL_RPM_TOLERANCE = 25.0;
+        public static final double FLYWHEEL_RPM_TOLERANCE = 15.0;
 
         public static final double FLYWHEEL_IDLE_RPM = 2000.0;
 

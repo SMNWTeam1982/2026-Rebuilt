@@ -139,9 +139,9 @@ public class RobotContainer {
         operatorController.povDown().debounce(0.1).onTrue(shooter.nudgeRPM(-250));
 
         // fine adjustment
-        operatorController.povRight().debounce(0.1).onTrue(shooter.nudgeRPM(50));
+        operatorController.povRight().debounce(0.1).onTrue(shooter.nudgeRPM(1000));
 
-        operatorController.povLeft().debounce(0.1).onTrue(shooter.nudgeRPM(-50));
+        operatorController.povLeft().debounce(0.1).onTrue(shooter.nudgeRPM(-1000));
     }
 
     private ChassisSpeeds getJoystickSpeeds() {
