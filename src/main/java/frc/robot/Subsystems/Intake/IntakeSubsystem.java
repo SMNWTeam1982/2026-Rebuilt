@@ -10,9 +10,9 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Tunables;
 import frc.robot.Constants.CANBus.IntakeIDs;
 import frc.robot.Constants.Measured.IntakeMeasurements;
+import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.IntakeTunables;
 import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
@@ -38,10 +38,9 @@ public class IntakeSubsystem extends SubsystemBase {
                 Logger.recordOutput("intake/supplied setpoint (post-modulus)", setpoint);
 
                 double clampedSetpoint = MathUtil.clamp(
-                    setpoint, 
-                    IntakeMeasurements.FULLY_RETRACTED_ANGLE.getRadians(), 
-                    IntakeMeasurements.FULLY_DEPLOYED_ANGLE.getRadians()
-                );
+                        setpoint,
+                        IntakeMeasurements.FULLY_RETRACTED_ANGLE.getRadians(),
+                        IntakeMeasurements.FULLY_DEPLOYED_ANGLE.getRadians());
                 Logger.recordOutput("intake/clamped setpoint (sent to pid)", clampedSetpoint);
 
                 pivotController.setSetpoint(clampedSetpoint);
@@ -56,8 +55,9 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem() {
         pivotMotor.configure(
                 IntakeTunables.PIVOT_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        
-        intakeMotor.configure(Tunables.DEFAULT_SPARK_MAX_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        intakeMotor.configure(
+                Tunables.DEFAULT_SPARK_MAX_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         pivotController.setTolerance(IntakeTunables.PIVOT_TOLERANCE.getRadians());
         pivotController.setSetpoint(IntakeTunables.STOW_POSITION.getRadians());
@@ -72,7 +72,8 @@ public class IntakeSubsystem extends SubsystemBase {
                 "intake/Current Angle (Radians)", getIntakePosition().getRadians());
         Logger.recordOutput("intake/Intake position", getIntakePosition());
 
-        Logger.recordOutput("intake/raw encoder value", pivotEncoder.getPosition().getValueAsDouble());
+        Logger.recordOutput(
+                "intake/raw encoder value", pivotEncoder.getPosition().getValueAsDouble());
 
         HotPIDFTuner.logPIDDetails("intake", "intake pivot", pivotController);
     }

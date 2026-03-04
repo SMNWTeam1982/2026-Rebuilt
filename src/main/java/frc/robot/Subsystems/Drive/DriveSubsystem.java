@@ -116,17 +116,19 @@ public class DriveSubsystem extends SubsystemBase {
         SmartDashboard.putData("Drive/Teleop Field", teleopField);
         SmartDashboard.putData("Drive/Auto Field", autoField);
 
-        teleopField.getObject("Passing Targets").setPoses(
-            new Pose2d(FieldTunables.BLUE_BOTTOM_PASSING_TARGET, new Rotation2d()),
-            new Pose2d(FieldTunables.BLUE_TOP_PASSING_TARGET, new Rotation2d()),
-            new Pose2d(FieldTunables.RED_BOTTOM_PASSING_TARGET, new Rotation2d()),
-            new Pose2d(FieldTunables.RED_TOP_PASSING_TARGET, new Rotation2d())
-        );
+        teleopField
+                .getObject("Passing Targets")
+                .setPoses(
+                        new Pose2d(FieldTunables.BLUE_BOTTOM_PASSING_TARGET, new Rotation2d()),
+                        new Pose2d(FieldTunables.BLUE_TOP_PASSING_TARGET, new Rotation2d()),
+                        new Pose2d(FieldTunables.RED_BOTTOM_PASSING_TARGET, new Rotation2d()),
+                        new Pose2d(FieldTunables.RED_TOP_PASSING_TARGET, new Rotation2d()));
 
-        teleopField.getObject("Hub Targets").setPoses(
-            new Pose2d(FieldMeasurements.BLUE_HUB_CENTER, new Rotation2d()),
-            new Pose2d(FieldMeasurements.RED_HUB_CENTER, new Rotation2d())
-        );
+        teleopField
+                .getObject("Hub Targets")
+                .setPoses(
+                        new Pose2d(FieldMeasurements.BLUE_HUB_CENTER, new Rotation2d()),
+                        new Pose2d(FieldMeasurements.RED_HUB_CENTER, new Rotation2d()));
 
         initPathPlannerLogging();
     }
@@ -158,13 +160,17 @@ public class DriveSubsystem extends SubsystemBase {
         teleopField.setRobotPose(getRobotPose());
         autoField.setRobotPose(getRobotPose());
 
-        teleopField.getObject("Nearest passing target").setPose(
-            new Pose2d(ShotCalculation.getNearestPassTargetPosition(getRobotPose().getTranslation()),new Rotation2d())
-        );
+        teleopField
+                .getObject("Nearest passing target")
+                .setPose(new Pose2d(
+                        ShotCalculation.getNearestPassTargetPosition(
+                                getRobotPose().getTranslation()),
+                        new Rotation2d()));
 
-        teleopField.getObject("Nearest hub").setPose(
-            new Pose2d(ShotCalculation.getNearestHubPosition(getRobotPose().getTranslation()),new Rotation2d())
-        );
+        teleopField
+                .getObject("Nearest hub")
+                .setPose(new Pose2d(
+                        ShotCalculation.getNearestHubPosition(getRobotPose().getTranslation()), new Rotation2d()));
 
         if (getCurrentCommand() == null) {
             Logger.recordOutput("Drive/drive command", "no active command");
@@ -245,15 +251,12 @@ public class DriveSubsystem extends SubsystemBase {
     public Command driveAndPointAtTarget(Supplier<ChassisSpeeds> fieldRelativeSpeeds, Supplier<Translation2d> target) {
         Supplier<Rotation2d> targetAngle = () -> {
             Translation2d currentTarget = target.get();
-            teleopField.getObject("Pointing Target").setPose(
-                currentTarget.getX(),
-                currentTarget.getY(),
-                new Rotation2d()
-            );
+            teleopField
+                    .getObject("Pointing Target")
+                    .setPose(currentTarget.getX(), currentTarget.getY(), new Rotation2d());
             return currentTarget.minus(getRobotPose().getTranslation()).getAngle();
         };
-        return driveTopDown(
-                fieldRelativeSpeeds, targetAngle);
+        return driveTopDown(fieldRelativeSpeeds, targetAngle);
     }
 
     /** drives the robot in a circle around the orbitCenter with a radius of the orbitDistance */

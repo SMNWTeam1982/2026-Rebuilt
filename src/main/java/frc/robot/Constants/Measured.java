@@ -8,7 +8,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -103,7 +102,7 @@ public class Measured {
         }
     }
 
-    public static final class IntakeMeasurements{
+    public static final class IntakeMeasurements {
         public static final Rotation2d FULLY_RETRACTED_ANGLE = new Rotation2d();
         public static final Rotation2d FULLY_DEPLOYED_ANGLE = new Rotation2d();
     }

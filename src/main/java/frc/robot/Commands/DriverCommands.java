@@ -27,8 +27,7 @@ public class DriverCommands {
         DoubleSupplier calculatedRPM =
                 () -> ShotCalculation.calculateRPM(drive.getRobotPose().getTranslation(), calculatedTarget.get());
         return drive.runOnce(
-                        () -> drive.setDefaultCommand(
-                            drive.driveAndPointAtTarget(fieldRelativeSpeeds, calculatedTarget)
+                        () -> drive.setDefaultCommand(drive.driveAndPointAtTarget(fieldRelativeSpeeds, calculatedTarget)
                                 .withName("target aim")))
                 .andThen(shooter.setRPMSupplier(calculatedRPM))
                 .withName("set target aim mode");

@@ -1,20 +1,21 @@
 package frc.robot.Subsystems.Climber;
 
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.Tunables;
 import frc.robot.Constants.CANBus.ClimberIDs;
+import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.ClimberTunables;
 
 public class ClimberSubsystem extends SubsystemBase {
     private final SparkMax climberMotor = new SparkMax(ClimberIDs.CLIMBER, MotorType.kBrushless);
 
     public ClimberSubsystem() {
-        climberMotor.configure(Tunables.DEFAULT_SPARK_MAX_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        climberMotor.configure(
+                Tunables.DEFAULT_SPARK_MAX_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     /** moves the climber away from the robot and ready to be used to hold on to the ladder */
