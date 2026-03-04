@@ -85,12 +85,12 @@ public class Tunables {
     }
 
     public static final class ShooterTunables {
-        public static final double FLYWHEEL_P = 0.0008;
+        public static final double FLYWHEEL_P = 0.001; // 0.0008;
         public static final double FLYWHEEL_I = 0.0;
-        public static final double FLYWHEEL_D = 0.00007;
+        public static final double FLYWHEEL_D = 0.00005; // 0.00007;
 
         public static final double FLYWHEEL_S = 0;
-        public static final double FLYWHEEL_V = 0.1285; // 26 Feb 2026
+        public static final double FLYWHEEL_V = 0.128; // 26 Feb 2026
         public static final double FLYWHEEL_A = 0;
 
         public static final double FLYWHEEL_RPM_TOLERANCE = 15.0;
@@ -110,9 +110,9 @@ public class Tunables {
         // the rev website recommends a limit of 40A-60A for NEO 1.1
         // the total flywheel current should not exceed 80A (40A * 2 motors)
         public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(40)
+                .smartCurrentLimit(30)
                 .idleMode(SparkBaseConfig.IdleMode.kCoast)
-                .secondaryCurrentLimit(60);
+                .secondaryCurrentLimit(40);
     }
 
     public static final class IntakeTunables {
