@@ -1,9 +1,8 @@
 package frc.robot.Constants;
 
 import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,32 +15,46 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.Measured.FieldMeasurements;
 
+// the rev website recommends a limit of 40A-60A for NEO 1.1
 public class Tunables {
-    private static final SparkBaseConfig DEFAULT_NEO_CONFIG = new SparkMaxConfig().smartCurrentLimit(40).secondaryCurrentLimit(60).idleMode(IdleMode.kBrake);
+
+    /** a spark max config for motors that aren't doing a lot of work, set to brake on idle */
+    public static final SparkBaseConfig DEFAULT_SPARK_MAX_CONFIG =
+            new SparkMaxConfig().smartCurrentLimit(20).secondaryCurrentLimit(30).idleMode(IdleMode.kBrake);
 
     /** speeds are in meters per second */
     public static final class DriveBaseTunables {
         /** the speed we limit the drive to, this MUST be below the physical max speed */
         public static final double ARTIFICIAL_MAX_SPEED = 3.0;
 
+        /**
+         * configurable based on driver preference and game need
+         * <p> this will be capped by the artificial max speed, so it can be set to any value & used to tune sensitivity
+         * <p> meters/sec */
         public static final double DRIVE_SPEED = 1.0; // 1 m/s
+        /** this can end up being capped by the artificial max speed, but the cap depends on robot size & module positions
+         * <p> radians/sec
+         */
         public static final double TURN_SPEED = 3.0; // 3 rad/s
+        /** the amount the joystick needs to deflect before it will register an input */
         public static final double INPUT_DEADZONE = 0.1;
 
         /** a speed for the commands that fine tune the robot position robot-relative */
         public static final double NUDGE_SPEED = 0.25;
 
         public static final double MAX_AUTO_SPEED = 0.5;
-        public static final double AUTO_TRANSLATION_TOLERANCE = 0.02; // 2cm
-        public static final Rotation2d AUTO_ROTATION_TOLERANCE = Rotation2d.fromDegrees(1);
 
         public static final double HEADING_P = 3.5;
         public static final double HEADING_I = 0.0;
         public static final double HEADING_D = 0.0;
 
+        public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(1);
+
         public static final double TRANSLATION_P = 3.0;
         public static final double TRANSLATION_I = 0.0;
         public static final double TRANSLATION_D = 0.0;
+
+        public static final double TRANSLATION_TOLERANCE = 0.02; // 2cm
     }
 
     public static final class SwerveModuleTunables {
@@ -63,8 +76,6 @@ public class Tunables {
         /** the distance from the hub that we have to be in order to score */
         public static final double HUB_SCORING_DISTANCE = 2.5;
 
-        public static final Translation2d BLUE_BOTTOM_PASSING_TARGET = new Translation2d(3, 2);
-
         private static Translation2d flipX(Translation2d position) {
             // subtract the position from the other side of the field to get the flipped position
             double new_x = FieldMeasurements.FIELD_CENTER.getX() * 2 - position.getX();
@@ -76,6 +87,8 @@ public class Tunables {
             double new_y = FieldMeasurements.FIELD_CENTER.getY() * 2 - position.getY();
             return new Translation2d(position.getX(), new_y);
         }
+
+        public static final Translation2d BLUE_BOTTOM_PASSING_TARGET = new Translation2d(3, 2);
 
         public static final Translation2d RED_BOTTOM_PASSING_TARGET = flipX(BLUE_BOTTOM_PASSING_TARGET);
 
@@ -107,8 +120,8 @@ public class Tunables {
         public static final int SHOT_PREDICTION_ITERATIONS = 5;
 
         // the flywheels should coast when disables so the motors don't have to absorb all of the momentum
-        // the rev website recommends a limit of 40A-60A for NEO 1.1
-        // the total flywheel current should not exceed 80A (40A * 2 motors)
+        // the total flywheel current should not exceed 40A (20A * 2 motors)
+        // being somewhat conservative with the flywheel current limits
         public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(30)
                 .idleMode(SparkBaseConfig.IdleMode.kCoast)
@@ -134,8 +147,10 @@ public class Tunables {
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.0;
 
-        public static final SparkBaseConfig PIVOT_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(30).idleMode(SparkBaseConfig.IdleMode.kBrake);
+        public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
+                .smartCurrentLimit(20)
+                .secondaryCurrentLimit(40)
+                .idleMode(SparkBaseConfig.IdleMode.kBrake);
     }
 
     public static final class KickerTunables {

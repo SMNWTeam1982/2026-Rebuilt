@@ -11,7 +11,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.IntakeIDs;
+import frc.robot.Constants.Measured.IntakeMeasurements;
+import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.IntakeTunables;
+import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
 import org.littletonrobotics.junction.Logger;
 
@@ -31,7 +34,16 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public final PIDCommandGenerator<Rotation2d> pivotControllerCommands = new PIDCommandGenerator<Rotation2d>(
             (target) -> {
-                pivotController.setSetpoint(target.getRadians());
+                double setpoint = MathUtil.angleModulus(target.getRadians());
+                Logger.recordOutput("intake/supplied setpoint (post-modulus)", setpoint);
+
+                double clampedSetpoint = MathUtil.clamp(
+                        setpoint,
+                        IntakeMeasurements.FULLY_RETRACTED_ANGLE.getRadians(),
+                        IntakeMeasurements.FULLY_DEPLOYED_ANGLE.getRadians());
+                Logger.recordOutput("intake/clamped setpoint (sent to pid)", clampedSetpoint);
+
+                pivotController.setSetpoint(clampedSetpoint);
             },
             this,
             pivotController);
@@ -44,16 +56,13 @@ public class IntakeSubsystem extends SubsystemBase {
         pivotMotor.configure(
                 IntakeTunables.PIVOT_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
+        intakeMotor.configure(
+                Tunables.DEFAULT_SPARK_MAX_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
         pivotController.setTolerance(IntakeTunables.PIVOT_TOLERANCE.getRadians());
         pivotController.setSetpoint(IntakeTunables.STOW_POSITION.getRadians());
 
         setDefaultCommand(runPID());
-    }
-
-    /** sets the pid setpoint to the desired angle */
-    public Command setTargetAngle(
-            Rotation2d targetAngle) { // Finds the target angle for the wrist based on button input
-        return runOnce(() -> pivotController.setSetpoint(targetAngle.getRadians()));
     }
 
     @Override
@@ -62,6 +71,11 @@ public class IntakeSubsystem extends SubsystemBase {
         Logger.recordOutput(
                 "intake/Current Angle (Radians)", getIntakePosition().getRadians());
         Logger.recordOutput("intake/Intake position", getIntakePosition());
+
+        Logger.recordOutput(
+                "intake/raw encoder value", pivotEncoder.getPosition().getValueAsDouble());
+
+        HotPIDFTuner.logPIDDetails("intake", "intake pivot", pivotController);
     }
 
     /** runs the feedback and feedforward control and sets the motor */
@@ -84,22 +98,14 @@ public class IntakeSubsystem extends SubsystemBase {
                     pivotController.reset();
                 });
     }
-
-    /** sets the pivot pid to the constants */
-    public Command setPIDValues(double p, double i, double d) {
-        return runOnce(() -> {
-            pivotController.setPID(p, i, d);
-        });
-    }
-
     /** sets the intake to start intaking and the intake target to the deploy position */
     public Command deploy() {
-        return startIntaking().andThen(setTargetAngle(IntakeTunables.DEPLOY_POSITION));
+        return startIntaking().andThen(pivotControllerCommands.setTarget(IntakeTunables.DEPLOY_POSITION));
     }
 
     /** sets the intake to stop intaking and the intake target to the stow position */
     public Command retract() {
-        return stopIntaking().andThen(setTargetAngle(IntakeTunables.STOW_POSITION));
+        return stopIntaking().andThen(pivotControllerCommands.setTarget(IntakeTunables.STOW_POSITION));
     }
 
     /** sets the intake motor to the intake speed */

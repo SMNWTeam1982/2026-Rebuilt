@@ -25,7 +25,7 @@ public class Robot extends LoggedRobot {
             Logger.addDataReceiver(new NT4Publisher());
         }
         Logger.start();
-        
+
         m_robotContainer = new RobotContainer();
     }
 
