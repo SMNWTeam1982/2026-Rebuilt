@@ -84,10 +84,10 @@ public class DriveSubsystem extends SubsystemBase {
                 driveBase.backLeft.turnPIDController,
                 driveBase.backRight.turnPIDController);
 
-        headingController.setTolerance(DriveBaseTunables.AUTO_ROTATION_TOLERANCE.getRadians());
+        headingController.setTolerance(DriveBaseTunables.HEADING_TOLERANCE.getRadians());
         headingController.enableContinuousInput(-Math.PI, Math.PI);
-        xController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
-        yController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
+        xController.setTolerance(DriveBaseTunables.TRANSLATION_TOLERANCE);
+        yController.setTolerance(DriveBaseTunables.TRANSLATION_TOLERANCE);
 
         /** configure last auto build  */
         AutoBuilder.configure(
