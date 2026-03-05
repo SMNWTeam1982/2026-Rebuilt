@@ -16,10 +16,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Measured.PathplannerMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
+import frc.robot.Constants.Tunables.FieldTunables;
 import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
+import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.DoubleSupplier;
@@ -81,10 +84,10 @@ public class DriveSubsystem extends SubsystemBase {
                 driveBase.backLeft.turnPIDController,
                 driveBase.backRight.turnPIDController);
 
-        headingController.setTolerance(DriveBaseTunables.AUTO_ROTATION_TOLERANCE.getRadians());
+        headingController.setTolerance(DriveBaseTunables.HEADING_TOLERANCE.getRadians());
         headingController.enableContinuousInput(-Math.PI, Math.PI);
-        xController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
-        yController.setTolerance(DriveBaseTunables.AUTO_TRANSLATION_TOLERANCE);
+        xController.setTolerance(DriveBaseTunables.TRANSLATION_TOLERANCE);
+        yController.setTolerance(DriveBaseTunables.TRANSLATION_TOLERANCE);
 
         /** configure last auto build  */
         AutoBuilder.configure(
@@ -109,8 +112,24 @@ public class DriveSubsystem extends SubsystemBase {
                 },
                 this // reference to this subsytem to set requirements
                 );
+
         SmartDashboard.putData("Drive/Teleop Field", teleopField);
         SmartDashboard.putData("Drive/Auto Field", autoField);
+
+        teleopField
+                .getObject("Passing Targets")
+                .setPoses(
+                        new Pose2d(FieldTunables.BLUE_BOTTOM_PASSING_TARGET, new Rotation2d()),
+                        new Pose2d(FieldTunables.BLUE_TOP_PASSING_TARGET, new Rotation2d()),
+                        new Pose2d(FieldTunables.RED_BOTTOM_PASSING_TARGET, new Rotation2d()),
+                        new Pose2d(FieldTunables.RED_TOP_PASSING_TARGET, new Rotation2d()));
+
+        teleopField
+                .getObject("Hub Targets")
+                .setPoses(
+                        new Pose2d(FieldMeasurements.BLUE_HUB_CENTER, new Rotation2d()),
+                        new Pose2d(FieldMeasurements.RED_HUB_CENTER, new Rotation2d()));
+
         initPathPlannerLogging();
     }
 
@@ -120,7 +139,7 @@ public class DriveSubsystem extends SubsystemBase {
     private void initPathPlannerLogging() {
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
             // i'd keep this just in case.
-            // autoField.getObject("Target").setPose(pose);
+            autoField.getObject("Pathplanner Target").setPose(pose);
             Logger.recordOutput("Drive/Auto/TargetX", pose.getX());
             Logger.recordOutput("Drive/Auto/TargetY", pose.getY());
             Logger.recordOutput("Drive/Auto/TargetTheta", pose.getRotation().getRadians());
@@ -133,12 +152,25 @@ public class DriveSubsystem extends SubsystemBase {
         driveBase.updatePoseEstimatorOdometry();
         driveBase.updatePoseEstimatorVision();
         driveBase.logModuleData();
+
         Logger.recordOutput("Drive/Field Reletive Velocity", getFieldRelativeVelocity());
         Logger.recordOutput("Drive/Robot Pose", getRobotPose());
 
         // Field2D logging
         teleopField.setRobotPose(getRobotPose());
         autoField.setRobotPose(getRobotPose());
+
+        teleopField
+                .getObject("Nearest passing target")
+                .setPose(new Pose2d(
+                        ShotCalculation.getNearestPassTargetPosition(
+                                getRobotPose().getTranslation()),
+                        new Rotation2d()));
+
+        teleopField
+                .getObject("Nearest hub")
+                .setPose(new Pose2d(
+                        ShotCalculation.getNearestHubPosition(getRobotPose().getTranslation()), new Rotation2d()));
 
         if (getCurrentCommand() == null) {
             Logger.recordOutput("Drive/drive command", "no active command");
@@ -171,23 +203,6 @@ public class DriveSubsystem extends SubsystemBase {
                     joystickSpeeds.vxMetersPerSecond,
                     joystickSpeeds.omegaRadiansPerSecond);
         }
-    }
-
-    /*
-     * This sets the PID setpoint for the X, Y. It will update the setPoint so the robot moves to the target translation.
-     */
-    public Command DriveSetPoint(Translation2d targetTranslation) {
-        return runOnce(() -> {
-            xController.setSetpoint(targetTranslation.getX());
-            yController.setSetpoint(targetTranslation.getY());
-        });
-    }
-    // ** This sets the PID setpoint for the heading. It will update the setpoint so the robot points in the target
-    // direction.*/
-    public Command DriveHeadSetPoint(Rotation2d targetRotation) {
-        return runOnce(() -> {
-            headingController.setSetpoint(targetRotation.getRadians());
-        });
     }
 
     /** drives the robot with chassis speeds relative to the robot coordinate system */
@@ -234,8 +249,14 @@ public class DriveSubsystem extends SubsystemBase {
      * @param fieldRelativeSpeeds the theta component is ignored
      */
     public Command driveAndPointAtTarget(Supplier<ChassisSpeeds> fieldRelativeSpeeds, Supplier<Translation2d> target) {
-        return driveTopDown(
-                fieldRelativeSpeeds, target.get().minus(getRobotPose().getTranslation())::getAngle);
+        Supplier<Rotation2d> targetAngle = () -> {
+            Translation2d currentTarget = target.get();
+            teleopField
+                    .getObject("Pointing Target")
+                    .setPose(currentTarget.getX(), currentTarget.getY(), new Rotation2d());
+            return currentTarget.minus(getRobotPose().getTranslation()).getAngle();
+        };
+        return driveTopDown(fieldRelativeSpeeds, targetAngle);
     }
 
     /** drives the robot in a circle around the orbitCenter with a radius of the orbitDistance */
