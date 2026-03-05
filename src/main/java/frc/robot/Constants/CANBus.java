@@ -44,5 +44,6 @@ public class CANBus {
 
     public static final class VisionConstants {
         public static final String limeLightCameraName = "limelight-front";
-    }
+       }
+
 }
