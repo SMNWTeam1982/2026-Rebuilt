@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.DriverCommands;
 import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
+import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Climber.ClimberSubsystem;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
@@ -27,17 +28,35 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 
 public class RobotContainer {
+    /** allows the ablility to toggle the velocity Compensation
+     * in the case theat the velocity Compensation is not working corectly
+     * you can toggle it on or off(true or false)*/
+    private boolean velocityCompensationEnabled = true;
+
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     private final VisionSubsystem vision = new VisionSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult);
 
-    private final Supplier<Translation2d> calculatedHubTarget =
-            () -> ShotCalculation.getHubTarget(drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
+    private final Supplier<Translation2d> calculatedHubTarget = () -> {
+        if (velocityCompensationEnabled) {
+            return ShotCalculation.getHubTarget(
+                    drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
+        } else {
+            return ShotCalculation.getNearestHubPosition(drive.getRobotPose().getTranslation());
+        }
+    };
 
-    private final Supplier<Translation2d> calculatedPassTarget = () ->
-            ShotCalculation.getPassTarget(drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
+    private final Supplier<Translation2d> calculatedPassTarget = () -> {
+        if (velocityCompensationEnabled) {
+            return ShotCalculation.getPassTarget(
+                    drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
+        } else {
+            return ShotCalculation.getNearestPassTargetPosition(
+                    drive.getRobotPose().getTranslation());
+        }
+    };
 
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final KickerSubsystem kicker = new KickerSubsystem();
@@ -126,6 +145,19 @@ public class RobotContainer {
 
         // automatically start/stop the kicker when the robot is ready/not ready
         // robotReadyToShoot.whileTrue(kicker.kick());
+
+        operatorController
+                .y()
+                .debounce(0.05)
+                .onTrue(shooter.velocityControllerCommands
+                        .setTarget(ShooterTunables.SHOOTER_OVERIDE_SPEED)
+                        .andThen(Commands.runOnce(() -> {
+                            velocityCompensationEnabled = false;
+                        })));
+
+        operatorController.x().debounce(0.05).onTrue(Commands.runOnce(() -> {
+            velocityCompensationEnabled = true;
+        }));
     }
 
     private void configureTestingBindings() {

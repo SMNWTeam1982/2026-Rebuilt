@@ -67,7 +67,7 @@ public final class ShotCalculation {
                 ShooterTunables.SHOT_PREDICTION_ITERATIONS);
     }
 
-    /** returns the hub target that robot should shoot at to compensate for its velocity */
+    /** returns the pass target that robot should shoot at to compensate for its velocity */
     public static Translation2d getPassTarget(Translation2d robotPosition, ChassisSpeeds robotVelocity) {
         return calculateTargetPositionMultiStep(
                 robotPosition,
