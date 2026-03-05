@@ -77,19 +77,19 @@ public final class HotPIDFTuner {
 
     /** logs the position of the pid, the target of the pid, the pid errors, and the last output of the controller  */
     public static void logPIDDetails(String subsystemName, String controllerName, PIDController controller) {
-        String path = subsystemName + "/" + controllerName;
+        String path = subsystemName + "/" + controllerName + "/";
 
-        Logger.recordOutput(path + "/position", controller.getSetpoint() - controller.getError());
-        Logger.recordOutput(path + "/target", controller.getSetpoint());
+        Logger.recordOutput(path + "position", controller.getSetpoint() - controller.getError());
+        Logger.recordOutput(path + "target", controller.getSetpoint());
 
-        Logger.recordOutput(path + "/p error", controller.getError());
-        Logger.recordOutput(path + "/i error", controller.getAccumulatedError());
-        Logger.recordOutput(path + "/d error", controller.getErrorDerivative());
+        Logger.recordOutput(path + "p error", controller.getError());
+        Logger.recordOutput(path + "i error", controller.getAccumulatedError());
+        Logger.recordOutput(path + "d error", controller.getErrorDerivative());
 
         double lastOutput = controller.getP() * controller.getError()
                 + controller.getI() * controller.getAccumulatedError()
                 + controller.getD() * controller.getErrorDerivative();
 
-        Logger.recordOutput(path + "/last output", lastOutput);
+        Logger.recordOutput(path + "last output", lastOutput);
     }
 }
