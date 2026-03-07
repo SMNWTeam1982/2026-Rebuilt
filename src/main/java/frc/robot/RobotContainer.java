@@ -4,10 +4,6 @@
 
 package frc.robot;
 
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.AutoLogOutput;
-
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -29,11 +25,13 @@ import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 public class RobotContainer {
     /** allows the ability to toggle the velocity Compensation
-    * in the case that the velocity Compensation is not working correctly
-    * you can toggle it on or off(true or false)*/
+     * in the case that the velocity Compensation is not working correctly
+     * you can toggle it on or off(true or false)*/
     private boolean velocityCompensationEnabled = true;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
@@ -148,7 +146,7 @@ public class RobotContainer {
 
         // automatically start/stop the kicker when the robot is ready/not ready
         // robotReadyToShoot.whileTrue(kicker.kick());
-        
+
         /**
          * Disables the velocity compensation and sets the motor speed to the shooter_overide_speed
          */
@@ -161,7 +159,7 @@ public class RobotContainer {
                             velocityCompensationEnabled = false;
                         })));
         /**
-         * Reenables the velocity compensation 
+         * Reenables the velocity compensation
          */
         operatorController.x().debounce(0.05).onTrue(Commands.runOnce(() -> {
             velocityCompensationEnabled = true;
