@@ -12,11 +12,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.DriverCommands;
 import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
+import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Kicker.KickerSubsystem;
@@ -26,7 +28,7 @@ import frc.robot.Subsystems.Vision.VisionSubsystem;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-public class RobotContainer {
+public class RobotContainer extends SubsystemBase{
     /** allows the ability to toggle the velocity Compensation
      * in the case that the velocity Compensation is not working correctly
      * you can toggle it on or off(true or false)*/
@@ -201,6 +203,8 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return DriverCommands.setAimAtTarget(
+                        drive, shooter, onBlueAlliance, null, calculatedHubTarget)
+                .alongWith(Commands.waitUntil(robotReadyToShoot).andThen(kicker.startKicker()));
     }
 }
