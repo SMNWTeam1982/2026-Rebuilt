@@ -43,7 +43,7 @@ public class RobotContainer {
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final KickerSubsystem kicker = new KickerSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
-    private final ClimberSubsystem climber = new ClimberSubsystem();
+    //private final ClimberSubsystem climber = new ClimberSubsystem();
 
     /** make sure that we are in the corret area for at least 1 second */
     private final Trigger inAllianceZone = new Trigger(() -> {
@@ -86,8 +86,8 @@ public class RobotContainer {
     private void configureDriverBindings() {
 
         // use right/left bumbers to extend/retract the climber
-        driverController.rightBumper().debounce(0.1).whileTrue(climber.moveClimberOut());
-        driverController.leftBumper().debounce(0.1).whileTrue(climber.moveClimberIn());
+        //driverController.rightBumper().debounce(0.1).whileTrue(climber.moveClimberOut());
+        //driverController.leftBumper().debounce(0.1).whileTrue(climber.moveClimberIn());
 
         // set the drive controls to hub aim mode when pressed, and set the shooter rpm calculation
         driverController
