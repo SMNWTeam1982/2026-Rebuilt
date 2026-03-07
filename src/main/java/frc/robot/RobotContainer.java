@@ -202,7 +202,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return DriverCommands.setAimAtTarget(drive, shooter, onBlueAlliance, null, calculatedHubTarget)
-                .alongWith(Commands.waitUntil(robotReadyToShoot).andThen(kicker.startKicker()));
+        return Commands.print("No autonomous command configured");
     }
 }
