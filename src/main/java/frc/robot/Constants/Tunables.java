@@ -1,5 +1,7 @@
 package frc.robot.Constants;
 
+import static edu.wpi.first.units.Units.RPM;
+
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -13,6 +15,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.Constants.Measured.FieldMeasurements;
 
 // the rev website recommends a limit of 40A-60A for NEO 1.1
@@ -111,6 +114,8 @@ public class Tunables {
         public static final double FLYWHEEL_IDLE_RPM = 2000.0;
 
         public static final double SHOOTER_RPM_CEILING = 5500;
+
+        public static final AngularVelocity SHOOTER_OVERIDE_SPEED = AngularVelocity.ofBaseUnits(4000, RPM);
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
