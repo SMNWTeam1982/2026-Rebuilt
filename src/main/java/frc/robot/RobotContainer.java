@@ -27,7 +27,7 @@ import frc.robot.Subsystems.Vision.VisionSubsystem;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-public class RobotContainer{
+public class RobotContainer {
     /** allows the ability to toggle the velocity Compensation
      * in the case that the velocity Compensation is not working correctly
      * you can toggle it on or off(true or false)*/
@@ -202,8 +202,7 @@ public class RobotContainer{
     }
 
     public Command getAutonomousCommand() {
-        return DriverCommands.setAimAtTarget(
-                        drive, shooter, onBlueAlliance, null, calculatedHubTarget)
+        return DriverCommands.setAimAtTarget(drive, shooter, onBlueAlliance, null, calculatedHubTarget)
                 .alongWith(Commands.waitUntil(robotReadyToShoot).andThen(kicker.startKicker()));
     }
 }
