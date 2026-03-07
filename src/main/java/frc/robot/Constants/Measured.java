@@ -92,7 +92,8 @@ public class Measured {
 
     public static final class ShooterMeasurements {
 
-        public static final double MAX_SCHOOL_FLYWHEEL_RPM = 4750; // the balls will hit the cieling in the cafeteria above this speed
+        public static final double MAX_SCHOOL_FLYWHEEL_RPM =
+                4750; // the balls will hit the cieling in the cafeteria above this speed
         public static final double HIGEST_RECORDED_FLYWHEEL_RPM_DROP = 400; // we recorded this at 4750 on march 7
         /**
          * the equation will be derived from a best fit of a data table that will be measured, expected
