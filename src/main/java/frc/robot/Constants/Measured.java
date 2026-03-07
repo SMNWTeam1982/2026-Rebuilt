@@ -59,8 +59,11 @@ public class Measured {
     }
 
     public static final class SwerveModuleMeasurements {
-        /** a number that is measured every year */
-        public static final double POSITION_TO_METERS_MULTIPLIER = -0.31927 / 6.75;
+        /** a number that is measured every year,
+         * <p> swerve wheel circumference divided by the drive gear ratio
+         */
+        public static final double POSITION_TO_METERS_MULTIPLIER =
+                Units.inchesToMeters(12.5) / 6.75; // measured on march 7 2026, old 2025 number: -0.31927 / 6.75;
 
         /** position to meters / 60seconds */
         public static final double RPM_TO_MPS_MULTIPLIER = POSITION_TO_METERS_MULTIPLIER / 60;
@@ -86,12 +89,15 @@ public class Measured {
                 Units.inchesToMeters(158.32) // april tag 4 Y
                 );
 
-        public static final double MAX_HUB_SCORING_DISTANCE = 4.5;
-        public static final double MIN_HUB_SCORING_DISTANCE = 1.5;
+        public static final double MAX_HUB_SCORING_DISTANCE = 6; // approx March 7
+        public static final double MIN_HUB_SCORING_DISTANCE = 2; // approx March 7
     }
 
     public static final class ShooterMeasurements {
 
+        public static final double MAX_SCHOOL_FLYWHEEL_RPM =
+                4750; // the balls will hit the cieling in the cafeteria above this speed
+        public static final double HIGEST_RECORDED_FLYWHEEL_RPM_DROP = 400; // we recorded this at 4750 on march 7
         /**
          * the equation will be derived from a best fit of a data table that will be measured, expected
          * to be quadratic or cubic
