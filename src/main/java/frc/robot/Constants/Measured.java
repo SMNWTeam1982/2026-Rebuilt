@@ -76,8 +76,15 @@ public class Measured {
         public static final Translation2d FIELD_CENTER =
                 new Translation2d(Units.inchesToMeters(325.06), Units.inchesToMeters(158.32));
 
-        public static final Translation2d BLUE_HUB_CENTER = new Translation2d();
-        public static final Translation2d RED_HUB_CENTER = new Translation2d();
+        public static final Translation2d BLUE_HUB_CENTER = new Translation2d(
+                Units.inchesToMeters(181.56), // april tag 18 X
+                Units.inchesToMeters(158.32) // april tag 26 Y
+                );
+
+        public static final Translation2d RED_HUB_CENTER = new Translation2d(
+                Units.inchesToMeters(468.56), // april tag 5 X
+                Units.inchesToMeters(158.32) // april tag 4 Y
+                );
 
         public static final double MAX_HUB_SCORING_DISTANCE = 4.5;
         public static final double MIN_HUB_SCORING_DISTANCE = 1.5;
