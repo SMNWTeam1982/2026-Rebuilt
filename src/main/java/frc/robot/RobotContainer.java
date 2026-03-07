@@ -19,8 +19,6 @@ import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
-import frc.robot.Subsystems.Intake.IntakeSubsystem;
-import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
@@ -59,8 +57,8 @@ public class RobotContainer {
     };
 
     private final ShooterSubsystem shooter = new ShooterSubsystem();
-    private final KickerSubsystem kicker = new KickerSubsystem();
-    private final IntakeSubsystem intake = new IntakeSubsystem();
+    // private final KickerSubsystem kicker = new KickerSubsystem();
+    // private final IntakeSubsystem intake = new IntakeSubsystem();
     // private final ClimberSubsystem climber = new ClimberSubsystem();
 
     /** make sure that we are in the corret area for at least 1 second */
@@ -94,8 +92,8 @@ public class RobotContainer {
         /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
         CameraServer.startAutomaticCapture();
-        configureDriverBindings();
-        configureOperatorBindings();
+        // configureDriverBindings();
+        // configureOperatorBindings();
 
         // temporary, will not be called during comp code
         configureTestingBindings();
@@ -136,12 +134,12 @@ public class RobotContainer {
 
     private void configureOperatorBindings() {
         // deploy/retract the intake with a & b
-        operatorController.a().debounce(0.1).onTrue(intake.deploy());
-        operatorController.b().debounce(0.1).onTrue(intake.retract());
+        // operatorController.a().debounce(0.1).onTrue(intake.deploy());
+        // operatorController.b().debounce(0.1).onTrue(intake.retract());
 
         // manually start/stop the kicker
-        operatorController.rightBumper().debounce(0.1).onTrue(kicker.startKicker());
-        operatorController.leftBumper().debounce(0.1).onTrue(kicker.idleKicker());
+        // operatorController.rightBumper().debounce(0.1).onTrue(kicker.startKicker());
+        // operatorController.leftBumper().debounce(0.1).onTrue(kicker.idleKicker());
 
         // automatically start/stop the kicker when the robot is ready/not ready
         // robotReadyToShoot.whileTrue(kicker.kick());
