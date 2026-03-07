@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.DriverCommands;
@@ -28,7 +27,7 @@ import frc.robot.Subsystems.Vision.VisionSubsystem;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 
-public class RobotContainer extends SubsystemBase{
+public class RobotContainer{
     /** allows the ability to toggle the velocity Compensation
      * in the case that the velocity Compensation is not working correctly
      * you can toggle it on or off(true or false)*/
