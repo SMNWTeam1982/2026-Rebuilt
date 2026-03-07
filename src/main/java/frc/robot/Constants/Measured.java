@@ -86,12 +86,14 @@ public class Measured {
                 Units.inchesToMeters(158.32) // april tag 4 Y
                 );
 
-        public static final double MAX_HUB_SCORING_DISTANCE = 4.5;
-        public static final double MIN_HUB_SCORING_DISTANCE = 1.5;
+        public static final double MAX_HUB_SCORING_DISTANCE = 6; // approx March 7
+        public static final double MIN_HUB_SCORING_DISTANCE = 2; // approx March 7
     }
 
     public static final class ShooterMeasurements {
 
+        public static final double MAX_SCHOOL_FLYWHEEL_RPM = 4750; // the balls will hit the cieling in the cafeteria above this speed
+        public static final double HIGEST_RECORDED_FLYWHEEL_RPM_DROP = 400; // we recorded this at 4750 on march 7
         /**
          * the equation will be derived from a best fit of a data table that will be measured, expected
          * to be quadratic or cubic
