@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -95,9 +96,9 @@ public class RobotContainer {
     public RobotContainer() {
         /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
-
-        // configureDriverBindings();
-        // configureOperatorBindings();
+        CameraServer.startAutomaticCapture();
+        configureDriverBindings();
+        configureOperatorBindings();
 
         // temporary, will not be called during comp code
         configureTestingBindings();
