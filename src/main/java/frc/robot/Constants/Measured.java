@@ -59,8 +59,11 @@ public class Measured {
     }
 
     public static final class SwerveModuleMeasurements {
-        /** a number that is measured every year */
-        public static final double POSITION_TO_METERS_MULTIPLIER = -0.31927 / 6.75;
+        /** a number that is measured every year,
+         * <p> swerve wheel circumference divided by the drive gear ratio
+         */
+        public static final double POSITION_TO_METERS_MULTIPLIER =
+                Units.inchesToMeters(12.5) / 6.75; // measured on march 7 2026, old 2025 number: -0.31927 / 6.75;
 
         /** position to meters / 60seconds */
         public static final double RPM_TO_MPS_MULTIPLIER = POSITION_TO_METERS_MULTIPLIER / 60;
