@@ -67,10 +67,12 @@ public class Measured {
                 Units.inchesToMeters(12.5) / 6.75; // measured on march 7 2026, old 2025 number: -0.31927 / 6.75;
 
         /** position to meters / 60seconds */
-        public static final double DRIVE_ENCODER_RPM_TO_MPS_MULTIPLIER = DRIVE_ENCODER_POSITION_TO_METERS_MULTIPLIER / 60;
+        public static final double DRIVE_ENCODER_RPM_TO_MPS_MULTIPLIER =
+                DRIVE_ENCODER_POSITION_TO_METERS_MULTIPLIER / 60;
 
         /** max NEO 1.1 rpm * rpm->mps conversion factor, 2026 value: 4.45 mps */
-        public static final double THEORETICAL_MAX_VELOCITY = 5676 * DRIVE_ENCODER_RPM_TO_MPS_MULTIPLIER; // approx 4.45mps, exact: 4.4497037037
+        public static final double THEORETICAL_MAX_VELOCITY =
+                5676 * DRIVE_ENCODER_RPM_TO_MPS_MULTIPLIER; // approx 4.45mps, exact: 4.4497037037
 
         /** the minimum value that the drive motor has to be set to before it can move */
         public static final double DRIVE_STATIC_GAIN = 0.05;
