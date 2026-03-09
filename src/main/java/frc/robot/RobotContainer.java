@@ -200,7 +200,9 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return DriverCommands.setAimAtTarget(drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget)
-                .alongWith(Commands.waitUntil(robotReadyToShoot).andThen(kicker.startKicker()));
+        return DriverCommands.setAimAtTarget(
+                        drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget)
+                .andThen(Commands.waitUntil(robotReadyToShoot));
+        // .andThen(kicker.startKicker()); disabled while kicker is disabled for testing
     }
 }
