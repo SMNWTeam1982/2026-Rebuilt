@@ -110,8 +110,8 @@ public final class DriveBase {
      * modules
      */
     public void setModulesFromRobotRelativeSpeeds(ChassisSpeeds speeds) {
-        ChassisSpeeds.discretize(speeds, DriveBaseMeasurements.DRIVE_PERIOD);
-        SwerveModuleState[] moduleStates = driveKinematics.toSwerveModuleStates(speeds);
+        ChassisSpeeds discretizedSpeeds = ChassisSpeeds.discretize(speeds, DriveBaseMeasurements.DRIVE_PERIOD);
+        SwerveModuleState[] moduleStates = driveKinematics.toSwerveModuleStates(discretizedSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DriveBaseTunables.ARTIFICIAL_MAX_SPEED);
         setModuleStates(moduleStates);
     }

@@ -126,7 +126,7 @@ public final class SwerveModule {
      */
     public SwerveModuleState getState() {
         return new SwerveModuleState(
-                driveEncoder.getVelocity() * SwerveModuleMeasurements.RPM_TO_MPS_MULTIPLIER,
+                driveEncoder.getVelocity() * SwerveModuleMeasurements.DRIVE_ENCODER_RPM_TO_MPS_MULTIPLIER,
                 Rotation2d.fromRotations(turnEncoder.getPosition().getValueAsDouble()));
     }
 
@@ -143,7 +143,7 @@ public final class SwerveModule {
      */
     public SwerveModulePosition getPosition() {
         return new SwerveModulePosition(
-                driveEncoder.getPosition() * SwerveModuleMeasurements.POSITION_TO_METERS_MULTIPLIER,
+                driveEncoder.getPosition() * SwerveModuleMeasurements.DRIVE_ENCODER_POSITION_TO_METERS_MULTIPLIER,
                 Rotation2d.fromRotations(turnEncoder.getPosition().getValueAsDouble()));
     }
 
