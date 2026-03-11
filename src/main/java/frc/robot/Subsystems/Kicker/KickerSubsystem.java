@@ -26,10 +26,10 @@ public class KickerSubsystem extends SubsystemBase {
     /** while running, it switches the kicker's speed from high to low periodically */
     public Command kick() {
         return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED))
-            .andThen(new WaitCommand(KickerTunables.HIGH_TIME))
-            .andThen(runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED)))
-            .andThen(new WaitCommand(KickerTunables.LOW_TIME))
-            .repeatedly();
+                .andThen(new WaitCommand(KickerTunables.HIGH_TIME))
+                .andThen(runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED)))
+                .andThen(new WaitCommand(KickerTunables.LOW_TIME))
+                .repeatedly();
     }
 
     public Command idleKicker() {
