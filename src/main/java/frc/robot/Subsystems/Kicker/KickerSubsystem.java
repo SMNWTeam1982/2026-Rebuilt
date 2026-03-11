@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.CANBus.KickerIDs;
 import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.KickerTunables;
@@ -19,17 +20,19 @@ public class KickerSubsystem extends SubsystemBase {
     }
 
     public Command startKicker() {
-        return runOnce(() -> kickerMotor.set(KickerTunables.KICKER_SPEED));
+        return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED));
     }
 
-    /** runs the kicker while active the stops it when it ends */
+    /** while running, it switches the kicker's speed from high to low periodically */
     public Command kick() {
-        return startEnd(
-                () -> kickerMotor.set(KickerTunables.KICKER_SPEED),
-                () -> kickerMotor.set(KickerTunables.KICKER_IDLE_SPEED));
+        return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED))
+                .andThen(new WaitCommand(KickerTunables.HIGH_TIME))
+                .andThen(runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED)))
+                .andThen(new WaitCommand(KickerTunables.LOW_TIME))
+                .repeatedly();
     }
 
     public Command idleKicker() {
-        return runOnce(() -> kickerMotor.set(KickerTunables.KICKER_IDLE_SPEED));
+        return runOnce(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
     }
 }

@@ -1,6 +1,7 @@
 package frc.robot.Constants;
 
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Seconds;
 
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -12,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants.Measured.FieldMeasurements;
 
 // the rev website recommends a limit of 40A-60A for NEO 1.1
@@ -155,8 +157,16 @@ public class Tunables {
     }
 
     public static final class KickerTunables {
-        public static final double KICKER_SPEED = 0.3;
-        public static final double KICKER_IDLE_SPEED = -0.1;
+        /** the speed of the kicker when on high */
+        public static final double HIGH_SPEED = 0.5;
+        /** the speed of the kicker when on low */
+        public static final double LOW_SPEED = -0.2;
+        /** how long the kicker runs at the high speed before switching to the low speed */
+        public static final Time HIGH_TIME = Seconds.of(2.0);
+        /** how long the kicker runs at the low speed before switching to the high speed */
+        public static final Time LOW_TIME = Seconds.of(0.2);
+        /** the speed the kicker runs at when not active */
+        public static final double IDLE_SPEED = -0.1;
     }
 
     public static final class ClimberTunables {
