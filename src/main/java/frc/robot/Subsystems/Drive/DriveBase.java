@@ -32,13 +32,13 @@ import java.util.function.Supplier;
  */
 public final class DriveBase {
     public final SwerveModule frontLeft =
-            new SwerveModule(DriveIDs.FRONT_LEFT_DRIVE, DriveIDs.FRONT_LEFT_TURN, DriveIDs.FRONT_LEFT_ENCODER);
+            new SwerveModule(DriveIDs.FRONT_LEFT_DRIVE, DriveIDs.FRONT_LEFT_TURN, DriveIDs.FRONT_LEFT_ENCODER, "FL");
     public final SwerveModule frontRight =
-            new SwerveModule(DriveIDs.FRONT_RIGHT_DRIVE, DriveIDs.FRONT_RIGHT_TURN, DriveIDs.FRONT_RIGHT_ENCODER);
+            new SwerveModule(DriveIDs.FRONT_RIGHT_DRIVE, DriveIDs.FRONT_RIGHT_TURN, DriveIDs.FRONT_RIGHT_ENCODER, "FR");
     public final SwerveModule backLeft =
-            new SwerveModule(DriveIDs.BACK_LEFT_DRIVE, DriveIDs.BACK_LEFT_TURN, DriveIDs.BACK_LEFT_ENCODER);
+            new SwerveModule(DriveIDs.BACK_LEFT_DRIVE, DriveIDs.BACK_LEFT_TURN, DriveIDs.BACK_LEFT_ENCODER, "BL");
     public final SwerveModule backRight =
-            new SwerveModule(DriveIDs.BACK_RIGHT_DRIVE, DriveIDs.BACK_RIGHT_TURN, DriveIDs.BACK_RIGHT_ENCODER);
+            new SwerveModule(DriveIDs.BACK_RIGHT_DRIVE, DriveIDs.BACK_RIGHT_TURN, DriveIDs.BACK_RIGHT_ENCODER, "BR");
 
     public final Pigeon2 gyro = new Pigeon2(0);
 
@@ -145,10 +145,10 @@ public final class DriveBase {
 
     /** logs some telemetry from each module under DriveBase/(module name) */
     public void logModuleData() {
-        frontLeft.logModuleData("front left");
-        frontRight.logModuleData("front right");
-        backLeft.logModuleData("back left");
-        backRight.logModuleData("back right");
+        frontLeft.logModuleData();
+        frontRight.logModuleData();
+        backLeft.logModuleData();
+        backRight.logModuleData();
     }
 
     /** Returns the heading from getEstimatedPose() */
@@ -163,16 +163,6 @@ public final class DriveBase {
      */
     public Pose2d getEstimatedPose() {
         return swervePoseEstimator.getEstimatedPosition();
-    }
-
-    /** gets the last desired state that the module got */
-    public SwerveModuleState[] getModuleLastDesiredStates() {
-        return new SwerveModuleState[] {
-            frontLeft.getLastDesiredState(),
-            frontRight.getLastDesiredState(),
-            backLeft.getLastDesiredState(),
-            backRight.getLastDesiredState()
-        };
     }
 
     /** useful for tuning the drivetrain current limiters to prevent brownouts */

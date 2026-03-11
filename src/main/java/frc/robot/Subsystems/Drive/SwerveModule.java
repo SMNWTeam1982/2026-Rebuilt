@@ -31,10 +31,11 @@ public final class SwerveModule {
     /** see the wpilib docs on Feedforward */
     private final SimpleMotorFeedforward driveFeedforward;
 
-    private SwerveModuleState lastDesiredState;
+    private final String moduleName;
 
     /** Constructs an instance of a SwerveModule with a drive motor, turn motor, and turn encoder. */
-    public SwerveModule(int driveMotorCANID, int turnMotorCANID, int encoderCANID) {
+    public SwerveModule(int driveMotorCANID, int turnMotorCANID, int encoderCANID, String moduleName) {
+        this.moduleName = moduleName;
         driveMotor = new SparkMax(driveMotorCANID, MotorType.kBrushless);
         driveMotor.configure(
                 SwerveModuleTunables.DRIVE_MOTOR_CONFIG,
@@ -63,15 +64,14 @@ public final class SwerveModule {
      * <p>this has to be called every frame in order to update work
      */
     public void setDesiredState(SwerveModuleState desiredState) {
-
-        lastDesiredState = desiredState;
-
         Rotation2d encoderRotation =
                 Rotation2d.fromRotations(turnEncoder.getPosition().getValueAsDouble());
 
         desiredState.optimize(encoderRotation);
 
         desiredState.cosineScale(encoderRotation);
+
+        Logger.recordOutput("DriveBase/" + moduleName + "/desired speed", desiredState.speedMetersPerSecond);
 
         double driveOutput = driveFeedforward.calculate(desiredState.speedMetersPerSecond);
 
@@ -115,13 +115,6 @@ public final class SwerveModule {
     }
 
     /**
-     * @return the last input to setDesiredState()
-     */
-    public SwerveModuleState getLastDesiredState() {
-        return lastDesiredState;
-    }
-
-    /**
      * @return the angle of the wheel and the velocity of the wheel
      */
     public SwerveModuleState getState() {
@@ -147,8 +140,9 @@ public final class SwerveModule {
                 Rotation2d.fromRotations(turnEncoder.getPosition().getValueAsDouble()));
     }
 
-    public void logModuleData(String moduleName) {
+    public void logModuleData() {
         Logger.recordOutput("DriveBase/" + moduleName + "/state", getState());
+        Logger.recordOutput("DriveBase/" + moduleName + "/measured speed", getState().speedMetersPerSecond);
         Logger.recordOutput("DriveBase/" + moduleName + "/driveCurrent", getDriveMotorOutputCurrent());
     }
 }
