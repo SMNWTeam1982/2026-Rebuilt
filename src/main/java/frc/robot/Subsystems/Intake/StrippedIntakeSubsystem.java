@@ -2,21 +2,18 @@ package frc.robot.Subsystems.Intake;
 
 import static edu.wpi.first.units.Units.Seconds;
 
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
-
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
-
-import edu.wpi.first.units.TimeUnit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.IntakeIDs;
 import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.IntakeTunables;
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 /** since we are having issues with the intake pivot motor, a stripped down version without complicated PIDF control is being created as a backup */
 public class StrippedIntakeSubsystem extends SubsystemBase {
@@ -30,9 +27,14 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
     private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
 
     @AutoLogOutput(key = "Intake/is stowed")
-    public final Trigger stowed = new Trigger(() -> pivotEncoder.getAbsolutePosition().getValueAsDouble() < IntakeTunables.STOWED_THRESHOLD).debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
+    public final Trigger stowed = new Trigger(
+                    () -> pivotEncoder.getAbsolutePosition().getValueAsDouble() < IntakeTunables.STOWED_THRESHOLD)
+            .debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
+
     @AutoLogOutput(key = "Intake/is deployed")
-    public final Trigger deployed = new Trigger(() -> pivotEncoder.getAbsolutePosition().getValueAsDouble() > IntakeTunables.DEPLOYED_THRESHOLD).debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
+    public final Trigger deployed = new Trigger(
+                    () -> pivotEncoder.getAbsolutePosition().getValueAsDouble() > IntakeTunables.DEPLOYED_THRESHOLD)
+            .debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
 
     public StrippedIntakeSubsystem() {
         pivotMotor.configure(
@@ -43,8 +45,9 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
     }
 
     @Override
-    public void periodic(){
-        Logger.recordOutput("Intake/absolute position", pivotEncoder.getAbsolutePosition().getValueAsDouble());
+    public void periodic() {
+        Logger.recordOutput(
+                "Intake/absolute position", pivotEncoder.getAbsolutePosition().getValueAsDouble());
     }
 
     /** sets the intake motor to the intake speed */
@@ -58,40 +61,38 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
     }
 
     /** sets the pivot motor to move IN at a constant speed while running, then stops the motor when it ends */
-    public Command moveIn(){
+    public Command moveIn() {
         return startEnd(
-            () -> {
-                pivotMotor.set(IntakeTunables.MOVE_IN_SPEED);
-            },
-            () -> {
-                pivotMotor.set(0.0);
-            }
-        );
+                () -> {
+                    pivotMotor.set(IntakeTunables.MOVE_IN_SPEED);
+                },
+                () -> {
+                    pivotMotor.set(0.0);
+                });
     }
 
     /** sets the pivot motor to move OUT at a constant speed while running, then stops the motor when it ends */
-    public Command moveOut(){
+    public Command moveOut() {
         return startEnd(
-            () -> {
-                pivotMotor.set(IntakeTunables.MOVE_OUT_SPEED);
-            },
-            () -> {
-                pivotMotor.set(0.0);
-            }
-        );
+                () -> {
+                    pivotMotor.set(IntakeTunables.MOVE_OUT_SPEED);
+                },
+                () -> {
+                    pivotMotor.set(0.0);
+                });
     }
 
     /** sets the intake to stop intaking, and to move in until it passes the stow threshold
      * <p> will automatically end after a tunable number of seconds (IntakeTunables.ATTEMPT_TIME)
      */
-    public Command stow(){
+    public Command stow() {
         return stopIntaking().andThen(moveIn().until(stowed)).withTimeout(IntakeTunables.ATTEMPT_TIME);
     }
 
-    /** sets the intake to start intaking, and to move out until it passes the deploy threshold 
+    /** sets the intake to start intaking, and to move out until it passes the deploy threshold
      * <p> will automatically end after a tunable number of seconds (IntakeTunables.ATTEMPT_TIME)
-    */
-    public Command deploy(){
+     */
+    public Command deploy() {
         return startIntaking().andThen(moveOut().until(deployed)).withTimeout(IntakeTunables.ATTEMPT_TIME);
     }
 }

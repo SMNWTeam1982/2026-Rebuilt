@@ -75,7 +75,7 @@ public class RobotContainer {
                     // are we to the left of the blue hub
                     Logger.recordOutput("Driver info/nearest hub", "BLUE");
                     return robotPosition.getX() < FieldMeasurements.BLUE_HUB_CENTER.getX();
-                } else if(nearestHub == FieldMeasurements.RED_HUB_CENTER){
+                } else if (nearestHub == FieldMeasurements.RED_HUB_CENTER) {
                     // are we to the right of the red hub
                     Logger.recordOutput("Driver info/nearest hub", "RED");
                     return robotPosition.getX() > FieldMeasurements.RED_HUB_CENTER.getX();
