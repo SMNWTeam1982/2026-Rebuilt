@@ -19,16 +19,19 @@ import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
+import frc.robot.Subsystems.Intake.StrippedIntakeSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 public class RobotContainer {
     /** allows the ability to toggle the velocity Compensation
      * in the case that the velocity Compensation is not working correctly
      * you can toggle it on or off(true or false)*/
+    @AutoLogOutput(key = "Driver info/velocity compensation enabled")
     private boolean velocityCompensationEnabled = true;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
@@ -59,19 +62,26 @@ public class RobotContainer {
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     // private final KickerSubsystem kicker = new KickerSubsystem();
     // private final IntakeSubsystem intake = new IntakeSubsystem();
+    private final StrippedIntakeSubsystem simpleIntake = new StrippedIntakeSubsystem();
     // private final ClimberSubsystem climber = new ClimberSubsystem();
 
     /** make sure that we are in the corret area for at least 1 second */
+    @AutoLogOutput(key = "Driver info/robot in alliance zone")
     private final Trigger inAllianceZone = new Trigger(() -> {
                 Translation2d robotPosition = drive.getRobotPose().getTranslation();
                 Translation2d nearestHub = ShotCalculation.getNearestHubPosition(robotPosition);
 
                 if (nearestHub == FieldMeasurements.BLUE_HUB_CENTER) {
                     // are we to the left of the blue hub
+                    Logger.recordOutput("Driver info/nearest hub", "BLUE");
                     return robotPosition.getX() < FieldMeasurements.BLUE_HUB_CENTER.getX();
-                } else {
+                } else if(nearestHub == FieldMeasurements.RED_HUB_CENTER){
                     // are we to the right of the red hub
+                    Logger.recordOutput("Driver info/nearest hub", "RED");
                     return robotPosition.getX() > FieldMeasurements.RED_HUB_CENTER.getX();
+                } else {
+                    Logger.recordOutput("Driver info/nearest hub", "no hub found");
+                    return false;
                 }
             })
             .debounce(1);
@@ -136,6 +146,8 @@ public class RobotContainer {
         // deploy/retract the intake with a & b
         // operatorController.a().debounce(0.1).onTrue(intake.deploy());
         // operatorController.b().debounce(0.1).onTrue(intake.retract());
+        operatorController.a().debounce(0.1).onTrue(simpleIntake.deploy());
+        operatorController.b().debounce(0.1).onTrue(simpleIntake.stow());
 
         // manually start/stop the kicker
         // operatorController.rightBumper().debounce(0.1).onTrue(kicker.startKicker());
@@ -145,7 +157,7 @@ public class RobotContainer {
         // robotReadyToShoot.whileTrue(kicker.kick());
 
         /**
-         * Disables the velocity compensation and sets the motor speed to the shooter_overide_speed
+         * Disables the velocity compensation and sets the motor speed to the shooter overide speed
          */
         operatorController
                 .y()
@@ -164,6 +176,9 @@ public class RobotContainer {
     }
 
     private void configureTestingBindings() {
+        operatorController.a().debounce(0.1).onTrue(simpleIntake.deploy());
+        operatorController.b().debounce(0.1).onTrue(simpleIntake.stow());
+
         // adjustments for testing
         operatorController
                 .back()

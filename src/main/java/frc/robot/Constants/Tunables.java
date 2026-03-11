@@ -1,6 +1,7 @@
 package frc.robot.Constants;
 
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Seconds;
 
 import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -16,6 +17,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants.Measured.FieldMeasurements;
 
 // the rev website recommends a limit of 40A-60A for NEO 1.1
@@ -149,13 +151,30 @@ public class Tunables {
         public static final Rotation2d STOW_POSITION = new Rotation2d();
         public static final Rotation2d DEPLOY_POSITION = new Rotation2d();
 
+        /** if the absolute position of the intake encoder is LESS than this the intake is considered STOWED */
+        public static final double STOWED_THRESHOLD = 0.0;
+
+        /** if the absolute position of the intake encoder is GREATER than this the intake is considered DEPLOYED */
+        public static final double DEPLOYED_THRESHOLD = 0.0;
+
+        /** how long does the intake position need to be past the stowed/deployed threshold before it considers it activated
+         * <p> this will be used to debounce the stowed/deployed Trigger
+         */
+        public static final Time THRESHOLD_TIME = Seconds.of(0.2);
+
+        /** the maximuma mount of time that the intake will run the pivot motor during an intake/deploy attempt */
+        public static final Time ATTEMPT_TIME = Seconds.of(1.5);
+
+        public static final double MOVE_IN_SPEED = -0.8;
+        public static final double MOVE_OUT_SPEED = 0.3;
+
         // percent that the intake will be set at when intaking
-        public static final double INTAKE_SPEED = 0.0;
+        public static final double INTAKE_SPEED = 0.5;
 
         public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(20)
                 .secondaryCurrentLimit(40)
-                .idleMode(SparkBaseConfig.IdleMode.kBrake);
+                .idleMode(SparkBaseConfig.IdleMode.kCoast);
     }
 
     public static final class KickerTunables {
