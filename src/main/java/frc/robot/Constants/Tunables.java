@@ -8,13 +8,9 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.Constants.Measured.FieldMeasurements;
 
@@ -169,10 +165,6 @@ public class Tunables {
     }
 
     public static final class VisionTunables {
-        public static final Transform3d PHOTON_CAM_RELATIVE_TO_ROBOT = new Transform3d(
-                new Translation3d(Units.inchesToMeters(12.0), Units.inchesToMeters(0.0), Units.inchesToMeters(9.75)),
-                new Rotation3d(0.0, 10.0, 0.0));
-
-        public static final Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(0.5, 0.5, 1);
+        public static final Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(0.25, 0.25, 1);
     }
 }

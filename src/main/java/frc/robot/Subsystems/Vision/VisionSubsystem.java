@@ -5,6 +5,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.VisionConstants;
+import frc.robot.Constants.Measured.VisionMeasurements;
 import frc.robot.Constants.Tunables.VisionTunables;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
@@ -26,7 +27,7 @@ public class VisionSubsystem extends SubsystemBase {
     public VisionSubsystem() {
         photonPoseEstimator = new PhotonPoseEstimator(
                 AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
-                VisionTunables.PHOTON_CAM_RELATIVE_TO_ROBOT);
+                VisionMeasurements.PHOTON_CAM_RELATIVE_TO_ROBOT);
         instanceCamera = new PhotonCamera(VisionConstants.limeLightCameraName);
         setDefaultCommand(pollVisionData());
     }
