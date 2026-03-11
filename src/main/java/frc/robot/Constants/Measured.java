@@ -131,7 +131,7 @@ public class Measured {
 
     public static final class VisionMeasurements {
         public static final Transform3d PHOTON_CAM_RELATIVE_TO_ROBOT = new Transform3d(
-            new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(9.25), Units.inchesToMeters(20.375)),
-            new Rotation3d(0.0, 9.0, 0.0));
+                new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(9.25), Units.inchesToMeters(20.375)),
+                new Rotation3d(0.0, 9.0, 0.0));
     }
 }
