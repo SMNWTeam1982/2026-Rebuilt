@@ -20,6 +20,7 @@ import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.StrippedIntakeSubsystem;
+import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
@@ -60,7 +61,7 @@ public class RobotContainer {
     };
 
     private final ShooterSubsystem shooter = new ShooterSubsystem();
-    // private final KickerSubsystem kicker = new KickerSubsystem();
+    private final KickerSubsystem kicker = new KickerSubsystem();
     // private final IntakeSubsystem intake = new IntakeSubsystem();
     private final StrippedIntakeSubsystem simpleIntake = new StrippedIntakeSubsystem();
     // private final ClimberSubsystem climber = new ClimberSubsystem();
@@ -102,7 +103,7 @@ public class RobotContainer {
         /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
         CameraServer.startAutomaticCapture();
-        // configureDriverBindings();
+        configureDriverBindings();
         // configureOperatorBindings();
 
         // temporary, will not be called during comp code
@@ -178,6 +179,12 @@ public class RobotContainer {
     private void configureTestingBindings() {
         operatorController.a().debounce(0.1).onTrue(simpleIntake.deploy());
         operatorController.b().debounce(0.1).onTrue(simpleIntake.stow());
+
+        operatorController.x().debounce(0.1).whileTrue(simpleIntake.moveOut());
+        operatorController.y().debounce(0.1).whileTrue(simpleIntake.moveIn());
+
+        operatorController.rightBumper().debounce(0.1).onTrue(kicker.kick());
+        operatorController.leftBumper().debounce(0.1).onTrue(kicker.idleKicker());
 
         // adjustments for testing
         operatorController

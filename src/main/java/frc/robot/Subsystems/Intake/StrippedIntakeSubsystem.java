@@ -83,16 +83,16 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
     }
 
     /** sets the intake to stop intaking, and to move in until it passes the stow threshold
-     * <p> will automatically end after a tunable number of seconds (IntakeTunables.ATTEMPT_TIME)
+     * <p> will automatically end after a tunable number of seconds (IntakeTunables.RETRACT_ATTEMPT_TIME)
      */
     public Command stow() {
-        return stopIntaking().andThen(moveIn().until(stowed)).withTimeout(IntakeTunables.ATTEMPT_TIME);
+        return stopIntaking().andThen(moveIn()).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME);
     }
 
     /** sets the intake to start intaking, and to move out until it passes the deploy threshold
-     * <p> will automatically end after a tunable number of seconds (IntakeTunables.ATTEMPT_TIME)
+     * <p> will automatically end after a tunable number of seconds (IntakeTunables.DEPLOY_ATTEMPT_TIME)
      */
     public Command deploy() {
-        return startIntaking().andThen(moveOut().until(deployed)).withTimeout(IntakeTunables.ATTEMPT_TIME);
+        return startIntaking().andThen(moveOut()).withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME);
     }
 }

@@ -158,14 +158,17 @@ public class Tunables {
          */
         public static final Time THRESHOLD_TIME = Seconds.of(0.2);
 
-        /** the maximuma mount of time that the intake will run the pivot motor during an intake/deploy attempt */
-        public static final Time ATTEMPT_TIME = Seconds.of(1.5);
+        /** the maximuma mount of time that the intake will run the pivot motor during a deploy attempt */
+        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(0.8);
 
-        public static final double MOVE_IN_SPEED = -0.8;
-        public static final double MOVE_OUT_SPEED = 0.3;
+        /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
+        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.1);
+
+        public static final double MOVE_IN_SPEED = -0.9;
+        public static final double MOVE_OUT_SPEED = 0.9;
 
         // percent that the intake will be set at when intaking
-        public static final double INTAKE_SPEED = 0.5;
+        public static final double INTAKE_SPEED = 0.7;
 
         public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(20)
@@ -175,13 +178,13 @@ public class Tunables {
 
     public static final class KickerTunables {
         /** the speed of the kicker when on high */
-        public static final double HIGH_SPEED = 0.5;
+        public static final double HIGH_SPEED = 0.8;
         /** the speed of the kicker when on low */
         public static final double LOW_SPEED = -0.2;
         /** how long the kicker runs at the high speed before switching to the low speed */
-        public static final Time HIGH_TIME = Seconds.of(2.0);
+        public static final Time HIGH_TIME = Seconds.of(1.0);
         /** how long the kicker runs at the low speed before switching to the high speed */
-        public static final Time LOW_TIME = Seconds.of(0.2);
+        public static final Time LOW_TIME = Seconds.of(0.8);
         /** the speed the kicker runs at when not active */
         public static final double IDLE_SPEED = -0.1;
     }
@@ -192,6 +195,6 @@ public class Tunables {
     }
 
     public static final class VisionTunables {
-        public static final Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(0.25, 0.25, 1);
+        public static final Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(.9, .9, .9);
     }
 }

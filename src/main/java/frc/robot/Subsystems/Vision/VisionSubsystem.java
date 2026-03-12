@@ -2,7 +2,6 @@ package frc.robot.Subsystems.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.VisionConstants;
 import frc.robot.Constants.Measured.VisionMeasurements;
@@ -29,13 +28,11 @@ public class VisionSubsystem extends SubsystemBase {
                 AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
                 VisionMeasurements.PHOTON_CAM_RELATIVE_TO_ROBOT);
         instanceCamera = new PhotonCamera(VisionConstants.limeLightCameraName);
-        setDefaultCommand(pollVisionData());
     }
 
-    public Command pollVisionData() {
-        return run(() -> {
-            lastVisionResult = getVisionResult();
-        });
+    @Override
+    public void periodic(){
+        lastVisionResult = getVisionResult();
     }
 
     public Optional<VisionData> getLastVisionResult() {
@@ -66,6 +63,7 @@ public class VisionSubsystem extends SubsystemBase {
         // if getAllUnreadResults() is empty then lastEstimatedPose will be Optional.empty()
         // also accounts for results that have data but are surrounded by results without data
         if (lastEstimatedPose.isEmpty()) {
+            Logger.recordOutput("Vision/visible targets", 0);
             return Optional.empty();
         }
 
