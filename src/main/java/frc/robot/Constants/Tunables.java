@@ -121,7 +121,7 @@ public class Tunables {
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
 
-        //public static final Rotation2d SHOOTING_ANGLE_TOLERANCE = Rotation2d.fromDegrees(15);
+        // public static final Rotation2d SHOOTING_ANGLE_TOLERANCE = Rotation2d.fromDegrees(15);
 
         public static final int SHOT_PREDICTION_ITERATIONS = 5;
 

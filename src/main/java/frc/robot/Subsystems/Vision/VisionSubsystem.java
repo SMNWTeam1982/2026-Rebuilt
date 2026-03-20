@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.VisionConstants;
 import frc.robot.Constants.Measured.VisionMeasurements;
 import frc.robot.Constants.Tunables.VisionTunables;
-
 import java.util.List;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
@@ -34,7 +33,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         lastVisionResult = getVisionResult();
     }
 
@@ -53,11 +52,10 @@ public class VisionSubsystem extends SubsystemBase {
     private Optional<VisionData> getVisionResult() {
         List<PhotonPipelineResult> cameraResults = instanceCamera.getAllUnreadResults();
 
-        if (cameraResults.isEmpty()){
+        if (cameraResults.isEmpty()) {
             // return early if no data from camera
             return Optional.empty();
         }
-
 
         Optional<EstimatedRobotPose> lastEstimatedPose = Optional.empty();
 

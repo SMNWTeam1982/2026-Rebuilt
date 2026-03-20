@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -20,7 +21,8 @@ public class DriverCommands {
             ShooterSubsystem shooter,
             boolean onBlueAlliance,
             Supplier<ChassisSpeeds> joystickSpeeds,
-            Supplier<Translation2d> calculatedTarget) {
+            Supplier<Translation2d> calculatedTarget,
+            BooleanSupplier changeShooterRPM) {
 
         Supplier<ChassisSpeeds> fieldRelativeSpeeds =
                 () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), onBlueAlliance);
@@ -29,7 +31,7 @@ public class DriverCommands {
         return drive.runOnce(
                         () -> drive.setDefaultCommand(drive.driveAndPointAtTarget(fieldRelativeSpeeds, calculatedTarget)
                                 .withName("target aim")))
-                //.andThen(shooter.setRPMSupplier(calculatedRPM))
+                .andThen(shooter.setRPMSupplier(calculatedRPM).onlyIf(changeShooterRPM))
                 .withName("set target aim mode");
     }
 
@@ -38,25 +40,29 @@ public class DriverCommands {
             DriveSubsystem drive,
             ShooterSubsystem shooter,
             boolean onBlueAlliance,
-            Supplier<ChassisSpeeds> joystickSpeeds) {
+            Supplier<ChassisSpeeds> joystickSpeeds,
+            BooleanSupplier changeShooterRPM) {
         Supplier<ChassisSpeeds> fieldRelativeSpeeds =
                 () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), onBlueAlliance);
         return drive.runOnce(() -> drive.setDefaultCommand(
                         drive.driveFieldRelative(fieldRelativeSpeeds).withName("DS relative")))
-                //.andThen(shooter.setIdle())
+                .andThen(shooter.setIdle().onlyIf(changeShooterRPM))
                 .withName("set normal DS drive mode");
     }
 
     /** sets the shooter to idle speed, sets the robot to be driven robot-relative */
     public static Command setRobotRelativeMode(
-            DriveSubsystem drive, ShooterSubsystem shooter, Supplier<ChassisSpeeds> joystickSpeeds) {
+            DriveSubsystem drive,
+            ShooterSubsystem shooter,
+            Supplier<ChassisSpeeds> joystickSpeeds,
+            BooleanSupplier changeShooterRPM) {
         // the conversion from blue drivers station to field speeds does the same thing that controller to robot
         // relative would do
         Supplier<ChassisSpeeds> robotRelativeSpeeds =
                 () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), false);
         return drive.runOnce(() -> drive.setDefaultCommand(
                         drive.driveRobotRelative(robotRelativeSpeeds).withName("Robot relative")))
-                //.andThen(shooter.setIdle())
+                .andThen(shooter.setIdle().onlyIf(changeShooterRPM))
                 .withName("set robot relative drive mode");
     }
 }

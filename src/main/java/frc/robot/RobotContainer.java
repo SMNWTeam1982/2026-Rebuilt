@@ -34,7 +34,13 @@ public class RobotContainer {
      * in the case that the velocity Compensation is not working correctly
      * you can toggle it on or off(true or false)*/
     @AutoLogOutput(key = "Driver info/velocity compensation enabled")
-    private boolean velocityCompensationEnabled = true;
+    private boolean velocityCompensationEnabled = false;
+
+    /**
+     * controls if the set drive mode commands triggered by the driver will also change the shooter RPM
+     */
+    @AutoLogOutput(key = "Driver info/driver can change shooter RPM")
+    private boolean driverCanChangeShooterRPM = false;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -123,32 +129,50 @@ public class RobotContainer {
                 .a()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setAimAtTarget(
-                        drive, shooter, onBlueAlliance, this::getJoystickSpeeds, calculatedHubTarget));
+                        drive,
+                        shooter,
+                        onBlueAlliance,
+                        this::getJoystickSpeeds,
+                        calculatedHubTarget,
+                        () -> driverCanChangeShooterRPM));
 
         // set the drive controls to pass aim mode when pressed, and set the shooter rpm calculation
         driverController
                 .x()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setAimAtTarget(
-                        drive, shooter, onBlueAlliance, this::getJoystickSpeeds, calculatedPassTarget));
+                        drive,
+                        shooter,
+                        onBlueAlliance,
+                        this::getJoystickSpeeds,
+                        calculatedPassTarget,
+                        () -> driverCanChangeShooterRPM));
 
         // sets the drive controls to standard field relative when pressed
         driverController
                 .b()
                 .debounce(0.1)
-                .onTrue(DriverCommands.setNormalMode(drive, shooter, onBlueAlliance, this::getJoystickSpeeds));
+                .onTrue(DriverCommands.setNormalMode(
+                        drive, shooter, onBlueAlliance, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
 
         // sets the drive controls to robot relative when pressed
         driverController
                 .y()
                 .debounce(0.1)
-                .onTrue(DriverCommands.setRobotRelativeMode(drive, shooter, this::getJoystickSpeeds));
+                .onTrue(DriverCommands.setRobotRelativeMode(
+                        drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
     }
 
     private void configureOperatorBindings() {
         // deploy/retract the intake with a & b
-        operatorController.a().debounce(0.05).whileTrue(simpleIntake.startIntaking().andThen(simpleIntake.moveOut()));
-        operatorController.b().debounce(0.05).whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
+        operatorController
+                .a()
+                .debounce(0.05)
+                .whileTrue(simpleIntake.startIntaking().andThen(simpleIntake.moveOut()));
+        operatorController
+                .b()
+                .debounce(0.05)
+                .whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
 
         // manually start/stop the kicker
         operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick());
@@ -160,13 +184,9 @@ public class RobotContainer {
         /**
          * Disables the velocity compensation
          */
-        operatorController
-                .y()
-                .debounce(0.05)
-                .onTrue(Commands.runOnce(() -> {
-                            velocityCompensationEnabled = false;
-                        }));
-
+        operatorController.y().debounce(0.05).onTrue(Commands.runOnce(() -> {
+            velocityCompensationEnabled = false;
+        }));
 
         /**
          * Reenables the velocity compensation
@@ -175,11 +195,33 @@ public class RobotContainer {
             velocityCompensationEnabled = true;
         }));
 
+        // the shooter's rpm WILL be set when the driver changes mode
+        operatorController.start().debounce(0.05).onTrue(Commands.runOnce(() -> {
+            driverCanChangeShooterRPM = true;
+        }));
+
+        // the shooter's rpm will NOT be set when the driver changes mode
+        operatorController.back().debounce(0.05).onTrue(Commands.runOnce(() -> {
+            driverCanChangeShooterRPM = false;
+        }));
+
         // speed overides for shooter
-        operatorController.povRight().debounce(0.05).onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_1));
-        operatorController.povDown().debounce(0.05).onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_2));
-        operatorController.povLeft().debounce(0.05).onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_3));
-        operatorController.povUp().debounce(0.05).onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_4));
+        operatorController
+                .povRight()
+                .debounce(0.05)
+                .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_1));
+        operatorController
+                .povDown()
+                .debounce(0.05)
+                .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_2));
+        operatorController
+                .povLeft()
+                .debounce(0.05)
+                .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_3));
+        operatorController
+                .povUp()
+                .debounce(0.05)
+                .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_4));
     }
 
     private void configureTestingBindings() {
@@ -193,30 +235,22 @@ public class RobotContainer {
         // operatorController.leftBumper().debounce(0.1).onTrue(kicker.idleKicker());
 
         // adjustments for testing
-        operatorController
-                .back()
-                .debounce(0.1)
-                .onTrue(drive.headingControllerCommands
-                        .publishPIDGains());
-        operatorController
-                .start()
-                .debounce(0.1)
-                .onTrue(drive.headingControllerCommands
-                        .updatePIDGains());
+        operatorController.back().debounce(0.1).onTrue(drive.headingControllerCommands.publishPIDGains());
+        operatorController.start().debounce(0.1).onTrue(drive.headingControllerCommands.updatePIDGains());
 
         // set the robot to point towards 0 heading
-        operatorController.a().debounce(0.1).onTrue(
-            drive.runOnce(
-                () -> drive.setDefaultCommand(drive.driveTopDown(() -> new ChassisSpeeds(), () -> new Rotation2d()))
-            )
-        );
+        operatorController
+                .a()
+                .debounce(0.1)
+                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(
+                        drive.driveTopDown(() -> new ChassisSpeeds(), () -> new Rotation2d()))));
 
         // set the robot to point towards 90 degrees heading
-        operatorController.b().debounce(0.1).onTrue(
-            drive.runOnce(
-                () -> drive.setDefaultCommand(drive.driveTopDown(() -> new ChassisSpeeds(), () -> new Rotation2d(Math.PI/2)))
-            )
-        );
+        operatorController
+                .b()
+                .debounce(0.1)
+                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(
+                        drive.driveTopDown(() -> new ChassisSpeeds(), () -> new Rotation2d(Math.PI / 2)))));
 
         // // coarse adjustment
         // operatorController.povUp().debounce(0.1).onTrue(shooter.nudgeRPM(250));
@@ -231,17 +265,17 @@ public class RobotContainer {
 
     private ChassisSpeeds getJoystickSpeeds() {
         return new ChassisSpeeds(
-                MathUtil.applyDeadband(
-                        driverController.getLeftX(), DriveBaseTunables.INPUT_DEADZONE, 1.0) * DriveBaseTunables.DRIVE_SPEED,
-                MathUtil.applyDeadband(
-                        driverController.getLeftY(), DriveBaseTunables.INPUT_DEADZONE, 1.0) * DriveBaseTunables.DRIVE_SPEED,
-                MathUtil.applyDeadband(
-                        driverController.getRightX(), DriveBaseTunables.INPUT_DEADZONE, 1.0) * DriveBaseTunables.TURN_SPEED);
+                MathUtil.applyDeadband(driverController.getLeftX(), DriveBaseTunables.INPUT_DEADZONE, 1.0)
+                        * DriveBaseTunables.DRIVE_SPEED,
+                MathUtil.applyDeadband(driverController.getLeftY(), DriveBaseTunables.INPUT_DEADZONE, 1.0)
+                        * DriveBaseTunables.DRIVE_SPEED,
+                MathUtil.applyDeadband(driverController.getRightX(), DriveBaseTunables.INPUT_DEADZONE, 1.0)
+                        * DriveBaseTunables.TURN_SPEED);
     }
 
     public Command getAutonomousCommand() {
         return DriverCommands.setAimAtTarget(
-                        drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget)
+                        drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget, () -> true)
                 .andThen(Commands.waitUntil(robotReadyToShoot));
         // .andThen(kicker.startKicker()); disabled while kicker is disabled for testing
     }
