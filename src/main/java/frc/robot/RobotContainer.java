@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -104,7 +105,7 @@ public class RobotContainer {
         /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
         CameraServer.startAutomaticCapture();
-        configureDriverBindings();
+        // configureDriverBindings();
         // configureOperatorBindings();
 
         // temporary, will not be called during comp code
@@ -182,38 +183,50 @@ public class RobotContainer {
     }
 
     private void configureTestingBindings() {
-        operatorController.a().debounce(0.1).onTrue(simpleIntake.deploy());
-        operatorController.b().debounce(0.1).onTrue(simpleIntake.stow());
+        // operatorController.a().debounce(0.1).onTrue(simpleIntake.deploy());
+        // operatorController.b().debounce(0.1).onTrue(simpleIntake.stow());
 
-        operatorController.x().debounce(0.1).whileTrue(simpleIntake.moveOut());
-        operatorController.y().debounce(0.1).whileTrue(simpleIntake.moveIn());
+        // operatorController.x().debounce(0.1).whileTrue(simpleIntake.moveOut());
+        // operatorController.y().debounce(0.1).whileTrue(simpleIntake.moveIn());
 
-        operatorController.rightBumper().debounce(0.1).onTrue(kicker.kick());
-        operatorController.leftBumper().debounce(0.1).onTrue(kicker.idleKicker());
+        // operatorController.rightBumper().debounce(0.1).onTrue(kicker.kick());
+        // operatorController.leftBumper().debounce(0.1).onTrue(kicker.idleKicker());
 
         // adjustments for testing
         operatorController
                 .back()
                 .debounce(0.1)
-                .onTrue(shooter.velocityControllerCommands
-                        .publishPIDGains()
-                        .andThen(shooter.flywheelFFCommands.publishGains()));
+                .onTrue(drive.headingControllerCommands
+                        .publishPIDGains());
         operatorController
                 .start()
                 .debounce(0.1)
-                .onTrue(shooter.velocityControllerCommands
-                        .updatePIDGains()
-                        .andThen(shooter.flywheelFFCommands.updateGains()));
+                .onTrue(drive.headingControllerCommands
+                        .updatePIDGains());
 
-        // coarse adjustment
-        operatorController.povUp().debounce(0.1).onTrue(shooter.nudgeRPM(250));
+        // set the robot to point towards 0 heading
+        operatorController.a().debounce(0.1).onTrue(
+            drive.runOnce(
+                () -> drive.setDefaultCommand(drive.driveTopDown(() -> new ChassisSpeeds(), () -> new Rotation2d()))
+            )
+        );
 
-        operatorController.povDown().debounce(0.1).onTrue(shooter.nudgeRPM(-250));
+        // set the robot to point towards 90 degrees heading
+        operatorController.b().debounce(0.1).onTrue(
+            drive.runOnce(
+                () -> drive.setDefaultCommand(drive.driveTopDown(() -> new ChassisSpeeds(), () -> new Rotation2d(Math.PI/2)))
+            )
+        );
 
-        // fine adjustment
-        operatorController.povRight().debounce(0.1).onTrue(shooter.nudgeRPM(1000));
+        // // coarse adjustment
+        // operatorController.povUp().debounce(0.1).onTrue(shooter.nudgeRPM(250));
 
-        operatorController.povLeft().debounce(0.1).onTrue(shooter.nudgeRPM(-1000));
+        // operatorController.povDown().debounce(0.1).onTrue(shooter.nudgeRPM(-250));
+
+        // // fine adjustment
+        // operatorController.povRight().debounce(0.1).onTrue(shooter.nudgeRPM(1000));
+
+        // operatorController.povLeft().debounce(0.1).onTrue(shooter.nudgeRPM(-1000));
     }
 
     private ChassisSpeeds getJoystickSpeeds() {
