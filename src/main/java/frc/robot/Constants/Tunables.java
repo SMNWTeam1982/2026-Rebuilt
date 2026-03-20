@@ -109,16 +109,19 @@ public class Tunables {
 
         public static final double FLYWHEEL_RPM_TOLERANCE = 15.0;
 
-        public static final double FLYWHEEL_IDLE_RPM = 2000.0;
+        public static final double FLYWHEEL_IDLE_RPM = 1000.0;
 
         public static final double SHOOTER_RPM_CEILING = 5500;
 
-        public static final AngularVelocity SHOOTER_OVERIDE_SPEED = AngularVelocity.ofBaseUnits(4000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_1 = AngularVelocity.ofBaseUnits(2000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_2 = AngularVelocity.ofBaseUnits(3000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_3 = AngularVelocity.ofBaseUnits(4000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_4 = AngularVelocity.ofBaseUnits(5000, RPM);
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
 
-        public static final Rotation2d SHOOTING_ANGLE_TOLERANCE = Rotation2d.fromDegrees(15);
+        //public static final Rotation2d SHOOTING_ANGLE_TOLERANCE = Rotation2d.fromDegrees(15);
 
         public static final int SHOT_PREDICTION_ITERATIONS = 5;
 

@@ -1,6 +1,7 @@
 package frc.robot.Constants;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
@@ -8,6 +9,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -38,7 +41,7 @@ public class Measured {
     }
 
     public static final class PathplannerMeasurements {
-        private static final Distance WHEEL_RADIUS = Meters.of(0.04); // guess
+        private static final Distance WHEEL_RADIUS = Inches.of(2); // 12.5/2pi is about 2 inches
         private static final LinearVelocity MAX_DRIVE_VELOCITY =
                 MetersPerSecond.of(DriveBaseMeasurements.PHYSICAL_MAX_SPEED); // set elsewhere
         private static final double WHEEL_COF = .4; // guess

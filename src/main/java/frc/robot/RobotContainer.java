@@ -67,10 +67,11 @@ public class RobotContainer {
     // private final ClimberSubsystem climber = new ClimberSubsystem();
 
     /** make sure that we are in the corret area for at least 1 second */
-    @AutoLogOutput(key = "Driver info/robot in alliance zone")
+    @AutoLogOutput(key = "Driver info/robot in alliance zone") // autologging this trigger should call it every period
     private final Trigger inAllianceZone = new Trigger(() -> {
                 Translation2d robotPosition = drive.getRobotPose().getTranslation();
                 Translation2d nearestHub = ShotCalculation.getNearestHubPosition(robotPosition);
+                Logger.recordOutput("Driver info/distance from nearest hub", robotPosition.getDistance(nearestHub));
 
                 if (nearestHub == FieldMeasurements.BLUE_HUB_CENTER) {
                     // are we to the left of the blue hub
@@ -145,35 +146,39 @@ public class RobotContainer {
 
     private void configureOperatorBindings() {
         // deploy/retract the intake with a & b
-        // operatorController.a().debounce(0.1).onTrue(intake.deploy());
-        // operatorController.b().debounce(0.1).onTrue(intake.retract());
-        operatorController.a().debounce(0.1).onTrue(simpleIntake.deploy());
-        operatorController.b().debounce(0.1).onTrue(simpleIntake.stow());
+        operatorController.a().debounce(0.05).whileTrue(simpleIntake.startIntaking().andThen(simpleIntake.moveOut()));
+        operatorController.b().debounce(0.05).whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
 
         // manually start/stop the kicker
-        // operatorController.rightBumper().debounce(0.1).onTrue(kicker.startKicker());
-        // operatorController.leftBumper().debounce(0.1).onTrue(kicker.idleKicker());
+        operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick());
+        operatorController.leftBumper().debounce(0.05).onTrue(kicker.idleKicker());
 
         // automatically start/stop the kicker when the robot is ready/not ready
         // robotReadyToShoot.whileTrue(kicker.kick());
 
         /**
-         * Disables the velocity compensation and sets the motor speed to the shooter overide speed
+         * Disables the velocity compensation
          */
         operatorController
                 .y()
                 .debounce(0.05)
-                .onTrue(shooter.velocityControllerCommands
-                        .setTarget(ShooterTunables.SHOOTER_OVERIDE_SPEED)
-                        .andThen(Commands.runOnce(() -> {
+                .onTrue(Commands.runOnce(() -> {
                             velocityCompensationEnabled = false;
-                        })));
+                        }));
+
+
         /**
          * Reenables the velocity compensation
          */
         operatorController.x().debounce(0.05).onTrue(Commands.runOnce(() -> {
             velocityCompensationEnabled = true;
         }));
+
+        // speed overides for shooter
+        operatorController.povRight().debounce(0.05).onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_1));
+        operatorController.povDown().debounce(0.05).onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_2));
+        operatorController.povLeft().debounce(0.05).onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_3));
+        operatorController.povUp().debounce(0.05).onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_4));
     }
 
     private void configureTestingBindings() {

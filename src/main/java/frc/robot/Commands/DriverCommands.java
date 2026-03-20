@@ -29,7 +29,7 @@ public class DriverCommands {
         return drive.runOnce(
                         () -> drive.setDefaultCommand(drive.driveAndPointAtTarget(fieldRelativeSpeeds, calculatedTarget)
                                 .withName("target aim")))
-                .andThen(shooter.setRPMSupplier(calculatedRPM))
+                //.andThen(shooter.setRPMSupplier(calculatedRPM))
                 .withName("set target aim mode");
     }
 
@@ -43,7 +43,7 @@ public class DriverCommands {
                 () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), onBlueAlliance);
         return drive.runOnce(() -> drive.setDefaultCommand(
                         drive.driveFieldRelative(fieldRelativeSpeeds).withName("DS relative")))
-                .andThen(shooter.setIdle())
+                //.andThen(shooter.setIdle())
                 .withName("set normal DS drive mode");
     }
 
@@ -53,10 +53,10 @@ public class DriverCommands {
         // the conversion from blue drivers station to field speeds does the same thing that controller to robot
         // relative would do
         Supplier<ChassisSpeeds> robotRelativeSpeeds =
-                () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), true);
+                () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), false);
         return drive.runOnce(() -> drive.setDefaultCommand(
                         drive.driveRobotRelative(robotRelativeSpeeds).withName("Robot relative")))
-                .andThen(shooter.setIdle())
+                //.andThen(shooter.setIdle())
                 .withName("set robot relative drive mode");
     }
 }
