@@ -39,7 +39,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public final PIDCommandGenerator<Rotation2d> swerveModuleRotationCommands;
 
-    /** controller for the field-relative heading of the robot */
+    /** controller for the field-relative heading of the robot, in radians out radians/sec */
     private final PIDController headingController =
             new PIDController(DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D);
 

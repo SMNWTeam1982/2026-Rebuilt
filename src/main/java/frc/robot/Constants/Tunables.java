@@ -45,13 +45,13 @@ public class Tunables {
 
         public static final double MAX_AUTO_SPEED = 0.5;
 
-        public static final double HEADING_P = 3.5;
+        public static final double HEADING_P = 1.0;
         public static final double HEADING_I = 0.0;
         public static final double HEADING_D = 0.0;
 
-        public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(1);
+        public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(5);
 
-        public static final double TRANSLATION_P = 3.0;
+        public static final double TRANSLATION_P = 1.0;
         public static final double TRANSLATION_I = 0.0;
         public static final double TRANSLATION_D = 0.0;
 
@@ -107,7 +107,7 @@ public class Tunables {
         public static final double FLYWHEEL_V = 0.128; // 26 Feb 2026
         public static final double FLYWHEEL_A = 0;
 
-        public static final double FLYWHEEL_RPM_TOLERANCE = 15.0;
+        public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
 
         public static final double FLYWHEEL_IDLE_RPM = 1000.0;
 
@@ -198,6 +198,6 @@ public class Tunables {
     }
 
     public static final class VisionTunables {
-        public static final Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(.9, .9, .9);
+        public static final Matrix<N3, N1> STANDARD_DEVIATIONS = VecBuilder.fill(.9, .9, .9);
     }
 }

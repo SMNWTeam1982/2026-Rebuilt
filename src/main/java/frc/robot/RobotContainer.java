@@ -219,11 +219,11 @@ public class RobotContainer {
     private ChassisSpeeds getJoystickSpeeds() {
         return new ChassisSpeeds(
                 MathUtil.applyDeadband(
-                        driverController.getLeftX(), DriveBaseTunables.INPUT_DEADZONE, DriveBaseTunables.DRIVE_SPEED),
+                        driverController.getLeftX(), DriveBaseTunables.INPUT_DEADZONE, 1.0) * DriveBaseTunables.DRIVE_SPEED,
                 MathUtil.applyDeadband(
-                        driverController.getLeftY(), DriveBaseTunables.INPUT_DEADZONE, DriveBaseTunables.DRIVE_SPEED),
+                        driverController.getLeftY(), DriveBaseTunables.INPUT_DEADZONE, 1.0) * DriveBaseTunables.DRIVE_SPEED,
                 MathUtil.applyDeadband(
-                        driverController.getRightX(), DriveBaseTunables.INPUT_DEADZONE, DriveBaseTunables.TURN_SPEED));
+                        driverController.getRightX(), DriveBaseTunables.INPUT_DEADZONE, 1.0) * DriveBaseTunables.TURN_SPEED);
     }
 
     public Command getAutonomousCommand() {

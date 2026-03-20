@@ -6,11 +6,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.VisionConstants;
 import frc.robot.Constants.Measured.VisionMeasurements;
 import frc.robot.Constants.Tunables.VisionTunables;
+
+import java.util.List;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 /** To do:
  * Bare bones vision control ( no checks, no ambiguity)
@@ -48,8 +51,17 @@ public class VisionSubsystem extends SubsystemBase {
      *  Then it gets the last estimated pose before replacing VisionData.
      */
     private Optional<VisionData> getVisionResult() {
+        List<PhotonPipelineResult> cameraResults = instanceCamera.getAllUnreadResults();
+
+        if (cameraResults.isEmpty()){
+            // return early if no data from camera
+            return Optional.empty();
+        }
+
+
         Optional<EstimatedRobotPose> lastEstimatedPose = Optional.empty();
-        for (var result : instanceCamera.getAllUnreadResults()) {
+
+        for (var result : cameraResults) {
             // Estimates the average position of the targets based on the targets last position
             lastEstimatedPose = photonPoseEstimator.estimateCoprocMultiTagPose(result);
 
@@ -60,8 +72,9 @@ public class VisionSubsystem extends SubsystemBase {
                 lastEstimatedPose = photonPoseEstimator.estimateLowestAmbiguityPose(result);
             }
         }
-        // if getAllUnreadResults() is empty then lastEstimatedPose will be Optional.empty()
-        // also accounts for results that have data but are surrounded by results without data
+
+        // lastEstimatedPose will be empty if the camera result has no targets
+        // only update the visible target logging if we have a camera result to log
         if (lastEstimatedPose.isEmpty()) {
             Logger.recordOutput("Vision/visible targets", 0);
             return Optional.empty();
@@ -69,13 +82,14 @@ public class VisionSubsystem extends SubsystemBase {
 
         EstimatedRobotPose estimatedPose = lastEstimatedPose.get();
 
-        Logger.recordOutput("Vision/visible targets", estimatedPose.targetsUsed.size());
+        int visibleTags = estimatedPose.targetsUsed.size();
+
+        Logger.recordOutput("Vision/visible targets", visibleTags);
 
         return Optional.of(new VisionData(
                 estimatedPose.estimatedPose.toPose2d(),
                 estimatedPose.timestampSeconds,
-                VisionTunables.PHOTON_CAM_VISION_TRUST // we should calculate this the same way photonVision does
-                // in their example code
+                VisionTunables.STANDARD_DEVIATIONS.div(visibleTags) // more trust with more tags
                 ));
     }
 }
