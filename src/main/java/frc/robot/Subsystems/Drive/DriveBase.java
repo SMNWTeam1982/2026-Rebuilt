@@ -16,6 +16,8 @@ import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 /**
  * NOT A SUBSYSTEM
  *
@@ -149,6 +151,12 @@ public final class DriveBase {
         frontRight.logModuleData();
         backLeft.logModuleData();
         backRight.logModuleData();
+        Logger.recordOutput("DriveBase/ModuleStates", new SwerveModuleState[] {
+            frontLeft.getState(),
+            frontRight.getState(),
+            backLeft.getState(),
+            backRight.getState()
+        });
     }
 
     /** Returns the heading from getEstimatedPose() */

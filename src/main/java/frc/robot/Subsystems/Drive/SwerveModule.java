@@ -141,7 +141,7 @@ public final class SwerveModule {
     }
 
     public void logModuleData() {
-        Logger.recordOutput("DriveBase/" + moduleName + "/state", getState());
+        //Logger.recordOutput("DriveBase/" + moduleName + "/state", getState());
         Logger.recordOutput("DriveBase/" + moduleName + "/measured speed", getState().speedMetersPerSecond);
         Logger.recordOutput("DriveBase/" + moduleName + "/driveCurrent", getDriveMotorOutputCurrent());
     }
