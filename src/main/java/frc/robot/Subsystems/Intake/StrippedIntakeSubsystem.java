@@ -48,6 +48,9 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
     public void periodic() {
         Logger.recordOutput(
                 "Intake/absolute position", pivotEncoder.getAbsolutePosition().getValueAsDouble());
+
+        Logger.recordOutput("Intake/pivot current draw", pivotMotor.getOutputCurrent());
+        Logger.recordOutput("Intake/pivot output", pivotMotor.getAppliedOutput());
     }
 
     /** sets the intake motor to the intake speed */

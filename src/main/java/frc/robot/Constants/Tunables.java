@@ -113,10 +113,10 @@ public class Tunables {
 
         public static final double SHOOTER_RPM_CEILING = 5500;
 
-        public static final AngularVelocity SPEED_OVERRIDE_1 = AngularVelocity.ofBaseUnits(2000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_2 = AngularVelocity.ofBaseUnits(3000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_3 = AngularVelocity.ofBaseUnits(4000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_4 = AngularVelocity.ofBaseUnits(5000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_1 = RPM.of(0);//AngularVelocity.ofBaseUnits(2000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(2500);//AngularVelocity.ofBaseUnits(3000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3000);//AngularVelocity.ofBaseUnits(4000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3500);//AngularVelocity.ofBaseUnits(5000, RPM);
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
@@ -167,15 +167,15 @@ public class Tunables {
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
         public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.1);
 
-        public static final double MOVE_IN_SPEED = -0.9;
-        public static final double MOVE_OUT_SPEED = 0.9;
+        public static final double MOVE_IN_SPEED = -0.3;
+        public static final double MOVE_OUT_SPEED = 0.3;
 
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.7;
 
         public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(20)
-                .secondaryCurrentLimit(40)
+                .smartCurrentLimit(40)
+                .secondaryCurrentLimit(60)
                 .idleMode(SparkBaseConfig.IdleMode.kCoast);
     }
 

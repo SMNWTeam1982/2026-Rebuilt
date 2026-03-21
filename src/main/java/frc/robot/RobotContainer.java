@@ -111,11 +111,11 @@ public class RobotContainer {
         /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
         CameraServer.startAutomaticCapture();
-        // configureDriverBindings();
-        // configureOperatorBindings();
+        configureDriverBindings();
+        configureOperatorBindings();
 
         // temporary, will not be called during comp code
-        configureTestingBindings();
+        //configureTestingBindings();
     }
 
     private void configureDriverBindings() {
@@ -234,23 +234,32 @@ public class RobotContainer {
         // operatorController.rightBumper().debounce(0.1).onTrue(kicker.kick());
         // operatorController.leftBumper().debounce(0.1).onTrue(kicker.idleKicker());
 
-        // adjustments for testing
-        operatorController.back().debounce(0.1).onTrue(drive.headingControllerCommands.publishPIDGains());
-        operatorController.start().debounce(0.1).onTrue(drive.headingControllerCommands.updatePIDGains());
-
-        // set the robot to point towards 0 heading
         operatorController
                 .a()
-                .debounce(0.1)
-                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(
-                        drive.driveTopDown(() -> new ChassisSpeeds(), () -> new Rotation2d()))));
-
-        // set the robot to point towards 90 degrees heading
+                .debounce(0.05)
+                .whileTrue(simpleIntake.startIntaking().andThen(simpleIntake.moveOut()));
         operatorController
                 .b()
-                .debounce(0.1)
-                .onTrue(drive.runOnce(() -> drive.setDefaultCommand(
-                        drive.driveTopDown(() -> new ChassisSpeeds(), () -> new Rotation2d(Math.PI / 2)))));
+                .debounce(0.05)
+                .whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
+
+        // adjustments for testing
+        // operatorController.back().debounce(0.1).onTrue(drive.headingControllerCommands.publishPIDGains());
+        // operatorController.start().debounce(0.1).onTrue(drive.headingControllerCommands.updatePIDGains());
+
+        // // set the robot to point towards 0 heading
+        // operatorController
+        //         .a()
+        //         .debounce(0.1)
+        //         .onTrue(drive.runOnce(() -> drive.setDefaultCommand(
+        //                 drive.driveTopDown(() -> new ChassisSpeeds(), () -> new Rotation2d()))));
+
+        // // set the robot to point towards 90 degrees heading
+        // operatorController
+        //         .b()
+        //         .debounce(0.1)
+        //         .onTrue(drive.runOnce(() -> drive.setDefaultCommand(
+        //                 drive.driveTopDown(() -> new ChassisSpeeds(), () -> new Rotation2d(Math.PI / 2)))));
 
         // // coarse adjustment
         // operatorController.povUp().debounce(0.1).onTrue(shooter.nudgeRPM(250));
