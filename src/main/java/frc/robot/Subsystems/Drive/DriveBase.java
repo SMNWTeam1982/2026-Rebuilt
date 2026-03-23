@@ -15,7 +15,6 @@ import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -152,10 +151,7 @@ public final class DriveBase {
         backLeft.logModuleData();
         backRight.logModuleData();
         Logger.recordOutput("DriveBase/ModuleStates", new SwerveModuleState[] {
-            frontLeft.getState(),
-            frontRight.getState(),
-            backLeft.getState(),
-            backRight.getState()
+            frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()
         });
     }
 

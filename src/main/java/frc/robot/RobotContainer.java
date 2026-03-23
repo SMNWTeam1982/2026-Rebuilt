@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -25,6 +24,7 @@ import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -44,6 +44,18 @@ public class RobotContainer {
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
+
+    // these suppliers are so that the status of the right trigger can be logged
+    // if the robot is in a good spot for reliable shooting at the given rpm, the driver or operator can press the right
+    // trigger to leave a marker in the log
+    // this marker can be looked at later to make it easier to find data points for the distance->RPM function
+    @AutoLogOutput(key = "Driver info/operator says at good shooting position")
+    private final BooleanSupplier operatorSaysAtGoodShootingPosition =
+            operatorController.rightTrigger().debounce(0.05)::getAsBoolean;
+
+    @AutoLogOutput(key = "Driver info/driver says at good shooting position")
+    private final BooleanSupplier driverSaysAtGoodShootingPosition =
+            driverController.rightTrigger().debounce(0.05)::getAsBoolean;
 
     private final VisionSubsystem vision = new VisionSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult);
@@ -115,7 +127,7 @@ public class RobotContainer {
         configureOperatorBindings();
 
         // temporary, will not be called during comp code
-        //configureTestingBindings();
+        // configureTestingBindings();
     }
 
     private void configureDriverBindings() {
@@ -161,6 +173,13 @@ public class RobotContainer {
                 .debounce(0.1)
                 .onTrue(DriverCommands.setRobotRelativeMode(
                         drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
+
+        // sets the drive mode to hub orbit when pressed
+        driverController
+                .povUp()
+                .debounce(0.1)
+                .onTrue(DriverCommands.setOrbitNearestHubAtCurrentDistance(
+                        drive, shooter, driverController::getLeftX, () -> driverCanChangeShooterRPM));
     }
 
     private void configureOperatorBindings() {

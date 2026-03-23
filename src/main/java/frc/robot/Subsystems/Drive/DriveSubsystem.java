@@ -260,7 +260,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /** drives the robot in a circle around the orbitCenter with a radius of the orbitDistance */
-    public Command orbitPoint(Supplier<Double> orbitDirection, Translation2d orbitCenter, double orbitDistance) {
+    public Command orbitPoint(DoubleSupplier orbitDirection, Translation2d orbitCenter, double orbitDistance) {
         return driveAndPointAtTarget(
                 () -> {
                     Pose2d currentRobotPose = driveBase.getEstimatedPose();
@@ -272,7 +272,7 @@ public class DriveSubsystem extends SubsystemBase {
                     // the y coordinate will be rotated to move the robot left and right relative to the
                     // center of the hub
                     return ChassisSpeeds.fromRobotRelativeSpeeds(
-                            new ChassisSpeeds(distanceControllerOutput, orbitDirection.get(), 0.0),
+                            new ChassisSpeeds(distanceControllerOutput, orbitDirection.getAsDouble(), 0.0),
                             orbitCenter.minus(currentRobotPose.getTranslation()).getAngle());
                 },
                 () -> orbitCenter);

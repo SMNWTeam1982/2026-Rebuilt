@@ -109,14 +109,14 @@ public class Tunables {
 
         public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
 
-        public static final double FLYWHEEL_IDLE_RPM = 1000.0;
+        public static final double FLYWHEEL_IDLE_RPM = 0.0;
 
         public static final double SHOOTER_RPM_CEILING = 5500;
 
-        public static final AngularVelocity SPEED_OVERRIDE_1 = RPM.of(0);//AngularVelocity.ofBaseUnits(2000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(2500);//AngularVelocity.ofBaseUnits(3000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3000);//AngularVelocity.ofBaseUnits(4000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3500);//AngularVelocity.ofBaseUnits(5000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_1 = RPM.of(0); // AngularVelocity.ofBaseUnits(2000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(2500); // AngularVelocity.ofBaseUnits(3000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3000); // AngularVelocity.ofBaseUnits(4000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3500); // AngularVelocity.ofBaseUnits(5000, RPM);
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
