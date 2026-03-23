@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Kicker;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -16,7 +18,13 @@ public class KickerSubsystem extends SubsystemBase {
 
     public KickerSubsystem() {
         kickerMotor.configure(
-                Tunables.DEFAULT_SPARK_MAX_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+                KickerTunables.KICKER_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    }
+
+    @Override
+    public void periodic(){
+        Logger.recordOutput("Kicker/kicker output", kickerMotor.getAppliedOutput());
+        Logger.recordOutput("Kicker/kicker current", kickerMotor.getOutputCurrent());
     }
 
     public Command startKicker() {

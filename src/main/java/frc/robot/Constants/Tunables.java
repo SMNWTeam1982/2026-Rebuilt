@@ -45,7 +45,7 @@ public class Tunables {
 
         public static final double MAX_AUTO_SPEED = 0.5;
 
-        public static final double HEADING_P = 1.0;
+        public static final double HEADING_P = 0.1;
         public static final double HEADING_I = 0.0;
         public static final double HEADING_D = 0.0;
 
@@ -167,8 +167,8 @@ public class Tunables {
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
         public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.1);
 
-        public static final double MOVE_IN_SPEED = -0.3;
-        public static final double MOVE_OUT_SPEED = 0.3;
+        public static final double MOVE_IN_SPEED = -0.5;
+        public static final double MOVE_OUT_SPEED = 0.5;
 
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.7;
@@ -183,13 +183,15 @@ public class Tunables {
         /** the speed of the kicker when on high */
         public static final double HIGH_SPEED = 0.8;
         /** the speed of the kicker when on low */
-        public static final double LOW_SPEED = 0.5;
+        public static final double LOW_SPEED = 0.8;
         /** how long the kicker runs at the high speed before switching to the low speed */
         public static final Time HIGH_TIME = Seconds.of(1.0);
         /** how long the kicker runs at the low speed before switching to the high speed */
         public static final Time LOW_TIME = Seconds.of(0.5);
         /** the speed the kicker runs at when not active */
         public static final double IDLE_SPEED = 0.0;
+
+        public static final SparkBaseConfig KICKER_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(20).secondaryCurrentLimit(30).idleMode(IdleMode.kCoast);
     }
 
     public static final class ClimberTunables {
