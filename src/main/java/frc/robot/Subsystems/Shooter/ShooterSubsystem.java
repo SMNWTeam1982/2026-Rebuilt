@@ -11,6 +11,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -20,6 +22,8 @@ import frc.robot.PIDTools.FFCommandGenerators.SimpleMotorFFCommandGenerator;
 import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
 import java.util.function.DoubleSupplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -38,14 +42,16 @@ public class ShooterSubsystem extends SubsystemBase {
     private final PIDController leftVelocityController =
             new PIDController(ShooterTunables.FLYWHEEL_P, ShooterTunables.FLYWHEEL_I, ShooterTunables.FLYWHEEL_D);
 
-    /** setting the target velocity will also set the shooter to hold velocity */
+    private final Alert outOfBoundsRPMTarget = new Alert("Shooter/recieved out of bounds RPM target", AlertType.kError);
+
+    /** setting the target velocity will also set the shooter to hold velocity
+     * <p> the RPM target will be clamped between 0 and the shooter RPM limit
+     */
     public final PIDCommandGenerator<AngularVelocity> velocityControllerCommands =
             new PIDCommandGenerator<AngularVelocity>(
                     (target) -> {
-                        double targetRPM = target.in(RPM);
                         idle = true;
-                        rightVelocityController.setSetpoint(targetRPM);
-                        leftVelocityController.setSetpoint(targetRPM);
+                        setTargetAngularVelocity(target);
                     },
                     this,
                     rightVelocityController,
@@ -58,6 +64,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public final SimpleMotorFFCommandGenerator flywheelFFCommands =
             new SimpleMotorFFCommandGenerator(this, flywheelFeedforward);
 
+    @AutoLogOutput(key = "Shooter/using rpm calculation function")
     public final Trigger inShootMode = new Trigger(this::inShootMode);
 
     /** the RPM calculated by the shot calculation system */
@@ -95,15 +102,29 @@ public class ShooterSubsystem extends SubsystemBase {
         HotPIDFTuner.logPIDDetails("Shooter", "right RPM controller", rightVelocityController);
     }
 
+    /** set the target of both pid loops, doing unit conversion, clamping it, and sending an alert if it is out of bounds */
+    private void setTargetAngularVelocity(AngularVelocity targetFlywheelSpeed){
+        Logger.recordOutput("Shooter/target angular velocity", targetFlywheelSpeed);
+
+        double targetRPM = targetFlywheelSpeed.in(RPM);
+
+        // send an alert if the RPM target is out of bounds then clamp it
+        if(targetRPM >= ShooterTunables.SHOOTER_RPM_CEILING || targetRPM < 0.0){
+            outOfBoundsRPMTarget.set(true);
+            targetRPM = MathUtil.clamp(targetRPM, 0, ShooterTunables.SHOOTER_RPM_CEILING);
+        }else{
+            outOfBoundsRPMTarget.set(false);
+        }
+
+        rightVelocityController.setSetpoint(targetRPM);
+        leftVelocityController.setSetpoint(targetRPM);
+    }
+
     private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
         // give the pid RPM
         double pidOutput;
 
-        if (idle) {
-            pidOutput = pid.calculate(encoder.getVelocity());
-        } else {
-            pidOutput = pid.calculate(encoder.getVelocity(), rpmCalculation.getAsDouble());
-        }
+        pidOutput = pid.calculate(encoder.getVelocity());
 
         double targetRPM = pid.getSetpoint();
 
@@ -120,6 +141,10 @@ public class ShooterSubsystem extends SubsystemBase {
     /** runs the velocity control, the RPM target will change if set to shoot mode */
     public Command runPIDs() {
         return run(() -> {
+            if (!idle){
+                // update the target RPM if the shooter is NOT in idle mode
+                setTargetAngularVelocity(RPM.of(rpmCalculation.getAsDouble()));
+            }
             runFlywheelPID(rightVelocityController, rightMotor, rightEncoder);
             runFlywheelPID(leftVelocityController, leftMotor, leftEncoder);
         });
@@ -151,8 +176,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** changes the held RPM by the amount */
     public Command nudgeRPM(double rpmNudge) {
-        return defer(() -> velocityControllerCommands.setTarget(RPM.of(MathUtil.clamp(
-                (rpmNudge + rightVelocityController.getSetpoint()), 0, ShooterTunables.SHOOTER_RPM_CEILING))));
+        return defer(() -> velocityControllerCommands.setTarget(RPM.of(rpmNudge + rightVelocityController.getSetpoint())));
     }
 
     /** a command that just sets the motor voltage and doesn't do anything fancy with pids */

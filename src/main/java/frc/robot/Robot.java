@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.CANBus;
+
 import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedPowerDistribution;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
@@ -20,6 +24,7 @@ public class Robot extends LoggedRobot {
 
     public Robot() {
         Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+        LoggedPowerDistribution.getInstance(CANBus.POWER_DISTRIBUTION_HUB,ModuleType.kRev);
 
         if (isReal()) {
             Logger.addDataReceiver(new NT4Publisher()); // Publish Data exclusively to NetworkTables
