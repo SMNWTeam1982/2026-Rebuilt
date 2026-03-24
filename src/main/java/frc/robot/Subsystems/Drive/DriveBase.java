@@ -8,6 +8,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.CANBus.DriveIDs;
 import frc.robot.Constants.Measured.DriveBaseMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
@@ -44,6 +46,12 @@ public final class DriveBase {
     public final Pigeon2 gyro = new Pigeon2(0);
 
     public final Supplier<Optional<VisionData>> visionResults;
+
+    /** if the drive base has been commanded to move, 
+     * this is different from if the drive base has had a setter function called on it 
+     * <p> the alert will be set to true if the drive base has been told to move with zero velocity
+     */
+    private final Alert recievedMovementCommand = new Alert("DriveBase/recieved a movement command", AlertType.kInfo);
 
     /** stores data about the swerve modules and their states */
     public final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
@@ -82,6 +90,7 @@ public final class DriveBase {
 
     /** sets all of the drivetrain motors to 0 */
     public void stop() {
+        recievedMovementCommand.set(false);
         frontLeft.stop();
         frontRight.stop();
         backLeft.stop();
@@ -111,8 +120,19 @@ public final class DriveBase {
      * modules
      */
     public void setModulesFromRobotRelativeSpeeds(ChassisSpeeds speeds) {
+
+        // check if each drive desired movement is 0
+        if (speeds.vxMetersPerSecond == 0.0 && speeds.vyMetersPerSecond == 0.0 && speeds.omegaRadiansPerSecond == 0.0){
+            recievedMovementCommand.set(false);
+        }else{
+            recievedMovementCommand.set(true);
+        }
+
+        // discretize the speeds to account for movement inputs happening on discrete intervals
         ChassisSpeeds discretizedSpeeds = ChassisSpeeds.discretize(speeds, DriveBaseMeasurements.DRIVE_PERIOD);
+        // convert the speeds into module states
         SwerveModuleState[] moduleStates = driveKinematics.toSwerveModuleStates(discretizedSpeeds);
+        // slow down the speeds of all the wheels if one has been commanded to go too fast
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DriveBaseTunables.ARTIFICIAL_MAX_SPEED);
         setModuleStates(moduleStates);
     }
