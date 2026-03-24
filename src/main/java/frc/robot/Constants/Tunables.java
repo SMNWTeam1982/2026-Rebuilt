@@ -32,11 +32,11 @@ public class Tunables {
          * configurable based on driver preference and game need
          * <p> this will be capped by the artificial max speed, so it can be set to any value & used to tune sensitivity
          * <p> meters/sec */
-        public static final double DRIVE_SPEED = 1.0; // 1 m/s
+        public static final double DRIVE_SPEED = 2.0; // 1 m/s
         /** this can end up being capped by the artificial max speed, but the cap depends on robot size & module positions
          * <p> radians/sec
          */
-        public static final double TURN_SPEED = 3.0; // 3 rad/s
+        public static final double TURN_SPEED = 3.5; // 3 rad/s
         /** the amount the joystick needs to deflect before it will register an input */
         public static final double INPUT_DEADZONE = 0.1;
 
@@ -45,9 +45,9 @@ public class Tunables {
 
         public static final double MAX_AUTO_SPEED = 0.5;
 
-        public static final double HEADING_P = 0.1;
+        public static final double HEADING_P = 2.0;
         public static final double HEADING_I = 0.0;
-        public static final double HEADING_D = 0.0;
+        public static final double HEADING_D = 0.1;
 
         public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(5);
 
@@ -114,9 +114,9 @@ public class Tunables {
         public static final double SHOOTER_RPM_CEILING = 5500;
 
         public static final AngularVelocity SPEED_OVERRIDE_1 = RPM.of(0); // AngularVelocity.ofBaseUnits(2000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(2500); // AngularVelocity.ofBaseUnits(3000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3000); // AngularVelocity.ofBaseUnits(4000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3500); // AngularVelocity.ofBaseUnits(5000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(3250); // AngularVelocity.ofBaseUnits(3000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3750); // AngularVelocity.ofBaseUnits(4000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(4000); // AngularVelocity.ofBaseUnits(5000, RPM);
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;

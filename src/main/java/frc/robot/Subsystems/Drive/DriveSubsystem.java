@@ -230,7 +230,7 @@ public class DriveSubsystem extends SubsystemBase {
         return driveFieldRelative(() -> {
                     ChassisSpeeds fieldRelativeSpeeds = fieldRelativeTranlations.get();
 
-                    double angularVelocity = headingController.calculate(
+                    double angularVelocity = -headingController.calculate(
                             driveBase.getHeading().getRadians(),
                             desiredFieldRotation.get().getRadians());
 
@@ -254,7 +254,7 @@ public class DriveSubsystem extends SubsystemBase {
             teleopField
                     .getObject("Pointing Target")
                     .setPose(currentTarget.getX(), currentTarget.getY(), new Rotation2d());
-            return currentTarget.minus(getRobotPose().getTranslation()).getAngle();
+            return currentTarget.minus(getRobotPose().getTranslation()).getAngle().plus(Rotation2d.k180deg); // temporary fix for the robot's heading being reversed
         };
         return driveTopDown(fieldRelativeSpeeds, targetAngle);
     }
@@ -288,7 +288,7 @@ public class DriveSubsystem extends SubsystemBase {
                     Pose2d currentRobotPose = driveBase.getEstimatedPose();
                     Pose2d currentTargetPose = targetPose.get();
 
-                    double angularVelocity = headingController.calculate(
+                    double angularVelocity = -headingController.calculate(
                             currentRobotPose.getRotation().getRadians(),
                             currentTargetPose.getRotation().getRadians());
 
