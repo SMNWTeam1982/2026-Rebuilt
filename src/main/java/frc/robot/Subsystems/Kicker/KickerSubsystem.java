@@ -1,7 +1,5 @@
 package frc.robot.Subsystems.Kicker;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -10,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.CANBus.KickerIDs;
-import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.KickerTunables;
+import org.littletonrobotics.junction.Logger;
 
 public class KickerSubsystem extends SubsystemBase {
     private final SparkMax kickerMotor = new SparkMax(KickerIDs.KICKER, MotorType.kBrushless);
@@ -22,7 +20,7 @@ public class KickerSubsystem extends SubsystemBase {
     }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         Logger.recordOutput("Kicker/kicker output", kickerMotor.getAppliedOutput());
         Logger.recordOutput("Kicker/kicker current", kickerMotor.getOutputCurrent());
     }

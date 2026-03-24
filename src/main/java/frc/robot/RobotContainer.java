@@ -107,6 +107,8 @@ public class RobotContainer {
             })
             .debounce(1);
 
+    private final Trigger robotEnabled = new Trigger(DriverStation::isEnabled);
+
     /**
      * is the drive at the target heading?
      * <p> are the flywheels at the target speed?
@@ -123,6 +125,12 @@ public class RobotContainer {
         /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
         CameraServer.startAutomaticCapture();
+
+        // automatically disable the vision LED mode when teleOp is enabled
+        robotEnabled.onTrue(vision.deactivateLEDMode());
+        // automatically disable the vision LED mode when teleOp is enabled
+        // robotEnabled.onFalse(vision.activateLEDMode());
+
         configureDriverBindings();
         configureOperatorBindings();
 
@@ -203,24 +211,24 @@ public class RobotContainer {
         /**
          * Disables the velocity compensation
          */
-        operatorController.y().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        operatorController.back().debounce(0.05).onTrue(Commands.runOnce(() -> {
             velocityCompensationEnabled = false;
         }));
 
         /**
          * Reenables the velocity compensation
          */
-        operatorController.x().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        operatorController.start().debounce(0.05).onTrue(Commands.runOnce(() -> {
             velocityCompensationEnabled = true;
         }));
 
         // the shooter's rpm WILL be set when the driver changes mode
-        operatorController.start().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        operatorController.x().debounce(0.05).onTrue(Commands.runOnce(() -> {
             driverCanChangeShooterRPM = true;
         }));
 
         // the shooter's rpm will NOT be set when the driver changes mode
-        operatorController.back().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        operatorController.y().debounce(0.05).onTrue(Commands.runOnce(() -> {
             driverCanChangeShooterRPM = false;
         }));
 
@@ -241,6 +249,12 @@ public class RobotContainer {
                 .povUp()
                 .debounce(0.05)
                 .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_4));
+
+        Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.5);
+        Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.5);
+
+        leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(250));
+        leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-250));
     }
 
     private void configureTestingBindings() {
@@ -302,9 +316,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return DriverCommands.setAimAtTarget(
-                        drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget, () -> true)
-                .andThen(Commands.waitUntil(robotReadyToShoot));
-        // .andThen(kicker.startKicker()); disabled while kicker is disabled for testing
+        return vision.deactivateLEDMode();
     }
 }

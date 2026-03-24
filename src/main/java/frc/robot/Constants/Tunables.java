@@ -113,10 +113,10 @@ public class Tunables {
 
         public static final double SHOOTER_RPM_CEILING = 5500;
 
-        public static final AngularVelocity SPEED_OVERRIDE_1 = RPM.of(0); // AngularVelocity.ofBaseUnits(2000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(3250); // AngularVelocity.ofBaseUnits(3000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3750); // AngularVelocity.ofBaseUnits(4000, RPM);
-        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(4000); // AngularVelocity.ofBaseUnits(5000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_1 = RPM.of(0);
+        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(2750);
+        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3250);
+        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3750);
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
@@ -191,7 +191,10 @@ public class Tunables {
         /** the speed the kicker runs at when not active */
         public static final double IDLE_SPEED = 0.0;
 
-        public static final SparkBaseConfig KICKER_MOTOR_CONFIG = new SparkMaxConfig().smartCurrentLimit(20).secondaryCurrentLimit(30).idleMode(IdleMode.kCoast);
+        public static final SparkBaseConfig KICKER_MOTOR_CONFIG = new SparkMaxConfig()
+                .smartCurrentLimit(20)
+                .secondaryCurrentLimit(30)
+                .idleMode(IdleMode.kCoast);
     }
 
     public static final class ClimberTunables {

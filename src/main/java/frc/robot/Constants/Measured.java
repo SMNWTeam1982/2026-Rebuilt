@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -21,6 +22,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.Constants.Tunables.ShooterTunables;
 
 public class Measured {
     public static final class DriveBaseMeasurements {
@@ -107,12 +109,22 @@ public class Measured {
         public static final double MAX_SCHOOL_FLYWHEEL_RPM =
                 4750; // the balls will hit the cieling in the cafeteria above this speed
         public static final double HIGEST_RECORDED_FLYWHEEL_RPM_DROP = 400; // we recorded this at 4750 on march 7
+
+        /// data table:
+        /// distance | RPM | flight time
+        /// 2.484 | 3000 | no data
+        /// 3.33  | 3500 | no data
+        ///
+        /// linear regression for distance (x) & rpm (y):
+        /// y=591.01655x+1531.91489
         /**
          * the equation will be derived from a best fit of a data table that will be measured, expected
          * to be quadratic or cubic
          */
         public static double distanceToFlywheelRPM(double distanceFromHub) {
-            return 0.0;
+            double x = distanceFromHub;
+            double calculatedRPM = 591.01655 * x + 1531.91489;
+            return MathUtil.clamp(calculatedRPM, 0, ShooterTunables.SHOOTER_RPM_CEILING);
         }
 
         /**

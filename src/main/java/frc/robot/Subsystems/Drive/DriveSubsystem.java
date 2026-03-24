@@ -254,7 +254,10 @@ public class DriveSubsystem extends SubsystemBase {
             teleopField
                     .getObject("Pointing Target")
                     .setPose(currentTarget.getX(), currentTarget.getY(), new Rotation2d());
-            return currentTarget.minus(getRobotPose().getTranslation()).getAngle().plus(Rotation2d.k180deg); // temporary fix for the robot's heading being reversed
+            return currentTarget
+                    .minus(getRobotPose().getTranslation())
+                    .getAngle()
+                    .plus(Rotation2d.k180deg); // temporary fix for the robot's heading being reversed
         };
         return driveTopDown(fieldRelativeSpeeds, targetAngle);
     }
