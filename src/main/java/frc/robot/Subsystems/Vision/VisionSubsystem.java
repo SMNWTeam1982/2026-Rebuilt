@@ -2,12 +2,14 @@ package frc.robot.Subsystems.Vision;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.VisionConstants;
 import frc.robot.Constants.Measured.VisionMeasurements;
 import frc.robot.Constants.Tunables.VisionTunables;
@@ -32,6 +34,8 @@ public class VisionSubsystem extends SubsystemBase {
     private final PhotonPoseEstimator photonPoseEstimator;
     private Optional<VisionData> lastVisionResult = Optional.empty();
 
+    public final Trigger hasVisionResult = new Trigger(lastVisionResult::isPresent);
+
     @AutoLogOutput(key = "Vision/LED mode enabled")
     private boolean useLEDs = true;
 
@@ -42,6 +46,8 @@ public class VisionSubsystem extends SubsystemBase {
                 AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
                 VisionMeasurements.PHOTON_CAM_RELATIVE_TO_ROBOT);
         instanceCamera = new PhotonCamera(VisionConstants.limeLightCameraName);
+
+        hasVisionResult.debounce(1.0, DebounceType.kFalling).onTrue(turnLEDsOn()).onFalse(turnLEDsOff());
     }
 
     @Override
@@ -57,6 +63,18 @@ public class VisionSubsystem extends SubsystemBase {
         return VisionConstants.limeLightCameraName;
     }
 
+    public Command turnLEDsOn(){
+        return runOnce(
+            () -> instanceCamera.setLED(VisionLEDMode.kOn)
+        ).onlyIf(() -> useLEDs).ignoringDisable(true);
+    }
+
+    public Command turnLEDsOff(){
+        return runOnce(
+            () -> instanceCamera.setLED(VisionLEDMode.kOff)
+        ).onlyIf(() -> useLEDs).ignoringDisable(true);
+    }
+
     /** when LED mode is enabled, the LEDs on the limelight will turn on when it sees an april tag */
     public Command activateLEDMode() {
         return runOnce(() -> {
@@ -69,7 +87,6 @@ public class VisionSubsystem extends SubsystemBase {
     public Command deactivateLEDMode() {
         return runOnce(() -> {
                     useLEDs = false;
-                    instanceCamera.setLED(VisionLEDMode.kOff);
                 })
                 .ignoringDisable(true);
     }
@@ -110,12 +127,6 @@ public class VisionSubsystem extends SubsystemBase {
             return Optional.empty();
         }
 
-        // if we have a result that has tags, the LEDs on the limelight will be on
-        if (useLEDs) {
-            instanceCamera.setLED(VisionLEDMode.kOn);
-        } else {
-            instanceCamera.setLED(VisionLEDMode.kOff);
-        }
 
         EstimatedRobotPose estimatedPose = lastEstimatedPose.get();
 

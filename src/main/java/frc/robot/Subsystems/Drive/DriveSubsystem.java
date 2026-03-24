@@ -215,7 +215,12 @@ public class DriveSubsystem extends SubsystemBase {
     /** drives the robot with chassis speeds relative to the field coordinate system */
     public Command driveFieldRelative(Supplier<ChassisSpeeds> desiredFieldSpeeds) {
         return driveRobotRelative(
-                () -> ChassisSpeeds.fromFieldRelativeSpeeds(desiredFieldSpeeds.get(), driveBase.getHeading()));
+                () -> {
+                    ChassisSpeeds fieldSpeeds = desiredFieldSpeeds.get();
+                    Logger.recordOutput("Drive/desired field relative speeds", fieldSpeeds);
+                    return ChassisSpeeds.fromFieldRelativeSpeeds(fieldSpeeds, driveBase.getHeading());
+                }
+            );
     }
 
     /**
@@ -256,8 +261,7 @@ public class DriveSubsystem extends SubsystemBase {
                     .setPose(currentTarget.getX(), currentTarget.getY(), new Rotation2d());
             return currentTarget
                     .minus(getRobotPose().getTranslation())
-                    .getAngle()
-                    .plus(Rotation2d.k180deg); // temporary fix for the robot's heading being reversed
+                    .getAngle();
         };
         return driveTopDown(fieldRelativeSpeeds, targetAngle);
     }

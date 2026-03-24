@@ -128,6 +128,8 @@ public final class DriveBase {
             recievedMovementCommand.set(true);
         }
 
+        Logger.recordOutput("DriveBase/desired robot relative chassis speeds", speeds);
+
         // discretize the speeds to account for movement inputs happening on discrete intervals
         ChassisSpeeds discretizedSpeeds = ChassisSpeeds.discretize(speeds, DriveBaseMeasurements.DRIVE_PERIOD);
         // convert the speeds into module states
