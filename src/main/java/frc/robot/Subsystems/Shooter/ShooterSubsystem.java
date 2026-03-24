@@ -22,7 +22,6 @@ import frc.robot.PIDTools.FFCommandGenerators.SimpleMotorFFCommandGenerator;
 import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
 import java.util.function.DoubleSupplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -103,16 +102,16 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** set the target of both pid loops, doing unit conversion, clamping it, and sending an alert if it is out of bounds */
-    private void setTargetAngularVelocity(AngularVelocity targetFlywheelSpeed){
+    private void setTargetAngularVelocity(AngularVelocity targetFlywheelSpeed) {
         Logger.recordOutput("Shooter/target angular velocity", targetFlywheelSpeed);
 
         double targetRPM = targetFlywheelSpeed.in(RPM);
 
         // send an alert if the RPM target is out of bounds then clamp it
-        if(targetRPM >= ShooterTunables.SHOOTER_RPM_CEILING || targetRPM < 0.0){
+        if (targetRPM >= ShooterTunables.SHOOTER_RPM_CEILING || targetRPM < 0.0) {
             outOfBoundsRPMTarget.set(true);
             targetRPM = MathUtil.clamp(targetRPM, 0, ShooterTunables.SHOOTER_RPM_CEILING);
-        }else{
+        } else {
             outOfBoundsRPMTarget.set(false);
         }
 
@@ -141,7 +140,7 @@ public class ShooterSubsystem extends SubsystemBase {
     /** runs the velocity control, the RPM target will change if set to shoot mode */
     public Command runPIDs() {
         return run(() -> {
-            if (!idle){
+            if (!idle) {
                 // update the target RPM if the shooter is NOT in idle mode
                 setTargetAngularVelocity(RPM.of(rpmCalculation.getAsDouble()));
             }
@@ -176,7 +175,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** changes the held RPM by the amount */
     public Command nudgeRPM(double rpmNudge) {
-        return defer(() -> velocityControllerCommands.setTarget(RPM.of(rpmNudge + rightVelocityController.getSetpoint())));
+        return defer(
+                () -> velocityControllerCommands.setTarget(RPM.of(rpmNudge + rightVelocityController.getSetpoint())));
     }
 
     /** a command that just sets the motor voltage and doesn't do anything fancy with pids */

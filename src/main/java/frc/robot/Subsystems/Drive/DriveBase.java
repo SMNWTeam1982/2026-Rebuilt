@@ -47,8 +47,8 @@ public final class DriveBase {
 
     public final Supplier<Optional<VisionData>> visionResults;
 
-    /** if the drive base has been commanded to move, 
-     * this is different from if the drive base has had a setter function called on it 
+    /** if the drive base has been commanded to move,
+     * this is different from if the drive base has had a setter function called on it
      * <p> the alert will be set to true if the drive base has been told to move with zero velocity
      */
     private final Alert recievedMovementCommand = new Alert("DriveBase/recieved a movement command", AlertType.kInfo);
@@ -122,9 +122,9 @@ public final class DriveBase {
     public void setModulesFromRobotRelativeSpeeds(ChassisSpeeds speeds) {
 
         // check if each drive desired movement is 0
-        if (speeds.vxMetersPerSecond == 0.0 && speeds.vyMetersPerSecond == 0.0 && speeds.omegaRadiansPerSecond == 0.0){
+        if (speeds.vxMetersPerSecond == 0.0 && speeds.vyMetersPerSecond == 0.0 && speeds.omegaRadiansPerSecond == 0.0) {
             recievedMovementCommand.set(false);
-        }else{
+        } else {
             recievedMovementCommand.set(true);
         }
 
