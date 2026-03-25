@@ -254,8 +254,8 @@ public class RobotContainer {
         Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
         Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
 
-        leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(50));
-        leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-50));
+        leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(100));
+        leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-100));
     }
 
     private void configureTestingBindings() {

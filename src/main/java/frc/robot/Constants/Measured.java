@@ -111,18 +111,31 @@ public class Measured {
         public static final double HIGEST_RECORDED_FLYWHEEL_RPM_DROP = 400; // we recorded this at 4750 on march 7
 
         /// data table:
+        /// 
         /// distance | RPM | flight time
         /// 
-        ///
-        /// linear regression for distance (x) & rpm (y):
-        /// y=591.01655x+1531.91489
+        /// AKit2: 26-03-24_23-27-29
+        /// 2.005 | 2800 | no data
+        /// 2.533 | 3000 | no data
+        /// 3.606 | 3500 | no data
+        /// ----------------------
+        /// AKit1: 26-03-24_23-39-51
+        /// 3.533 | 3400 | no data
+        /// 3.982 | 3600 | no data
+        /// 4.495 | 3800 | no data
+        /// ----------------------
+        /// 
+        /// linear regression for RPM (y) and distance (x)
+        /// y = 407.53685x + 1981.08371
+        /// 
+        
         /**
          * the equation will be derived from a best fit of a data table that will be measured, expected
          * to be quadratic or cubic
          */
         public static double distanceToFlywheelRPM(double distanceFromHub) {
             double x = distanceFromHub;
-            double calculatedRPM = (-23.09965 * x * x * x) + (216.4407 * x * x) - (238.72801 * x) + 2593.53186;
+            double calculatedRPM = (407.53685 * x) + 1981.08371;
             return MathUtil.clamp(calculatedRPM, 0, ShooterTunables.SHOOTER_RPM_CEILING);
         }
 
