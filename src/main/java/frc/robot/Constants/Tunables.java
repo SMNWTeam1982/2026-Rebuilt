@@ -32,26 +32,26 @@ public class Tunables {
          * configurable based on driver preference and game need
          * <p> this will be capped by the artificial max speed, so it can be set to any value & used to tune sensitivity
          * <p> meters/sec */
-        public static final double DRIVE_SPEED = 1.0; // 1 m/s
+        public static final double DRIVE_SPEED = 2.0; // 1 m/s
         /** this can end up being capped by the artificial max speed, but the cap depends on robot size & module positions
          * <p> radians/sec
          */
-        public static final double TURN_SPEED = 3.0; // 3 rad/s
+        public static final double TURN_SPEED = -3.5; // 3 rad/s
         /** the amount the joystick needs to deflect before it will register an input */
         public static final double INPUT_DEADZONE = 0.1;
 
         /** a speed for the commands that fine tune the robot position robot-relative */
-        public static final double NUDGE_SPEED = 0.25;
+        public static final double NUDGE_SPEED = 0.5;
 
         public static final double MAX_AUTO_SPEED = 0.5;
 
-        public static final double HEADING_P = 3.5;
+        public static final double HEADING_P = 3.0;
         public static final double HEADING_I = 0.0;
-        public static final double HEADING_D = 0.0;
+        public static final double HEADING_D = 0.1;
 
-        public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(1);
+        public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(5);
 
-        public static final double TRANSLATION_P = 3.0;
+        public static final double TRANSLATION_P = 1.0;
         public static final double TRANSLATION_I = 0.0;
         public static final double TRANSLATION_D = 0.0;
 
@@ -66,7 +66,7 @@ public class Tunables {
 
         /** config for the drive motor on the module */
         public static final SparkBaseConfig DRIVE_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(35).idleMode(SparkBaseConfig.IdleMode.kBrake);
+                new SparkMaxConfig().smartCurrentLimit(35).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
 
         /** config for the turn motor on the module */
         public static final SparkBaseConfig TURN_MOTOR_CONFIG =
@@ -107,18 +107,21 @@ public class Tunables {
         public static final double FLYWHEEL_V = 0.128; // 26 Feb 2026
         public static final double FLYWHEEL_A = 0;
 
-        public static final double FLYWHEEL_RPM_TOLERANCE = 15.0;
+        public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
 
-        public static final double FLYWHEEL_IDLE_RPM = 2000.0;
+        public static final double FLYWHEEL_IDLE_RPM = 0.0;
 
         public static final double SHOOTER_RPM_CEILING = 5500;
 
-        public static final AngularVelocity SHOOTER_OVERIDE_SPEED = AngularVelocity.ofBaseUnits(4000, RPM);
+        public static final AngularVelocity SPEED_OVERRIDE_1 = RPM.of(0);
+        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(3400);
+        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3600);
+        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3800);
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
 
-        public static final Rotation2d SHOOTING_ANGLE_TOLERANCE = Rotation2d.fromDegrees(15);
+        // public static final Rotation2d SHOOTING_ANGLE_TOLERANCE = Rotation2d.fromDegrees(15);
 
         public static final int SHOT_PREDICTION_ITERATIONS = 5;
 
@@ -164,15 +167,15 @@ public class Tunables {
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
         public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.1);
 
-        public static final double MOVE_IN_SPEED = -0.9;
-        public static final double MOVE_OUT_SPEED = 0.9;
+        public static final double MOVE_IN_SPEED = -0.5;
+        public static final double MOVE_OUT_SPEED = 0.5;
 
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.7;
 
         public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(20)
-                .secondaryCurrentLimit(40)
+                .smartCurrentLimit(40)
+                .secondaryCurrentLimit(60)
                 .idleMode(SparkBaseConfig.IdleMode.kCoast);
     }
 
@@ -180,13 +183,18 @@ public class Tunables {
         /** the speed of the kicker when on high */
         public static final double HIGH_SPEED = 0.8;
         /** the speed of the kicker when on low */
-        public static final double LOW_SPEED = -0.2;
+        public static final double LOW_SPEED = 0.0;
         /** how long the kicker runs at the high speed before switching to the low speed */
-        public static final Time HIGH_TIME = Seconds.of(1.0);
+        public static final Time HIGH_TIME = Seconds.of(0.5);
         /** how long the kicker runs at the low speed before switching to the high speed */
-        public static final Time LOW_TIME = Seconds.of(0.8);
+        public static final Time LOW_TIME = Seconds.of(0.1);
         /** the speed the kicker runs at when not active */
-        public static final double IDLE_SPEED = -0.1;
+        public static final double IDLE_SPEED = 0.0;
+
+        public static final SparkBaseConfig KICKER_MOTOR_CONFIG = new SparkMaxConfig()
+                .smartCurrentLimit(20)
+                .secondaryCurrentLimit(30)
+                .idleMode(IdleMode.kCoast);
     }
 
     public static final class ClimberTunables {
@@ -195,6 +203,7 @@ public class Tunables {
     }
 
     public static final class VisionTunables {
-        public static final Matrix<N3, N1> PHOTON_CAM_VISION_TRUST = VecBuilder.fill(.9, .9, .9);
+        public static final Matrix<N3, N1> STANDARD_DEVIATIONS = VecBuilder.fill(.7, .7, .3);
+        public static final Matrix<N3, N1> MULTI_TAG_STANDARD_DEVIATIONS = VecBuilder.fill(0.15, 0.15, 0.1);
     }
 }

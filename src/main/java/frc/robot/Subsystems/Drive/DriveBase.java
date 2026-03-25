@@ -8,6 +8,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import frc.robot.Constants.CANBus.DriveIDs;
 import frc.robot.Constants.Measured.DriveBaseMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
@@ -15,6 +17,7 @@ import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 /**
  * NOT A SUBSYSTEM
@@ -44,6 +47,12 @@ public final class DriveBase {
 
     public final Supplier<Optional<VisionData>> visionResults;
 
+    /** if the drive base has been commanded to move,
+     * this is different from if the drive base has had a setter function called on it
+     * <p> the alert will be set to true if the drive base has been told to move with zero velocity
+     */
+    private final Alert recievedTranslationInput = new Alert("DriveBase/recieved a translation input", AlertType.kInfo);
+
     /** stores data about the swerve modules and their states */
     public final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
             DriveBaseMeasurements.FRONT_LEFT_TRANSLATION,
@@ -57,6 +66,7 @@ public final class DriveBase {
 
     public DriveBase(Supplier<Optional<VisionData>> visionResults) {
         this.visionResults = visionResults;
+        recievedTranslationInput.set(false);
     }
 
     /**
@@ -81,6 +91,7 @@ public final class DriveBase {
 
     /** sets all of the drivetrain motors to 0 */
     public void stop() {
+        recievedTranslationInput.set(false);
         frontLeft.stop();
         frontRight.stop();
         backLeft.stop();
@@ -110,8 +121,21 @@ public final class DriveBase {
      * modules
      */
     public void setModulesFromRobotRelativeSpeeds(ChassisSpeeds speeds) {
+
+        // check if each drive desired movement is 0
+        if (speeds.vxMetersPerSecond == 0.0 && speeds.vyMetersPerSecond == 0.0) {
+            recievedTranslationInput.set(false);
+        } else {
+            recievedTranslationInput.set(true);
+        }
+
+        Logger.recordOutput("DriveBase/desired robot relative speeds", speeds);
+
+        // discretize the speeds to account for movement inputs happening on discrete intervals
         ChassisSpeeds discretizedSpeeds = ChassisSpeeds.discretize(speeds, DriveBaseMeasurements.DRIVE_PERIOD);
+        // convert the speeds into module states
         SwerveModuleState[] moduleStates = driveKinematics.toSwerveModuleStates(discretizedSpeeds);
+        // slow down the speeds of all the wheels if one has been commanded to go too fast
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DriveBaseTunables.ARTIFICIAL_MAX_SPEED);
         setModuleStates(moduleStates);
     }
@@ -149,6 +173,9 @@ public final class DriveBase {
         frontRight.logModuleData();
         backLeft.logModuleData();
         backRight.logModuleData();
+        Logger.recordOutput("DriveBase/ModuleStates", new SwerveModuleState[] {
+            frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()
+        });
     }
 
     /** Returns the heading from getEstimatedPose() */

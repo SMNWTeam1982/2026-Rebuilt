@@ -8,15 +8,20 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.CANBus.KickerIDs;
-import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.KickerTunables;
+import frc.robot.SparkMaxHelper;
 
 public class KickerSubsystem extends SubsystemBase {
     private final SparkMax kickerMotor = new SparkMax(KickerIDs.KICKER, MotorType.kBrushless);
 
     public KickerSubsystem() {
         kickerMotor.configure(
-                Tunables.DEFAULT_SPARK_MAX_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+                KickerTunables.KICKER_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    }
+
+    @Override
+    public void periodic() {
+        SparkMaxHelper.logMotorDetails("Kicker", "kicker motor", kickerMotor);
     }
 
     public Command startKicker() {

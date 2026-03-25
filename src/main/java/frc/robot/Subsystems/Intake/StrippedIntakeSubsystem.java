@@ -1,8 +1,5 @@
 package frc.robot.Subsystems.Intake;
 
-import static edu.wpi.first.units.Units.Seconds;
-
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
@@ -12,8 +9,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.IntakeIDs;
 import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.IntakeTunables;
+import frc.robot.SparkMaxHelper;
 import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 /** since we are having issues with the intake pivot motor, a stripped down version without complicated PIDF control is being created as a backup */
 public class StrippedIntakeSubsystem extends SubsystemBase {
@@ -23,18 +20,21 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
     /** for deploying the intake */
     private final SparkMax pivotMotor = new SparkMax(IntakeIDs.PIVOT, SparkMax.MotorType.kBrushless);
 
-    /** the absolue throughbore encoder attatched to the hex shaft */
-    private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
+    @AutoLogOutput(key = "Intake/intake motor is hot")
+    private final Trigger intakeMotorHot = new Trigger(() -> intakeMotor.getMotorTemperature() >= 60);
 
-    @AutoLogOutput(key = "Intake/is stowed")
-    public final Trigger stowed = new Trigger(
-                    () -> pivotEncoder.getAbsolutePosition().getValueAsDouble() < IntakeTunables.STOWED_THRESHOLD)
-            .debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
+    // /** the absolue throughbore encoder attatched to the hex shaft */
+    // private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
 
-    @AutoLogOutput(key = "Intake/is deployed")
-    public final Trigger deployed = new Trigger(
-                    () -> pivotEncoder.getAbsolutePosition().getValueAsDouble() > IntakeTunables.DEPLOYED_THRESHOLD)
-            .debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
+    // @AutoLogOutput(key = "Intake/is stowed")
+    // public final Trigger stowed = new Trigger(
+    //                 () -> pivotEncoder.getAbsolutePosition().getValueAsDouble() < IntakeTunables.STOWED_THRESHOLD)
+    //         .debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
+
+    // @AutoLogOutput(key = "Intake/is deployed")
+    // public final Trigger deployed = new Trigger(
+    //                 () -> pivotEncoder.getAbsolutePosition().getValueAsDouble() > IntakeTunables.DEPLOYED_THRESHOLD)
+    //         .debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
 
     public StrippedIntakeSubsystem() {
         pivotMotor.configure(
@@ -46,8 +46,10 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        Logger.recordOutput(
-                "Intake/absolute position", pivotEncoder.getAbsolutePosition().getValueAsDouble());
+        // Logger.recordOutput("Intake/absolute position", pivotEncoder.getAbsolutePosition().getValueAsDouble());
+
+        SparkMaxHelper.logMotorDetails("Intake", "pivot motor", pivotMotor);
+        SparkMaxHelper.logMotorDetails("Intake", "intake motor", intakeMotor);
     }
 
     /** sets the intake motor to the intake speed */

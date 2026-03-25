@@ -1,6 +1,7 @@
 package frc.robot.Constants;
 
 public class CANBus {
+    public static final int POWER_DISTRIBUTION_HUB = 50;
 
     public static final class DriveIDs {
         public static final int FRONT_LEFT_DRIVE = 1;

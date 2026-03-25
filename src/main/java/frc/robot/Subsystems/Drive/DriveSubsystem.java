@@ -39,7 +39,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     public final PIDCommandGenerator<Rotation2d> swerveModuleRotationCommands;
 
-    /** controller for the field-relative heading of the robot */
+    /** controller for the field-relative heading of the robot, in radians out radians/sec */
     private final PIDController headingController =
             new PIDController(DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D);
 
@@ -214,8 +214,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     /** drives the robot with chassis speeds relative to the field coordinate system */
     public Command driveFieldRelative(Supplier<ChassisSpeeds> desiredFieldSpeeds) {
-        return driveRobotRelative(
-                () -> ChassisSpeeds.fromFieldRelativeSpeeds(desiredFieldSpeeds.get(), driveBase.getHeading()));
+        return driveRobotRelative(() -> {
+            ChassisSpeeds fieldSpeeds = desiredFieldSpeeds.get();
+            Logger.recordOutput("Drive/desired field relative speeds", fieldSpeeds);
+            return ChassisSpeeds.fromFieldRelativeSpeeds(fieldSpeeds, driveBase.getHeading());
+        });
     }
 
     /**
@@ -260,7 +263,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     /** drives the robot in a circle around the orbitCenter with a radius of the orbitDistance */
-    public Command orbitPoint(Supplier<Double> orbitDirection, Translation2d orbitCenter, double orbitDistance) {
+    public Command orbitPoint(DoubleSupplier orbitDirection, Translation2d orbitCenter, double orbitDistance) {
         return driveAndPointAtTarget(
                 () -> {
                     Pose2d currentRobotPose = driveBase.getEstimatedPose();
@@ -272,7 +275,7 @@ public class DriveSubsystem extends SubsystemBase {
                     // the y coordinate will be rotated to move the robot left and right relative to the
                     // center of the hub
                     return ChassisSpeeds.fromRobotRelativeSpeeds(
-                            new ChassisSpeeds(distanceControllerOutput, orbitDirection.get(), 0.0),
+                            new ChassisSpeeds(distanceControllerOutput, orbitDirection.getAsDouble(), 0.0),
                             orbitCenter.minus(currentRobotPose.getTranslation()).getAngle());
                 },
                 () -> orbitCenter);
@@ -288,7 +291,7 @@ public class DriveSubsystem extends SubsystemBase {
                     Pose2d currentRobotPose = driveBase.getEstimatedPose();
                     Pose2d currentTargetPose = targetPose.get();
 
-                    double angularVelocity = headingController.calculate(
+                    double angularVelocity = -headingController.calculate(
                             currentRobotPose.getRotation().getRadians(),
                             currentTargetPose.getRotation().getRadians());
 
@@ -320,19 +323,23 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Command nudgeForward() {
-        return driveRobotRelative(() -> new ChassisSpeeds(DriveBaseTunables.NUDGE_SPEED, 0, 0));
+        return driveRobotRelative(() -> new ChassisSpeeds(DriveBaseTunables.NUDGE_SPEED, 0, 0))
+                .withName("nudge forward");
     }
 
     public Command nudgeBack() {
-        return driveRobotRelative(() -> new ChassisSpeeds(-DriveBaseTunables.NUDGE_SPEED, 0, 0));
+        return driveRobotRelative(() -> new ChassisSpeeds(-DriveBaseTunables.NUDGE_SPEED, 0, 0))
+                .withName("nudge back");
     }
 
     public Command nudgeRight() {
-        return driveRobotRelative(() -> new ChassisSpeeds(0, -DriveBaseTunables.NUDGE_SPEED, 0));
+        return driveRobotRelative(() -> new ChassisSpeeds(0, -DriveBaseTunables.NUDGE_SPEED, 0))
+                .withName("nudge right");
     }
 
     public Command nudgeLeft() {
-        return driveRobotRelative(() -> new ChassisSpeeds(0, DriveBaseTunables.NUDGE_SPEED, 0));
+        return driveRobotRelative(() -> new ChassisSpeeds(0, DriveBaseTunables.NUDGE_SPEED, 0))
+                .withName("nudge left");
     }
 
     public Pose2d getRobotPose() {

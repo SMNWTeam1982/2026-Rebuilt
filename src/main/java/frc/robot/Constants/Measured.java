@@ -1,13 +1,14 @@
 package frc.robot.Constants;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -21,6 +22,7 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.wpilibj.TimedRobot;
+import frc.robot.Constants.Tunables.ShooterTunables;
 
 public class Measured {
     public static final class DriveBaseMeasurements {
@@ -38,7 +40,7 @@ public class Measured {
     }
 
     public static final class PathplannerMeasurements {
-        private static final Distance WHEEL_RADIUS = Meters.of(0.04); // guess
+        private static final Distance WHEEL_RADIUS = Inches.of(2); // 12.5/2pi is about 2 inches
         private static final LinearVelocity MAX_DRIVE_VELOCITY =
                 MetersPerSecond.of(DriveBaseMeasurements.PHYSICAL_MAX_SPEED); // set elsewhere
         private static final double WHEEL_COF = .4; // guess
@@ -107,12 +109,34 @@ public class Measured {
         public static final double MAX_SCHOOL_FLYWHEEL_RPM =
                 4750; // the balls will hit the cieling in the cafeteria above this speed
         public static final double HIGEST_RECORDED_FLYWHEEL_RPM_DROP = 400; // we recorded this at 4750 on march 7
+
+        /// data table:
+        ///
+        /// distance | RPM | flight time
+        ///
+        /// AKit2: 26-03-24_23-27-29
+        /// 2.005 | 2800 | no data
+        /// 2.533 | 3000 | no data
+        /// 3.606 | 3500 | no data
+        /// ----------------------
+        /// AKit1: 26-03-24_23-39-51
+        /// 3.533 | 3400 | no data
+        /// 3.982 | 3600 | no data
+        /// 4.495 | 3800 | no data
+        /// ----------------------
+        ///
+        /// linear regression for RPM (y) and distance (x)
+        /// y = 407.53685x + 1981.08371
+        ///
+
         /**
          * the equation will be derived from a best fit of a data table that will be measured, expected
          * to be quadratic or cubic
          */
         public static double distanceToFlywheelRPM(double distanceFromHub) {
-            return 0.0;
+            double x = distanceFromHub;
+            double calculatedRPM = (407.53685 * x) + 1981.08371;
+            return MathUtil.clamp(calculatedRPM, 0, ShooterTunables.SHOOTER_RPM_CEILING);
         }
 
         /**
@@ -137,6 +161,6 @@ public class Measured {
     public static final class VisionMeasurements {
         public static final Transform3d PHOTON_CAM_RELATIVE_TO_ROBOT = new Transform3d(
                 new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(9.25), Units.inchesToMeters(20.375)),
-                new Rotation3d(0.0, 9.0, 0.0));
+                new Rotation3d(0.0, Math.toRadians(-11.0 /*9.0*/), 0.0));
     }
 }
