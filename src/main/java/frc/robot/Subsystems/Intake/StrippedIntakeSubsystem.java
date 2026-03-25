@@ -5,10 +5,12 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.IntakeIDs;
 import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.IntakeTunables;
-import org.littletonrobotics.junction.Logger;
+import frc.robot.SparkMaxHelper;
+import org.littletonrobotics.junction.AutoLogOutput;
 
 /** since we are having issues with the intake pivot motor, a stripped down version without complicated PIDF control is being created as a backup */
 public class StrippedIntakeSubsystem extends SubsystemBase {
@@ -17,6 +19,9 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
 
     /** for deploying the intake */
     private final SparkMax pivotMotor = new SparkMax(IntakeIDs.PIVOT, SparkMax.MotorType.kBrushless);
+
+    @AutoLogOutput(key = "Intake/intake motor is hot")
+    private final Trigger intakeMotorHot = new Trigger(() -> intakeMotor.getMotorTemperature() >= 60);
 
     // /** the absolue throughbore encoder attatched to the hex shaft */
     // private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
@@ -43,8 +48,8 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
     public void periodic() {
         // Logger.recordOutput("Intake/absolute position", pivotEncoder.getAbsolutePosition().getValueAsDouble());
 
-        Logger.recordOutput("Intake/pivot current draw", pivotMotor.getOutputCurrent());
-        Logger.recordOutput("Intake/pivot output", pivotMotor.getAppliedOutput());
+        SparkMaxHelper.logMotorDetails("Intake", "pivot motor", pivotMotor);
+        SparkMaxHelper.logMotorDetails("Intake", "intake motor", intakeMotor);
     }
 
     /** sets the intake motor to the intake speed */

@@ -48,7 +48,10 @@ public class VisionSubsystem extends SubsystemBase {
                 VisionMeasurements.PHOTON_CAM_RELATIVE_TO_ROBOT);
         instanceCamera = new PhotonCamera(VisionConstants.limeLightCameraName);
 
-        hasVisionResult.debounce(1.0, DebounceType.kFalling).onTrue(turnLEDsOn()).onFalse(turnLEDsOff());
+        hasVisionResult
+                .debounce(1.0, DebounceType.kFalling)
+                .onTrue(turnLEDsOn())
+                .onFalse(turnLEDsOff());
     }
 
     @Override
@@ -64,16 +67,16 @@ public class VisionSubsystem extends SubsystemBase {
         return VisionConstants.limeLightCameraName;
     }
 
-    public Command turnLEDsOn(){
-        return runOnce(
-            () -> instanceCamera.setLED(VisionLEDMode.kOn)
-        ).onlyIf(() -> useLEDs).ignoringDisable(true);
+    public Command turnLEDsOn() {
+        return runOnce(() -> instanceCamera.setLED(VisionLEDMode.kOn))
+                .onlyIf(() -> useLEDs)
+                .ignoringDisable(true);
     }
 
-    public Command turnLEDsOff(){
-        return runOnce(
-            () -> instanceCamera.setLED(VisionLEDMode.kOff)
-        ).onlyIf(() -> useLEDs).ignoringDisable(true);
+    public Command turnLEDsOff() {
+        return runOnce(() -> instanceCamera.setLED(VisionLEDMode.kOff))
+                .onlyIf(() -> useLEDs)
+                .ignoringDisable(true);
     }
 
     /** when LED mode is enabled, the LEDs on the limelight will turn on when it sees an april tag */
@@ -127,7 +130,6 @@ public class VisionSubsystem extends SubsystemBase {
             Logger.recordOutput("Vision/visible targets", 0);
             return Optional.empty();
         }
-
 
         EstimatedRobotPose estimatedPose = lastEstimatedPose.get();
 

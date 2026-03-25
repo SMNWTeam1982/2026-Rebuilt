@@ -111,9 +111,9 @@ public class Measured {
         public static final double HIGEST_RECORDED_FLYWHEEL_RPM_DROP = 400; // we recorded this at 4750 on march 7
 
         /// data table:
-        /// 
+        ///
         /// distance | RPM | flight time
-        /// 
+        ///
         /// AKit2: 26-03-24_23-27-29
         /// 2.005 | 2800 | no data
         /// 2.533 | 3000 | no data
@@ -124,11 +124,11 @@ public class Measured {
         /// 3.982 | 3600 | no data
         /// 4.495 | 3800 | no data
         /// ----------------------
-        /// 
+        ///
         /// linear regression for RPM (y) and distance (x)
         /// y = 407.53685x + 1981.08371
-        /// 
-        
+        ///
+
         /**
          * the equation will be derived from a best fit of a data table that will be measured, expected
          * to be quadratic or cubic
@@ -161,6 +161,6 @@ public class Measured {
     public static final class VisionMeasurements {
         public static final Transform3d PHOTON_CAM_RELATIVE_TO_ROBOT = new Transform3d(
                 new Translation3d(Units.inchesToMeters(-2), Units.inchesToMeters(9.25), Units.inchesToMeters(20.375)),
-                new Rotation3d(0.0, Math.toRadians(-11.0/*9.0*/), 0.0));
+                new Rotation3d(0.0, Math.toRadians(-11.0 /*9.0*/), 0.0));
     }
 }

@@ -214,13 +214,11 @@ public class DriveSubsystem extends SubsystemBase {
 
     /** drives the robot with chassis speeds relative to the field coordinate system */
     public Command driveFieldRelative(Supplier<ChassisSpeeds> desiredFieldSpeeds) {
-        return driveRobotRelative(
-                () -> {
-                    ChassisSpeeds fieldSpeeds = desiredFieldSpeeds.get();
-                    Logger.recordOutput("Drive/desired field relative speeds", fieldSpeeds);
-                    return ChassisSpeeds.fromFieldRelativeSpeeds(fieldSpeeds, driveBase.getHeading());
-                }
-            );
+        return driveRobotRelative(() -> {
+            ChassisSpeeds fieldSpeeds = desiredFieldSpeeds.get();
+            Logger.recordOutput("Drive/desired field relative speeds", fieldSpeeds);
+            return ChassisSpeeds.fromFieldRelativeSpeeds(fieldSpeeds, driveBase.getHeading());
+        });
     }
 
     /**
@@ -259,9 +257,7 @@ public class DriveSubsystem extends SubsystemBase {
             teleopField
                     .getObject("Pointing Target")
                     .setPose(currentTarget.getX(), currentTarget.getY(), new Rotation2d());
-            return currentTarget
-                    .minus(getRobotPose().getTranslation())
-                    .getAngle();
+            return currentTarget.minus(getRobotPose().getTranslation()).getAngle();
         };
         return driveTopDown(fieldRelativeSpeeds, targetAngle);
     }
@@ -327,19 +323,23 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Command nudgeForward() {
-        return driveRobotRelative(() -> new ChassisSpeeds(DriveBaseTunables.NUDGE_SPEED, 0, 0)).withName("nudge forward");
+        return driveRobotRelative(() -> new ChassisSpeeds(DriveBaseTunables.NUDGE_SPEED, 0, 0))
+                .withName("nudge forward");
     }
 
     public Command nudgeBack() {
-        return driveRobotRelative(() -> new ChassisSpeeds(-DriveBaseTunables.NUDGE_SPEED, 0, 0)).withName("nudge back");
+        return driveRobotRelative(() -> new ChassisSpeeds(-DriveBaseTunables.NUDGE_SPEED, 0, 0))
+                .withName("nudge back");
     }
 
     public Command nudgeRight() {
-        return driveRobotRelative(() -> new ChassisSpeeds(0, -DriveBaseTunables.NUDGE_SPEED, 0)).withName("nudge right");
+        return driveRobotRelative(() -> new ChassisSpeeds(0, -DriveBaseTunables.NUDGE_SPEED, 0))
+                .withName("nudge right");
     }
 
     public Command nudgeLeft() {
-        return driveRobotRelative(() -> new ChassisSpeeds(0, DriveBaseTunables.NUDGE_SPEED, 0)).withName("nudge left");
+        return driveRobotRelative(() -> new ChassisSpeeds(0, DriveBaseTunables.NUDGE_SPEED, 0))
+                .withName("nudge left");
     }
 
     public Pose2d getRobotPose() {

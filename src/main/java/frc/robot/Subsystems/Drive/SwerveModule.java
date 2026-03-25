@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Constants.Measured.SwerveModuleMeasurements;
 import frc.robot.Constants.Tunables.SwerveModuleTunables;
+import frc.robot.SparkMaxHelper;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -143,6 +144,8 @@ public final class SwerveModule {
     public void logModuleData() {
         // Logger.recordOutput("DriveBase/" + moduleName + "/state", getState());
         Logger.recordOutput("DriveBase/" + moduleName + "/measured speed", getState().speedMetersPerSecond);
-        Logger.recordOutput("DriveBase/" + moduleName + "/driveCurrent", getDriveMotorOutputCurrent());
+
+        SparkMaxHelper.logMotorDetails("DriveBase/" + moduleName, "drive motor", driveMotor);
+        SparkMaxHelper.logMotorDetails("DriveBase/" + moduleName, "turn motor", turnMotor);
     }
 }

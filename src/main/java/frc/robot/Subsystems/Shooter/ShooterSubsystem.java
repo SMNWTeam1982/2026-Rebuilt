@@ -21,6 +21,7 @@ import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.PIDTools.FFCommandGenerators.SimpleMotorFFCommandGenerator;
 import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
+import frc.robot.SparkMaxHelper;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -93,10 +94,12 @@ public class ShooterSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         Logger.recordOutput("Shooter/At target", velocityControllerCommands.atSetpoint.getAsBoolean());
-        Logger.recordOutput("Shooter/Right current", rightMotor.getOutputCurrent());
-        Logger.recordOutput("Shooter/Left current", leftMotor.getOutputCurrent());
+
         Logger.recordOutput("Shooter/Right Flywheel RPM", getRightFlywheelVelocity());
         Logger.recordOutput("Shooter/Left Flywheel RPM", getLeftFlywheelVelocity());
+
+        SparkMaxHelper.logMotorDetails("Shooter", "left motor", leftMotor);
+        SparkMaxHelper.logMotorDetails("Shooter", "right motor", rightMotor);
 
         HotPIDFTuner.logPIDDetails("Shooter", "left RPM controller", leftVelocityController);
         HotPIDFTuner.logPIDDetails("Shooter", "right RPM controller", rightVelocityController);

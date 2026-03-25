@@ -317,6 +317,12 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return drive.driveRobotRelative(() -> new ChassisSpeeds(-0.2,0,0)).withTimeout(3).andThen(DriverCommands.setAimAtTarget(drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget, () -> true)).andThen(Commands.waitUntil(robotReadyToShoot)).andThen(kicker.startKicker()).andThen(vision.deactivateLEDMode());
+        return drive.nudgeBack()
+                .withTimeout(3)
+                .andThen(DriverCommands.setAimAtTarget(
+                        drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget, () -> true))
+                .andThen(Commands.waitUntil(robotReadyToShoot))
+                .andThen(kicker.startKicker())
+                .andThen(vision.deactivateLEDMode());
     }
 }
