@@ -34,6 +34,7 @@ public class VisionSubsystem extends SubsystemBase {
     private final PhotonPoseEstimator photonPoseEstimator;
     private Optional<VisionData> lastVisionResult = Optional.empty();
 
+    @AutoLogOutput(key = "Vision/has a tag result")
     public final Trigger hasVisionResult = new Trigger(lastVisionResult::isPresent);
 
     @AutoLogOutput(key = "Vision/LED mode enabled")

@@ -203,6 +203,7 @@ public class Tunables {
     }
 
     public static final class VisionTunables {
-        public static final Matrix<N3, N1> STANDARD_DEVIATIONS = VecBuilder.fill(.9, .9, .9);
+        public static final Matrix<N3, N1> STANDARD_DEVIATIONS = VecBuilder.fill(.7, .7, .3);
+        public static final Matrix<N3, N1> MULTI_TAG_STANDARD_DEVIATIONS = VecBuilder.fill(0.15,0.15,0.1);
     }
 }

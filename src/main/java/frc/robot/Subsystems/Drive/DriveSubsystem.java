@@ -327,19 +327,19 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Command nudgeForward() {
-        return driveRobotRelative(() -> new ChassisSpeeds(DriveBaseTunables.NUDGE_SPEED, 0, 0));
+        return driveRobotRelative(() -> new ChassisSpeeds(DriveBaseTunables.NUDGE_SPEED, 0, 0)).withName("nudge forward");
     }
 
     public Command nudgeBack() {
-        return driveRobotRelative(() -> new ChassisSpeeds(-DriveBaseTunables.NUDGE_SPEED, 0, 0));
+        return driveRobotRelative(() -> new ChassisSpeeds(-DriveBaseTunables.NUDGE_SPEED, 0, 0)).withName("nudge back");
     }
 
     public Command nudgeRight() {
-        return driveRobotRelative(() -> new ChassisSpeeds(0, -DriveBaseTunables.NUDGE_SPEED, 0));
+        return driveRobotRelative(() -> new ChassisSpeeds(0, -DriveBaseTunables.NUDGE_SPEED, 0)).withName("nudge right");
     }
 
     public Command nudgeLeft() {
-        return driveRobotRelative(() -> new ChassisSpeeds(0, DriveBaseTunables.NUDGE_SPEED, 0));
+        return driveRobotRelative(() -> new ChassisSpeeds(0, DriveBaseTunables.NUDGE_SPEED, 0)).withName("nudge left");
     }
 
     public Pose2d getRobotPose() {

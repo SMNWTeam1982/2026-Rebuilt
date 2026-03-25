@@ -168,9 +168,10 @@ public class ShooterSubsystem extends SubsystemBase {
         return velocityControllerCommands.setTarget(RPM.of(ShooterTunables.FLYWHEEL_IDLE_RPM));
     }
 
-    /** a command that sets the rpm supplier to the one provided */
+    /** a command that sets the rpm supplier to the one provided, and sets the shooter to follow it */
     public Command setRPMSupplier(DoubleSupplier calculatedRPM) {
         return runOnce(() -> {
+            idle = false;
             this.rpmCalculation = calculatedRPM;
         });
     }

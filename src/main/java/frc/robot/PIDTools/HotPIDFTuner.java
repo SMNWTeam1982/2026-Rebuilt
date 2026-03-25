@@ -79,6 +79,8 @@ public final class HotPIDFTuner {
     public static void logPIDDetails(String subsystemName, String controllerName, PIDController controller) {
         String path = subsystemName + "/" + controllerName + "/";
 
+        Logger.recordOutput(path + "at target", controller.atSetpoint());
+
         Logger.recordOutput(path + "p gain", controller.getP());
         Logger.recordOutput(path + "I gain", controller.getI());
         Logger.recordOutput(path + "D gain", controller.getD());
