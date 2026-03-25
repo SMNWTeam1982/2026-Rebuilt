@@ -235,7 +235,7 @@ public class DriveSubsystem extends SubsystemBase {
         return driveFieldRelative(() -> {
                     ChassisSpeeds fieldRelativeSpeeds = fieldRelativeTranlations.get();
 
-                    double angularVelocity = -headingController.calculate(
+                    double angularVelocity = headingController.calculate(
                             driveBase.getHeading().getRadians(),
                             desiredFieldRotation.get().getRadians());
 

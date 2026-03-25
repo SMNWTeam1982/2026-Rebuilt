@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.ShooterIDs;
+import frc.robot.Constants.Measured.ShooterMeasurements;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.PIDTools.FFCommandGenerators.SimpleMotorFFCommandGenerator;
 import frc.robot.PIDTools.HotPIDFTuner;
@@ -67,6 +68,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public final Trigger inShootMode = new Trigger(this::inShootMode);
 
     /** the RPM calculated by the shot calculation system */
+    @AutoLogOutput(key = "Shooter/rpm calculation")
     private DoubleSupplier rpmCalculation = () -> 0.0;
 
     private boolean idle = true;

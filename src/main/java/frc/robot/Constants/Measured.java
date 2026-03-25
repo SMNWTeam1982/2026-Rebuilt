@@ -112,8 +112,7 @@ public class Measured {
 
         /// data table:
         /// distance | RPM | flight time
-        /// 2.484 | 3000 | no data
-        /// 3.33  | 3500 | no data
+        /// 
         ///
         /// linear regression for distance (x) & rpm (y):
         /// y=591.01655x+1531.91489
@@ -123,7 +122,7 @@ public class Measured {
          */
         public static double distanceToFlywheelRPM(double distanceFromHub) {
             double x = distanceFromHub;
-            double calculatedRPM = 591.01655 * x + 1531.91489;
+            double calculatedRPM = (-23.09965 * x * x * x) + (216.4407 * x * x) - (238.72801 * x) + 2593.53186;
             return MathUtil.clamp(calculatedRPM, 0, ShooterTunables.SHOOTER_RPM_CEILING);
         }
 

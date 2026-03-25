@@ -124,7 +124,8 @@ public class RobotContainer {
     public RobotContainer() {
         /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
-        CameraServer.startAutomaticCapture();
+        CameraServer.startAutomaticCapture(0);
+        CameraServer.startAutomaticCapture(1);
 
         // automatically disable the vision LED mode when teleOp is enabled
         robotEnabled.onTrue(vision.deactivateLEDMode());
@@ -253,8 +254,8 @@ public class RobotContainer {
         Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
         Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
 
-        leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(250));
-        leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-250));
+        leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(50));
+        leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-50));
     }
 
     private void configureTestingBindings() {
@@ -316,6 +317,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return vision.deactivateLEDMode();
+        return drive.driveRobotRelative(() -> new ChassisSpeeds(-0.2,0,0)).withTimeout(3).andThen(DriverCommands.setAimAtTarget(drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget, () -> true)).andThen(Commands.waitUntil(robotReadyToShoot)).andThen(kicker.startKicker()).andThen(vision.deactivateLEDMode());
     }
 }
