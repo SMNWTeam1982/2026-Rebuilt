@@ -2,6 +2,7 @@ package frc.robot.Subsystems.Drive;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.MathUtil;
@@ -89,6 +90,15 @@ public class DriveSubsystem extends SubsystemBase {
         xController.setTolerance(DriveBaseTunables.TRANSLATION_TOLERANCE);
         yController.setTolerance(DriveBaseTunables.TRANSLATION_TOLERANCE);
 
+        RobotConfig config = PathplannerMeasurements.PATHPLANNER_CONFIG;
+        try{
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Logger.recordOutput("it failed", config == PathplannerMeasurements.PATHPLANNER_CONFIG);
+
         /** configure last auto build  */
         AutoBuilder.configure(
                 this::getRobotPose, // robot pose supplier
@@ -105,7 +115,7 @@ public class DriveSubsystem extends SubsystemBase {
                         new PIDConstants(
                                 DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D)
                         ),
-                PathplannerMeasurements.PATHPLANNER_CONFIG, // robot config
+                config, // robot config
                 () -> {
                     var alliance = DriverStation.getAlliance();
                     if (alliance.isPresent()) {
@@ -136,7 +146,7 @@ public class DriveSubsystem extends SubsystemBase {
         initPathPlannerLogging();
     }
 
-    
+
 
     /*
      * Gives the trajectory for the Robot during auto so we can replay it in advantageKit
