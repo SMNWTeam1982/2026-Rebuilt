@@ -222,9 +222,10 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return DriverCommands.setAimAtTarget(
-                        drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget)
-                .andThen(Commands.waitUntil(robotReadyToShoot));
-        // .andThen(kicker.startKicker()); disabled while kicker is disabled for testing
+        return simpleIntake.deploy()
+        .andThen(drive.nudgeBack().withTimeout(2)
+        .andThen( DriverCommands.setAimAtTarget(
+                drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget)
+        .andThen(Commands.waitUntil(robotReadyToShoot)).andThen(kicker.startKicker())));
     }
 }
