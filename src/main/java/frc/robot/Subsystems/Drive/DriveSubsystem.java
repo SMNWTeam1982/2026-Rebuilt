@@ -94,7 +94,7 @@ public class DriveSubsystem extends SubsystemBase {
                 this::getRobotPose, // robot pose supplier
                 driveBase::resetEstimatedPose, // drivebase function
                 driveBase::getRobotRelativeSpeeds, // drivebase function
-                (speeds, feedforwards) -> driveBase.setModulesFromRobotRelativeSpeeds(speeds), //
+                (speeds, feedforwards) -> {driveBase.setModulesFromRobotRelativeSpeeds(speeds);}, //
                 new PPHolonomicDriveController(
                     // new PIDConstants(5),
                     // new PIDConstants(5)
