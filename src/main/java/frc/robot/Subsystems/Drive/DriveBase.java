@@ -17,6 +17,8 @@ import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -240,6 +242,7 @@ public final class DriveBase {
     /**
      * @return robot relative ChassisSpeeds, see the wpilib coordinate system for more info
      */
+    @AutoLogOutput(key = "DriveBase/current robot relative speeds")
     public ChassisSpeeds getRobotRelativeSpeeds() {
         return driveKinematics.toChassisSpeeds(getModuleStates());
     }

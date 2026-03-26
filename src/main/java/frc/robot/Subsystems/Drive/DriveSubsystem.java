@@ -96,14 +96,14 @@ public class DriveSubsystem extends SubsystemBase {
                 driveBase::getRobotRelativeSpeeds, // drivebase function
                 (speeds, feedforwards) -> driveBase.setModulesFromRobotRelativeSpeeds(speeds), //
                 new PPHolonomicDriveController(
-                    new PIDConstants(5),
-                    new PIDConstants(5)
-                        // new PIDConstants(
-                        //         DriveBaseTunables.TRANSLATION_P,
-                        //         DriveBaseTunables.TRANSLATION_I,
-                        //         DriveBaseTunables.TRANSLATION_D),
-                        // new PIDConstants(
-                        //         DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D)
+                    // new PIDConstants(5),
+                    // new PIDConstants(5)
+                        new PIDConstants(
+                                DriveBaseTunables.TRANSLATION_P,
+                                DriveBaseTunables.TRANSLATION_I,
+                                DriveBaseTunables.TRANSLATION_D),
+                        new PIDConstants(
+                                DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D)
                         ),
                 PathplannerMeasurements.PATHPLANNER_CONFIG, // robot config
                 () -> {
