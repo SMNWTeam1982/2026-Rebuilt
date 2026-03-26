@@ -139,6 +139,10 @@ public final class DriveBase {
         SwerveModuleState[] moduleStates = driveKinematics.toSwerveModuleStates(discretizedSpeeds);
         // slow down the speeds of all the wheels if one has been commanded to go too fast
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DriveBaseTunables.ARTIFICIAL_MAX_SPEED);
+
+        Logger.recordOutput("DriveBase/Desired ModuleStates", new SwerveModuleState[] {
+            frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()
+        });
         setModuleStates(moduleStates);
     }
 
