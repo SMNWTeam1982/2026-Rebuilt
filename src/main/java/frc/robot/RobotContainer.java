@@ -49,7 +49,7 @@ public class RobotContainer {
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
-    private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<Command>("auto chooser", AutoBuilder.buildAutoChooser());
+    private final LoggedDashboardChooser<Command> autoChooser;
 
     // these suppliers are so that the status of the right trigger can be logged
     // if the robot is in a good spot for reliable shooting at the given rpm, the driver or operator can press the right
@@ -142,6 +142,8 @@ public class RobotContainer {
         configureOperatorBindings();
 
         addNamedCommands();
+
+        autoChooser = new LoggedDashboardChooser<Command>("auto chooser", AutoBuilder.buildAutoChooser());
 
         // temporary, will not be called during comp code
         // configureTestingBindings();
