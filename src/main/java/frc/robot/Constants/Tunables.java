@@ -173,7 +173,7 @@ public class Tunables {
         public static final double MOVE_OUT_SPEED = 0.5;
 
         // percent that the intake will be set at when intaking
-        public static final double INTAKE_SPEED = 0.7;
+        public static final double INTAKE_SPEED = 0.85;
 
         public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(40)
