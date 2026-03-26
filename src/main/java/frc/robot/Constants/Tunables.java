@@ -45,7 +45,7 @@ public class Tunables {
         /** a speed for the commands that fine tune the robot position robot-relative */
         public static final double NUDGE_SPEED = 0.5;
 
-        public static final double MAX_AUTO_SPEED = 0.5;
+        public static final double MAX_AUTO_SPEED = 1.5;
 
         public static final double HEADING_P = 3.0;
         public static final double HEADING_I = 0.0;
@@ -53,7 +53,7 @@ public class Tunables {
 
         public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(10);
 
-        public static final double TRANSLATION_P = 5.0;
+        public static final double TRANSLATION_P = 4.0;
         public static final double TRANSLATION_I = 0.0;
         public static final double TRANSLATION_D = 0.0;
 
