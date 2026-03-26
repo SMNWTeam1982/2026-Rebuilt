@@ -45,13 +45,13 @@ public class Measured {
                 MetersPerSecond.of(DriveBaseMeasurements.PHYSICAL_MAX_SPEED); // set elsewhere
         private static final double WHEEL_COF = .4; // guess
         private static final DCMotor DRIVE_MOTOR = DCMotor.getNEO(1); // 1 drive neo
-        private static final Current DRIVE_CURRENT_LIMIT = Amps.of(35); // set elsewhere
+        private static final Current DRIVE_CURRENT_LIMIT = Amps.of(60); // set elsewhere
         private static final ModuleConfig MODULE_CONFIG =
                 new ModuleConfig(WHEEL_RADIUS, MAX_DRIVE_VELOCITY, WHEEL_COF, DRIVE_MOTOR, DRIVE_CURRENT_LIMIT, 1);
 
         private static final Mass ROBOT_MASS = Kilograms.of(52); // max robot weight
         private static final MomentOfInertia ROBOT_MOMENT_OF_INERTIA =
-                KilogramSquareMeters.of(4.25); // uses pathplanner's moi estimate equation
+                KilogramSquareMeters.of(5.07); // uses pathplanner's moi estimate equation
 
         public static final RobotConfig PATHPLANNER_CONFIG = new RobotConfig(
                 ROBOT_MASS,

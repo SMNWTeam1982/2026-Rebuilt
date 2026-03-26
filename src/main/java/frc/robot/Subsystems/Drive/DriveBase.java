@@ -125,11 +125,11 @@ public final class DriveBase {
     public void setModulesFromRobotRelativeSpeeds(ChassisSpeeds speeds) {
 
         // check if each drive desired movement is 0
-        if (speeds.vxMetersPerSecond == 0.0 && speeds.vyMetersPerSecond == 0.0) {
-            recievedTranslationInput.set(false);
-        } else {
-            recievedTranslationInput.set(true);
-        }
+        // if (speeds.vxMetersPerSecond == 0.0 && speeds.vyMetersPerSecond == 0.0) {
+        //     recievedTranslationInput.set(false);
+        // } else {
+        //     recievedTranslationInput.set(true);
+        // }
 
         Logger.recordOutput("DriveBase/desired robot relative speeds", speeds);
 
@@ -140,7 +140,7 @@ public final class DriveBase {
         // slow down the speeds of all the wheels if one has been commanded to go too fast
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DriveBaseTunables.ARTIFICIAL_MAX_SPEED);
 
-        Logger.recordOutput("DriveBase/Desired ModuleStates", new SwerveModuleState[] {
+        Logger.recordOutput("DriveBase/DesiredModuleStates", new SwerveModuleState[] {
             frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()
         });
         setModuleStates(moduleStates);
