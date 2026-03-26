@@ -28,6 +28,10 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 public class RobotContainer {
     /** allows the ability to toggle the velocity Compensation
@@ -44,6 +48,8 @@ public class RobotContainer {
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
+
+    private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<Command>("auto chooser", AutoBuilder.buildAutoChooser());
 
     // these suppliers are so that the status of the right trigger can be logged
     // if the robot is in a good spot for reliable shooting at the given rpm, the driver or operator can press the right
@@ -135,8 +141,27 @@ public class RobotContainer {
         configureDriverBindings();
         configureOperatorBindings();
 
+        addNamedCommands();
+
         // temporary, will not be called during comp code
         // configureTestingBindings();
+    }
+
+    private void addNamedCommands(){
+        // shooter
+        NamedCommands.registerCommand("set shooter to target the hub", shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget));
+        NamedCommands.registerCommand("idle shooter", shooter.setIdle());
+        // kicker
+        NamedCommands.registerCommand("kick", kicker.kick());
+        NamedCommands.registerCommand("start kicker", kicker.startKicker());
+        NamedCommands.registerCommand("stop kicker", kicker.idleKicker());
+        // intake
+        NamedCommands.registerCommand("start intaking", simpleIntake.startIntaking());
+        NamedCommands.registerCommand("stop intaking", simpleIntake.stopIntaking());
+        NamedCommands.registerCommand("deploy intake", simpleIntake.deploy());
+        NamedCommands.registerCommand("stow intake", simpleIntake.stow());
+
+        
     }
 
     private void configureDriverBindings() {
@@ -317,12 +342,13 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return drive.nudgeBack()
-                .withTimeout(3)
-                .andThen(DriverCommands.setAimAtTarget(
-                        drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget, () -> true))
-                .andThen(Commands.waitUntil(robotReadyToShoot))
-                .andThen(kicker.startKicker())
-                .andThen(vision.deactivateLEDMode());
+        return autoChooser.get();
+        // return drive.nudgeBack()
+        //         .withTimeout(3)
+        //         .andThen(DriverCommands.setAimAtTarget(
+        //                 drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget, () -> true))
+        //         .andThen(Commands.waitUntil(robotReadyToShoot))
+        //         .andThen(kicker.startKicker())
+        //         .andThen(vision.deactivateLEDMode());
     }
 }

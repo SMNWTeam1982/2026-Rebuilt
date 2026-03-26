@@ -23,6 +23,8 @@ public class Tunables {
     public static final SparkBaseConfig DEFAULT_SPARK_MAX_CONFIG =
             new SparkMaxConfig().smartCurrentLimit(20).secondaryCurrentLimit(30).idleMode(IdleMode.kBrake);
 
+    public static final String SPECIAL_MESSAGE = "pit test";
+
     /** speeds are in meters per second */
     public static final class DriveBaseTunables {
         /** the speed we limit the drive to, this MUST be below the physical max speed */
@@ -49,9 +51,9 @@ public class Tunables {
         public static final double HEADING_I = 0.0;
         public static final double HEADING_D = 0.1;
 
-        public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(5);
+        public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(10);
 
-        public static final double TRANSLATION_P = 1.0;
+        public static final double TRANSLATION_P = 5.0;
         public static final double TRANSLATION_I = 0.0;
         public static final double TRANSLATION_D = 0.0;
 
@@ -162,10 +164,10 @@ public class Tunables {
         public static final Time THRESHOLD_TIME = Seconds.of(0.2);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a deploy attempt */
-        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(0.8);
+        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(1.2);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
-        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.1);
+        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.2);
 
         public static final double MOVE_IN_SPEED = -0.5;
         public static final double MOVE_OUT_SPEED = 0.5;

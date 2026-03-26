@@ -10,6 +10,7 @@ import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -23,6 +24,8 @@ import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
 import frc.robot.SparkMaxHelper;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -176,6 +179,13 @@ public class ShooterSubsystem extends SubsystemBase {
             idle = false;
             this.rpmCalculation = calculatedRPM;
         });
+    }
+
+    /** sets the RPM target to be based off of the current robot position and a given target position */
+    public Command setTarget(Supplier<Translation2d> robotPosition, Supplier<Translation2d> targetPosition){
+        return setRPMSupplier(
+            () -> ShotCalculation.calculateRPM(robotPosition.get(), targetPosition.get())
+        );
     }
 
     /** changes the held RPM by the amount */
