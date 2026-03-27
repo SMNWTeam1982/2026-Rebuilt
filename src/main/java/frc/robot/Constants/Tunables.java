@@ -125,7 +125,7 @@ public class Tunables {
 
         // public static final Rotation2d SHOOTING_ANGLE_TOLERANCE = Rotation2d.fromDegrees(15);
 
-        public static final int SHOT_PREDICTION_ITERATIONS = 5;
+        public static final int SHOT_PREDICTION_ITERATIONS = 2;
 
         public static final Time AUTO_SPIN_UP_TIME = Seconds.of(3);
 
