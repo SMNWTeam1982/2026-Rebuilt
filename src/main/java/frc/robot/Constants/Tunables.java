@@ -68,7 +68,7 @@ public class Tunables {
 
         /** config for the drive motor on the module */
         public static final SparkBaseConfig DRIVE_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(40).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
+                new SparkMaxConfig().smartCurrentLimit(30).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
 
         /** config for the turn motor on the module */
         public static final SparkBaseConfig TURN_MOTOR_CONFIG =
@@ -111,7 +111,7 @@ public class Tunables {
 
         public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
 
-        public static final double FLYWHEEL_IDLE_RPM = 1200.0;
+        public static final double FLYWHEEL_IDLE_RPM = 1000.0;
 
         public static final double SHOOTER_RPM_CEILING = 5500;
 
@@ -125,7 +125,7 @@ public class Tunables {
 
         // public static final Rotation2d SHOOTING_ANGLE_TOLERANCE = Rotation2d.fromDegrees(15);
 
-        public static final int SHOT_PREDICTION_ITERATIONS = 2;
+        public static final int SHOT_PREDICTION_ITERATIONS = 5;
 
         public static final Time AUTO_SPIN_UP_TIME = Seconds.of(3);
 
@@ -134,8 +134,8 @@ public class Tunables {
         // the total flywheel current should not exceed 60A (30A * 2 motors)
         // being somewhat conservative with the flywheel current limits
         public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(30)
-                .idleMode(SparkBaseConfig.IdleMode.kBrake)
+                .smartCurrentLimit(25)
+                .idleMode(SparkBaseConfig.IdleMode.kCoast)
                 .secondaryCurrentLimit(40);
     }
 
@@ -188,7 +188,7 @@ public class Tunables {
         /** the speed of the kicker when on high */
         public static final double HIGH_SPEED = 0.5;
         /** the speed of the kicker when on low */
-        public static final double LOW_SPEED = -0.2;
+        public static final double LOW_SPEED = 0.2;
         /** how long the kicker runs at the high speed before switching to the low speed */
         public static final Time HIGH_TIME = Seconds.of(0.5);
         /** how long the kicker runs at the low speed before switching to the high speed */
