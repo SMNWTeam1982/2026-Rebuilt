@@ -23,7 +23,7 @@ public class Tunables {
     public static final SparkBaseConfig DEFAULT_SPARK_MAX_CONFIG =
             new SparkMaxConfig().smartCurrentLimit(20).secondaryCurrentLimit(30).idleMode(IdleMode.kBrake);
 
-    public static final String SPECIAL_MESSAGE = "pit test";
+    public static final String SPECIAL_MESSAGE = "quals";
 
     /** speeds are in meters per second */
     public static final class DriveBaseTunables {
@@ -68,7 +68,7 @@ public class Tunables {
 
         /** config for the drive motor on the module */
         public static final SparkBaseConfig DRIVE_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(35).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
+                new SparkMaxConfig().smartCurrentLimit(40).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
 
         /** config for the turn motor on the module */
         public static final SparkBaseConfig TURN_MOTOR_CONFIG =
@@ -127,12 +127,13 @@ public class Tunables {
 
         public static final int SHOT_PREDICTION_ITERATIONS = 5;
 
-        // the flywheels should coast when disables so the motors don't have to absorb all of the momentum
-        // the total flywheel current should not exceed 40A (20A * 2 motors)
+        // brake mode on for the flywheels so that we dont get a penalty for an eranious shot while the flywheels spin down
+        // the brake mode should also help prevent jams
+        // the total flywheel current should not exceed 60A (30A * 2 motors)
         // being somewhat conservative with the flywheel current limits
         public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(30)
-                .idleMode(SparkBaseConfig.IdleMode.kCoast)
+                .idleMode(SparkBaseConfig.IdleMode.kBrake)
                 .secondaryCurrentLimit(40);
     }
 

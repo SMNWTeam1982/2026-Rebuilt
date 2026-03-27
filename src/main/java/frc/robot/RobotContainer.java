@@ -38,13 +38,13 @@ public class RobotContainer {
      * in the case that the velocity Compensation is not working correctly
      * you can toggle it on or off(true or false)*/
     @AutoLogOutput(key = "Driver info/velocity compensation enabled")
-    private boolean velocityCompensationEnabled = false;
+    private boolean velocityCompensationEnabled = true;
 
     /**
      * controls if the set drive mode commands triggered by the driver will also change the shooter RPM
      */
     @AutoLogOutput(key = "Driver info/driver can change shooter RPM")
-    private boolean driverCanChangeShooterRPM = false;
+    private boolean driverCanChangeShooterRPM = true;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
