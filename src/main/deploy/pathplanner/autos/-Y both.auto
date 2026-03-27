@@ -7,13 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "-Y bump to middle"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Middle to -Y trench "
           }
         }
       ]
     }
   },
-  "resetOdom": false,
+  "resetOdom": true,
   "folder": null,
   "choreoAuto": false
 }
