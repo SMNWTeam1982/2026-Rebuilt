@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
@@ -43,15 +44,15 @@ public class Measured {
         private static final Distance WHEEL_RADIUS = Inches.of(2); // 12.5/2pi is about 2 inches
         private static final LinearVelocity MAX_DRIVE_VELOCITY =
                 MetersPerSecond.of(DriveBaseMeasurements.PHYSICAL_MAX_SPEED); // set elsewhere
-        private static final double WHEEL_COF = .4; // guess
+        private static final double WHEEL_COF = 1.2; // pathplanner default
         private static final DCMotor DRIVE_MOTOR = DCMotor.getNEO(1); // 1 drive neo
-        private static final Current DRIVE_CURRENT_LIMIT = Amps.of(35); // set elsewhere
+        private static final Current DRIVE_CURRENT_LIMIT = Amps.of(40); // set elsewhere
         private static final ModuleConfig MODULE_CONFIG =
                 new ModuleConfig(WHEEL_RADIUS, MAX_DRIVE_VELOCITY, WHEEL_COF, DRIVE_MOTOR, DRIVE_CURRENT_LIMIT, 1);
 
         private static final Mass ROBOT_MASS = Kilograms.of(52); // max robot weight
         private static final MomentOfInertia ROBOT_MOMENT_OF_INERTIA =
-                KilogramSquareMeters.of(4.25); // uses pathplanner's moi estimate equation
+                KilogramSquareMeters.of(4.08); // uses pathplanner's moi estimate equation
 
         public static final RobotConfig PATHPLANNER_CONFIG = new RobotConfig(
                 ROBOT_MASS,
@@ -128,7 +129,6 @@ public class Measured {
         /// linear regression for RPM (y) and distance (x)
         /// y = 407.53685x + 1981.08371
         ///
-
         /**
          * the equation will be derived from a best fit of a data table that will be measured, expected
          * to be quadratic or cubic
@@ -139,12 +139,31 @@ public class Measured {
             return MathUtil.clamp(calculatedRPM, 0, ShooterTunables.SHOOTER_RPM_CEILING);
         }
 
+        /// distance | RPM (based on the equation from above) | flight time
+        /// St. Louis practice match 18
+        /// 2.429 | 2970.886 | 1.10
+        /// 2.861 | 3146.882 | 1.18
+        /// 2.769 | 3109.546 | 1.15
+        /// 2.775 | 3111.992 | 1.17
+        /// 2.591 | 3037.112 | 1.15
+        /// -----------------------
+        /// St. Louis practic match 24
+        /// 4.836 | 3951.    | 1.45 <- row not used
+        /// 4.828 | 3948.865 | 1.47
+        /// 3.567 | 3273.297 | 1.36
+        /// 2.340 | 2934.641 | 1.02
+        /// -----------------------
+        /// 
+        /// linear regression for flight time (t) and distance (x)
+        /// t = 0.180436x + 0.637674
         /**
          * the equation will be derived from a best fit of a data table that will be measured, expected
          * to be linear
          */
         public static double distanceToFlightTime(double distanceFromHub) {
-            return 0.0;
+            double x = distanceFromHub;
+            double calculatedFlightTime = (0.180436 * x) + 0.637674;
+            return Math.max(calculatedFlightTime, 0.0);
         }
     }
 
