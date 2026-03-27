@@ -67,17 +67,21 @@ public class RobotContainer {
     private final VisionSubsystem vision = new VisionSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult);
 
-    @AutoLogOutput(key = "Driver info/calculated hub target")
+    //@AutoLogOutput(key = "Driver info/calculated hub target")
     private final Supplier<Translation2d> calculatedHubTarget = () -> {
         if (velocityCompensationEnabled) {
-            return ShotCalculation.getHubTarget(
+            var buf =  ShotCalculation.getHubTarget(
                     drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
+            Logger.recordOutput("Driver info/calculated hub target", buf);
+            return buf;
         } else {
-            return ShotCalculation.getNearestHubPosition(drive.getRobotPose().getTranslation());
+            var buf = ShotCalculation.getNearestHubPosition(drive.getRobotPose().getTranslation());
+            Logger.recordOutput("Driver info/calculated hub target", buf);
+            return buf;
         }
     };
 
-    @AutoLogOutput(key = "Driver info/calculated pass target")
+    //@AutoLogOutput(key = "Driver info/calculated pass target")
     private final Supplier<Translation2d> calculatedPassTarget = () -> {
         if (velocityCompensationEnabled) {
             return ShotCalculation.getPassTarget(
