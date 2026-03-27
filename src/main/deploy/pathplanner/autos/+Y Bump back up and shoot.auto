@@ -1,0 +1,43 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "+Y Bump to top"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "spin up shooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "deploy intake "
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "kick 10 seconds"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
