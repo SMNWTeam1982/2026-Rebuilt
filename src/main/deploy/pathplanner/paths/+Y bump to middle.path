@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.60298107328869,
-        "y": 5.45542474655878
+        "x": 1.6015871793009782,
+        "y": 5.529089239211309
       },
       "isLocked": false,
       "linkedName": "+Y Bump Start"
@@ -20,11 +20,11 @@
         "y": 4.012
       },
       "prevControl": {
-        "x": 1.6741985793340772,
-        "y": 4.013894740513393
+        "x": 1.6741944698869053,
+        "y": 4.012
       },
       "nextControl": null,
-      "isLocked": false,
+      "isLocked": true,
       "linkedName": "+Y Bump End"
     }
   ],
@@ -37,7 +37,7 @@
         "y": 4.021
       },
       "rotationOffset": 0.0,
-      "minWaypointRelativePos": 0.35,
+      "minWaypointRelativePos": 0.19696444217289727,
       "maxWaypointRelativePos": 1.0,
       "name": "Point Towards Zone"
     }
