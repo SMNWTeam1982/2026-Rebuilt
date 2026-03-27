@@ -167,6 +167,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("stop intaking", simpleIntake.stopIntaking());
         NamedCommands.registerCommand("deploy intake", simpleIntake.deploy());
         NamedCommands.registerCommand("stow intake", simpleIntake.stow());
+        // drive
+        NamedCommands.registerCommand("stop drive", drive.stop());
 
         
     }

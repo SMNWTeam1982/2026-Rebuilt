@@ -111,7 +111,7 @@ public class Tunables {
 
         public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
 
-        public static final double FLYWHEEL_IDLE_RPM = 0.0;
+        public static final double FLYWHEEL_IDLE_RPM = 1500.0;
 
         public static final double SHOOTER_RPM_CEILING = 5500;
 
