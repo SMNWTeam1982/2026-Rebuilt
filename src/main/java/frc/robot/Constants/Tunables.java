@@ -111,7 +111,7 @@ public class Tunables {
 
         public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
 
-        public static final double FLYWHEEL_IDLE_RPM = 1500.0;
+        public static final double FLYWHEEL_IDLE_RPM = 1200.0;
 
         public static final double SHOOTER_RPM_CEILING = 5500;
 
@@ -192,7 +192,7 @@ public class Tunables {
         /** how long the kicker runs at the high speed before switching to the low speed */
         public static final Time HIGH_TIME = Seconds.of(0.5);
         /** how long the kicker runs at the low speed before switching to the high speed */
-        public static final Time LOW_TIME = Seconds.of(0.1);
+        public static final Time LOW_TIME = Seconds.of(1.0);
         /** the speed the kicker runs at when not active */
         public static final double IDLE_SPEED = 0.0;
 
