@@ -127,6 +127,8 @@ public class Tunables {
 
         public static final int SHOT_PREDICTION_ITERATIONS = 5;
 
+        public static final Time AUTO_SPIN_UP_TIME = Seconds.of(3);
+
         // brake mode on for the flywheels so that we dont get a penalty for an eranious shot while the flywheels spin down
         // the brake mode should also help prevent jams
         // the total flywheel current should not exceed 60A (30A * 2 motors)

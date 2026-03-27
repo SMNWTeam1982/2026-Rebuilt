@@ -13,32 +13,13 @@
         {
           "type": "named",
           "data": {
-            "name": "set shooter to target the hub"
+            "name": "spin up shooter"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "kick"
-                }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 10.0
-                }
-              }
-            ]
+            "name": "kick 10 seconds"
           }
         }
       ]

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.DriverCommands;
@@ -152,6 +153,10 @@ public class RobotContainer {
     private void addNamedCommands(){
         // shooter
         NamedCommands.registerCommand("set shooter to target the hub", shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget));
+        NamedCommands.registerCommand("spin up shooter",shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget).andThen(new WaitCommand(ShooterTunables.AUTO_SPIN_UP_TIME)));
+        NamedCommands.registerCommand("kick 5 seconds", kicker.kick().withTimeout(5));
+        NamedCommands.registerCommand("kick 7.5 seconds", kicker.kick().withTimeout(7.5));
+        NamedCommands.registerCommand("kick 10 seconds", kicker.kick().withTimeout(10));
         NamedCommands.registerCommand("idle shooter", shooter.setIdle());
         // kicker
         NamedCommands.registerCommand("kick", kicker.kick());

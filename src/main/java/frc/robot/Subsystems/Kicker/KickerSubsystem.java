@@ -34,7 +34,7 @@ public class KickerSubsystem extends SubsystemBase {
                 .andThen(new WaitCommand(KickerTunables.HIGH_TIME))
                 .andThen(runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED)))
                 .andThen(new WaitCommand(KickerTunables.LOW_TIME))
-                .repeatedly();
+                .repeatedly().finallyDo(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
     }
 
     public Command idleKicker() {
