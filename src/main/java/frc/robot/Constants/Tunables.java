@@ -172,8 +172,8 @@ public class Tunables {
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
         public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.2);
 
-        public static final double MOVE_IN_SPEED = -0.5;
-        public static final double MOVE_OUT_SPEED = 0.5;
+        public static final double MOVE_IN_SPEED = -0.2;
+        public static final double MOVE_OUT_SPEED = 0.2;
 
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.85;

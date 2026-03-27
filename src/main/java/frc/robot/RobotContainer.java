@@ -152,14 +152,14 @@ public class RobotContainer {
 
     private void addNamedCommands(){
         // shooter
-        NamedCommands.registerCommand("set shooter to target the hub", shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget));
-        NamedCommands.registerCommand("spin up shooter",shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget).andThen(new WaitCommand(ShooterTunables.AUTO_SPIN_UP_TIME)));
+        NamedCommands.registerCommand("set shooter to target the hub", shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget).asProxy());
+        NamedCommands.registerCommand("spin up shooter",shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget).asProxy().andThen(new WaitCommand(ShooterTunables.AUTO_SPIN_UP_TIME)));
+        NamedCommands.registerCommand("idle shooter", shooter.setIdle().asProxy());
+        // kicker
+        NamedCommands.registerCommand("kick", kicker.kick());
         NamedCommands.registerCommand("kick 5 seconds", kicker.kick().withTimeout(5));
         NamedCommands.registerCommand("kick 7.5 seconds", kicker.kick().withTimeout(7.5));
         NamedCommands.registerCommand("kick 10 seconds", kicker.kick().withTimeout(10));
-        NamedCommands.registerCommand("idle shooter", shooter.setIdle());
-        // kicker
-        NamedCommands.registerCommand("kick", kicker.kick());
         NamedCommands.registerCommand("start kicker", kicker.startKicker());
         NamedCommands.registerCommand("stop kicker", kicker.idleKicker());
         // intake
