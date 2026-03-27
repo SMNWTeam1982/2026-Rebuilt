@@ -151,6 +151,7 @@ public class RobotContainer {
     }
 
     private void addNamedCommands(){
+        NamedCommands.registerCommand("shoot & kick", shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget).andThen(shooter.runPIDs().withTimeout(ShooterTunables.AUTO_SPIN_UP_TIME)).andThen(kicker.kick().alongWith(shooter.runPIDs()).withTimeout(8)));
         // shooter
         NamedCommands.registerCommand("set shooter to target the hub", shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget).asProxy());
         NamedCommands.registerCommand("spin up shooter",shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget).asProxy().andThen(new WaitCommand(ShooterTunables.AUTO_SPIN_UP_TIME)));
@@ -189,7 +190,8 @@ public class RobotContainer {
                         onBlueAlliance,
                         this::getJoystickSpeeds,
                         calculatedHubTarget,
-                        () -> driverCanChangeShooterRPM));
+                        () -> driverCanChangeShooterRPM)
+                        .andThen(kicker.kick().asProxy()));
 
         // set the drive controls to pass aim mode when pressed, and set the shooter rpm calculation
         driverController
@@ -201,21 +203,24 @@ public class RobotContainer {
                         onBlueAlliance,
                         this::getJoystickSpeeds,
                         calculatedPassTarget,
-                        () -> driverCanChangeShooterRPM));
+                        () -> driverCanChangeShooterRPM)
+                        .andThen(kicker.kick().asProxy()));
 
         // sets the drive controls to standard field relative when pressed
         driverController
                 .b()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setNormalMode(
-                        drive, shooter, onBlueAlliance, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
+                        drive, shooter, onBlueAlliance, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM)
+                        .andThen(kicker.idleKicker().asProxy()));
 
         // sets the drive controls to robot relative when pressed
         driverController
                 .y()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setRobotRelativeMode(
-                        drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
+                        drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM)
+                        .andThen(kicker.idleKicker().asProxy()));
 
         // sets the drive mode to hub orbit when pressed
         driverController

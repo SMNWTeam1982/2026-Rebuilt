@@ -34,11 +34,11 @@ public class Tunables {
          * configurable based on driver preference and game need
          * <p> this will be capped by the artificial max speed, so it can be set to any value & used to tune sensitivity
          * <p> meters/sec */
-        public static final double DRIVE_SPEED = 2.0; // 1 m/s
+        public static final double DRIVE_SPEED = 2.5; // 1 m/s
         /** this can end up being capped by the artificial max speed, but the cap depends on robot size & module positions
          * <p> radians/sec
          */
-        public static final double TURN_SPEED = -3.5; // 3 rad/s
+        public static final double TURN_SPEED = -4.0; // 3 rad/s
         /** the amount the joystick needs to deflect before it will register an input */
         public static final double INPUT_DEADZONE = 0.1;
 
@@ -186,13 +186,13 @@ public class Tunables {
 
     public static final class KickerTunables {
         /** the speed of the kicker when on high */
-        public static final double HIGH_SPEED = 0.1;
+        public static final double HIGH_SPEED = 0.2;
         /** the speed of the kicker when on low */
         public static final double LOW_SPEED = -0.9;
         /** how long the kicker runs at the high speed before switching to the low speed */
-        public static final Time HIGH_TIME = Seconds.of(0.8);
+        public static final Time HIGH_TIME = Seconds.of(0.5);
         /** how long the kicker runs at the low speed before switching to the high speed */
-        public static final Time LOW_TIME = Seconds.of(0.4);
+        public static final Time LOW_TIME = Seconds.of(0.2);
         /** the speed the kicker runs at when not active */
         public static final double IDLE_SPEED = 0.0;
 

@@ -19,19 +19,13 @@
         {
           "type": "named",
           "data": {
-            "name": "spin up shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "deploy intake "
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "kick 10 seconds"
+            "name": "shoot & kick"
           }
         }
       ]
