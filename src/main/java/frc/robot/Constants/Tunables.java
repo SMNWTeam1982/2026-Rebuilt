@@ -47,9 +47,9 @@ public class Tunables {
 
         public static final double MAX_AUTO_SPEED = 1.5;
 
-        public static final double HEADING_P = 3.0;
+        public static final double HEADING_P = 6.0;
         public static final double HEADING_I = 0.0;
-        public static final double HEADING_D = 0.1;
+        public static final double HEADING_D = 0.2;
 
         public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(10);
 
