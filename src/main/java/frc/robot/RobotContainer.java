@@ -67,6 +67,7 @@ public class RobotContainer {
     private final VisionSubsystem vision = new VisionSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult);
 
+    @AutoLogOutput(key = "Driver info/calculated hub target")
     private final Supplier<Translation2d> calculatedHubTarget = () -> {
         if (velocityCompensationEnabled) {
             return ShotCalculation.getHubTarget(
@@ -76,6 +77,7 @@ public class RobotContainer {
         }
     };
 
+    @AutoLogOutput(key = "Driver info/calculated pass target")
     private final Supplier<Translation2d> calculatedPassTarget = () -> {
         if (velocityCompensationEnabled) {
             return ShotCalculation.getPassTarget(
@@ -151,7 +153,7 @@ public class RobotContainer {
     }
 
     private void addNamedCommands(){
-        NamedCommands.registerCommand("shoot & kick", shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget).andThen(shooter.runPIDs().withTimeout(ShooterTunables.AUTO_SPIN_UP_TIME)).andThen(kicker.kick().alongWith(shooter.runPIDs()).withTimeout(8)));
+        NamedCommands.registerCommand("shoot & kick", shooter.setTarget(() -> drive.getRobotPose().getTranslation(), calculatedHubTarget).andThen(shooter.runPIDs().withTimeout(ShooterTunables.AUTO_SPIN_UP_TIME)).andThen(kicker.kick().alongWith(shooter.runPIDs()).withTimeout(8)));
         // shooter
         NamedCommands.registerCommand("set shooter to target the hub", shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget).asProxy());
         NamedCommands.registerCommand("spin up shooter",shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget).asProxy().andThen(new WaitCommand(ShooterTunables.AUTO_SPIN_UP_TIME)));

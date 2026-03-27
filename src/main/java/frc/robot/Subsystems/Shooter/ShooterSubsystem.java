@@ -106,6 +106,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
         HotPIDFTuner.logPIDDetails("Shooter", "left RPM controller", leftVelocityController);
         HotPIDFTuner.logPIDDetails("Shooter", "right RPM controller", rightVelocityController);
+
+
+        if (getCurrentCommand() == null) {
+            Logger.recordOutput("Shooter/current command", "no active command");
+        } else {
+            Logger.recordOutput("Shooter/current command", this.getCurrentCommand().getName());
+        }
     }
 
     /** set the target of both pid loops, doing unit conversion, clamping it, and sending an alert if it is out of bounds */

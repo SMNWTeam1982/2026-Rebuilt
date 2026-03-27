@@ -1,5 +1,7 @@
 package frc.robot.Subsystems.Kicker;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -22,6 +24,12 @@ public class KickerSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SparkMaxHelper.logMotorDetails("Kicker", "kicker motor", kickerMotor);
+
+        if (getCurrentCommand() == null) {
+            Logger.recordOutput("Kicker/current command", "no active command");
+        } else {
+            Logger.recordOutput("Kicker/current command", this.getCurrentCommand().getName());
+        }
     }
 
     public Command startKicker() {

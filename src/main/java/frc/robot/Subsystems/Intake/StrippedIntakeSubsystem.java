@@ -11,6 +11,7 @@ import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.IntakeTunables;
 import frc.robot.SparkMaxHelper;
 import org.littletonrobotics.junction.AutoLogOutput;
+import org.littletonrobotics.junction.Logger;
 
 /** since we are having issues with the intake pivot motor, a stripped down version without complicated PIDF control is being created as a backup */
 public class StrippedIntakeSubsystem extends SubsystemBase {
@@ -50,6 +51,12 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
 
         SparkMaxHelper.logMotorDetails("Intake", "pivot motor", pivotMotor);
         SparkMaxHelper.logMotorDetails("Intake", "intake motor", intakeMotor);
+
+        if (getCurrentCommand() == null) {
+            Logger.recordOutput("Intake/current command", "no active command");
+        } else {
+            Logger.recordOutput("Intake/current command", this.getCurrentCommand().getName());
+        }
     }
 
     /** sets the intake motor to the intake speed */
