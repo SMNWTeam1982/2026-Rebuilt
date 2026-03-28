@@ -36,6 +36,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private final RelativeEncoder rightEncoder = rightMotor.getEncoder();
     private final RelativeEncoder leftEncoder = leftMotor.getEncoder();
 
+    @AutoLogOutput(key = "Shooter/right jammed")
+    public final Trigger rightShooterJammed = new Trigger(() -> rightMotor.getOutputCurrent() >= 30.0 && Math.abs(rightEncoder.getVelocity()) <= 400);
+    @AutoLogOutput(key = "Shooter/left jammed")
+    public final Trigger leftShooterJammed = new Trigger(() -> leftMotor.getOutputCurrent() >= 30.0 && Math.abs(leftEncoder.getVelocity()) <= 400);
+
     /** input RPM, outputs volts */
     private final PIDController rightVelocityController =
             new PIDController(ShooterTunables.FLYWHEEL_P, ShooterTunables.FLYWHEEL_I, ShooterTunables.FLYWHEEL_D);
@@ -112,6 +117,8 @@ public class ShooterSubsystem extends SubsystemBase {
             Logger.recordOutput(
                     "Shooter/current command", this.getCurrentCommand().getName());
         }
+
+        
     }
 
     /** set the target of both pid loops, doing unit conversion, clamping it, and sending an alert if it is out of bounds */
