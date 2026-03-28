@@ -94,7 +94,7 @@ public class RobotContainer {
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final KickerSubsystem kicker = new KickerSubsystem();
     // private final IntakeSubsystem intake = new IntakeSubsystem();
-    private final StrippedIntakeSubsystem simpleIntake = new StrippedIntakeSubsystem();
+    //private final StrippedIntakeSubsystem simpleIntake = new StrippedIntakeSubsystem();
     // private final ClimberSubsystem climber = new ClimberSubsystem();
 
     /** make sure that we are in the corret area for at least 1 second */
@@ -160,7 +160,7 @@ public class RobotContainer {
                 "shoot & kick",
                 shooter.setTarget(() -> drive.getRobotPose().getTranslation(), calculatedHubTarget)
                         .andThen(shooter.runPIDs().withTimeout(ShooterTunables.AUTO_SPIN_UP_TIME))
-                        .andThen(kicker.kick().alongWith(shooter.runPIDs()).withTimeout(6)));
+                        .andThen(kicker.kick().alongWith(shooter.runPIDs())));
         // shooter
         NamedCommands.registerCommand(
                 "set shooter to target the hub",
@@ -180,10 +180,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("start kicker", kicker.startKicker());
         NamedCommands.registerCommand("stop kicker", kicker.idleKicker());
         // intake
-        NamedCommands.registerCommand("start intaking", simpleIntake.startIntaking());
-        NamedCommands.registerCommand("stop intaking", simpleIntake.stopIntaking());
-        NamedCommands.registerCommand("deploy intake", simpleIntake.deploy());
-        NamedCommands.registerCommand("stow intake", simpleIntake.stow());
+        // NamedCommands.registerCommand("start intaking", simpleIntake.startIntaking());
+        // NamedCommands.registerCommand("stop intaking", simpleIntake.stopIntaking());
+        // NamedCommands.registerCommand("deploy intake", simpleIntake.deploy());
+        // NamedCommands.registerCommand("stow intake", simpleIntake.stow());
         // drive
         NamedCommands.registerCommand("stop drive", drive.stop());
     }
@@ -195,30 +195,30 @@ public class RobotContainer {
         // driverController.leftBumper().debounce(0.1).whileTrue(climber.moveClimberIn());
 
         // set the drive controls to hub aim mode when pressed, and set the shooter rpm calculation
-        driverController
-                .a()
-                .debounce(0.1)
-                .onTrue(DriverCommands.setAimAtTarget(
-                                drive,
-                                shooter,
-                                onBlueAlliance,
-                                this::getJoystickSpeeds,
-                                calculatedHubTarget,
-                                () -> driverCanChangeShooterRPM)
-                        .andThen(kicker.kick().asProxy()));
+        // driverController
+        //         .a()
+        //         .debounce(0.1)
+        //         .onTrue(DriverCommands.setAimAtTarget(
+        //                         drive,
+        //                         shooter,
+        //                         onBlueAlliance,
+        //                         this::getJoystickSpeeds,
+        //                         calculatedHubTarget,
+        //                         () -> driverCanChangeShooterRPM)
+        //                 .andThen(kicker.kick().asProxy()));
 
         // set the drive controls to pass aim mode when pressed, and set the shooter rpm calculation
-        driverController
-                .x()
-                .debounce(0.1)
-                .onTrue(DriverCommands.setAimAtTarget(
-                                drive,
-                                shooter,
-                                onBlueAlliance,
-                                this::getJoystickSpeeds,
-                                calculatedPassTarget,
-                                () -> driverCanChangeShooterRPM)
-                        .andThen(kicker.kick().asProxy()));
+        // driverController
+        //         .x()
+        //         .debounce(0.1)
+        //         .onTrue(DriverCommands.setAimAtTarget(
+        //                         drive,
+        //                         shooter,
+        //                         onBlueAlliance,
+        //                         this::getJoystickSpeeds,
+        //                         calculatedPassTarget,
+        //                         () -> driverCanChangeShooterRPM)
+        //                 .andThen(kicker.kick().asProxy()));
 
         // sets the drive controls to standard field relative when pressed
         driverController
@@ -241,27 +241,30 @@ public class RobotContainer {
                         .andThen(kicker.idleKicker().asProxy()));
 
         // sets the drive mode to hub orbit when pressed
-        driverController
-                .povUp()
-                .debounce(0.1)
-                .onTrue(DriverCommands.setOrbitNearestHubAtCurrentDistance(
-                        drive, shooter, driverController::getLeftX, () -> driverCanChangeShooterRPM));
+        // driverController
+        //         .povUp()
+        //         .debounce(0.1)
+        //         .onTrue(DriverCommands.setOrbitNearestHubAtCurrentDistance(
+        //                 drive, shooter, driverController::getLeftX, () -> driverCanChangeShooterRPM));
     }
 
     private void configureOperatorBindings() {
+
+        operatorController.a().onTrue(shooter.turnOff().andThen(kicker.turnOff()));
+
         // deploy/retract the intake with a & b
-        operatorController
-                .a()
-                .debounce(0.05)
-                .whileTrue(simpleIntake.startIntaking().andThen(simpleIntake.moveOut()));
-        operatorController
-                .b()
-                .debounce(0.05)
-                .whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
+        // operatorController
+        //         .a()
+        //         .debounce(0.05)
+        //         .whileTrue(simpleIntake.startIntaking().andThen(simpleIntake.moveOut()));
+        // operatorController
+        //         .b()
+        //         .debounce(0.05)
+        //         .whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
 
         // manually start/stop the kicker
-        operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick());
-        operatorController.leftBumper().debounce(0.05).onTrue(kicker.idleKicker());
+        // operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick());
+        // operatorController.leftBumper().debounce(0.05).onTrue(kicker.idleKicker());
 
         // automatically start/stop the kicker when the robot is ready/not ready
         // robotReadyToShoot.whileTrue(kicker.kick());
@@ -269,50 +272,50 @@ public class RobotContainer {
         /**
          * Disables the velocity compensation
          */
-        operatorController.back().debounce(0.05).onTrue(Commands.runOnce(() -> {
-            velocityCompensationEnabled = false;
-        }));
+        // operatorController.back().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        //     velocityCompensationEnabled = false;
+        // }));
 
         /**
          * Reenables the velocity compensation
          */
-        operatorController.start().debounce(0.05).onTrue(Commands.runOnce(() -> {
-            velocityCompensationEnabled = true;
-        }));
+        // operatorController.start().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        //     velocityCompensationEnabled = true;
+        // }));
 
         // the shooter's rpm WILL be set when the driver changes mode
-        operatorController.x().debounce(0.05).onTrue(Commands.runOnce(() -> {
-            driverCanChangeShooterRPM = true;
-        }));
+        // operatorController.x().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        //     driverCanChangeShooterRPM = true;
+        // }));
 
         // the shooter's rpm will NOT be set when the driver changes mode
-        operatorController.y().debounce(0.05).onTrue(Commands.runOnce(() -> {
-            driverCanChangeShooterRPM = false;
-        }));
+        // operatorController.y().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        //     driverCanChangeShooterRPM = false;
+        // }));
 
         // speed overides for shooter
-        operatorController
-                .povRight()
-                .debounce(0.05)
-                .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_1));
-        operatorController
-                .povDown()
-                .debounce(0.05)
-                .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_2));
-        operatorController
-                .povLeft()
-                .debounce(0.05)
-                .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_3));
-        operatorController
-                .povUp()
-                .debounce(0.05)
-                .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_4));
+        // operatorController
+        //         .povRight()
+        //         .debounce(0.05)
+        //         .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_1));
+        // operatorController
+        //         .povDown()
+        //         .debounce(0.05)
+        //         .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_2));
+        // operatorController
+        //         .povLeft()
+        //         .debounce(0.05)
+        //         .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_3));
+        // operatorController
+        //         .povUp()
+        //         .debounce(0.05)
+        //         .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_4));
 
-        Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
-        Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
+        // Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
+        // Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
 
-        leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(100));
-        leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-100));
+        // leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(100));
+        // leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-100));
     }
 
     private void configureTestingBindings() {
@@ -325,14 +328,14 @@ public class RobotContainer {
         // operatorController.rightBumper().debounce(0.1).onTrue(kicker.kick());
         // operatorController.leftBumper().debounce(0.1).onTrue(kicker.idleKicker());
 
-        operatorController
-                .a()
-                .debounce(0.05)
-                .whileTrue(simpleIntake.startIntaking().andThen(simpleIntake.moveOut()));
-        operatorController
-                .b()
-                .debounce(0.05)
-                .whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
+        // operatorController
+        //         .a()
+        //         .debounce(0.05)
+        //         .whileTrue(simpleIntake.startIntaking().andThen(simpleIntake.moveOut()));
+        // operatorController
+        //         .b() 
+        //         .debounce(0.05)
+        //         .whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
 
         // adjustments for testing
         // operatorController.back().debounce(0.1).onTrue(drive.headingControllerCommands.publishPIDGains());
@@ -375,7 +378,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         return autoChooser.get();
-        // return drive.nudgeBack()
+        // return drive.nudgeBack() 
         //         .withTimeout(3)
         //         .andThen(DriverCommands.setAimAtTarget(
         //                 drive, shooter, onBlueAlliance, () -> new ChassisSpeeds(), calculatedHubTarget, () -> true))

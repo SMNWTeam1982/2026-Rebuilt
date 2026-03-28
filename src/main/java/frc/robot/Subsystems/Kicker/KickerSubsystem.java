@@ -4,6 +4,10 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -52,5 +56,28 @@ public class KickerSubsystem extends SubsystemBase {
 
     public Command idleKicker() {
         return runOnce(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
+    }
+
+    /** disables the motors and sets their current limits to 0, their pid gains to 0, and their ff gains to 0 */
+    public Command turnOff() {
+        return runOnce(
+            () -> {
+                Logger.recordOutput("Kicker/turned off", true);
+                kickerMotor.disable();
+
+                SparkBaseConfig disabledConfig = new SparkMaxConfig().idleMode(IdleMode.kBrake).smartCurrentLimit(0).secondaryCurrentLimit(0.0);
+                kickerMotor.configure(disabledConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+                
+                setDefaultCommand(dontMove());
+            }
+        );
+    }
+
+    public Command dontMove() {
+        return run(
+            () -> {
+                kickerMotor.stopMotor();
+            }
+        );
     }
 }
