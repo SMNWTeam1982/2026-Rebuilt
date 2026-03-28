@@ -197,7 +197,7 @@ public class RobotContainer {
                         this::getJoystickSpeeds,
                         calculatedHubTarget,
                         () -> driverCanChangeShooterRPM)
-                        );//.andThen(kicker.kick().asProxy()));
+                        .andThen(kicker.kick().asProxy()));
 
         // set the drive controls to pass aim mode when pressed, and set the shooter rpm calculation
         driverController
@@ -210,7 +210,7 @@ public class RobotContainer {
                         this::getJoystickSpeeds,
                         calculatedPassTarget,
                         () -> driverCanChangeShooterRPM)
-                        );//.andThen(kicker.kick().asProxy()));
+                        .andThen(kicker.kick().asProxy()));
 
         // sets the drive controls to standard field relative when pressed
         driverController
@@ -218,7 +218,7 @@ public class RobotContainer {
                 .debounce(0.1)
                 .onTrue(DriverCommands.setNormalMode(
                         drive, shooter, onBlueAlliance, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM)
-                        );//.andThen(kicker.idleKicker().asProxy()));
+                        .andThen(kicker.idleKicker().asProxy()));
 
         // sets the drive controls to robot relative when pressed
         driverController
@@ -226,7 +226,7 @@ public class RobotContainer {
                 .debounce(0.1)
                 .onTrue(DriverCommands.setRobotRelativeMode(
                         drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM)
-                        );//.andThen(kicker.idleKicker().asProxy()));
+                        .andThen(kicker.idleKicker().asProxy()));
 
         // sets the drive mode to hub orbit when pressed
         driverController
