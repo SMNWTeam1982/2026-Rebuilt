@@ -23,7 +23,7 @@ public class Tunables {
     public static final SparkBaseConfig DEFAULT_SPARK_MAX_CONFIG =
             new SparkMaxConfig().smartCurrentLimit(20).secondaryCurrentLimit(30).idleMode(IdleMode.kBrake);
 
-    public static final String SPECIAL_MESSAGE = "quals";
+    public static final String SPECIAL_MESSAGE = "finals";
 
     /** speeds are in meters per second */
     public static final class DriveBaseTunables {
@@ -34,8 +34,8 @@ public class Tunables {
          * configurable based on driver preference and game need
          * <p> this will be capped by the artificial max speed, so it can be set to any value & used to tune sensitivity
          * <p> meters/sec */
-         
-        public static final double DRIVE_SPEED = 2.5; // 1 m/s
+
+        public static final double DRIVE_SPEED = 2.8; // 1 m/s
         /** this can end up being capped by the artificial max speed, but the cap depends on robot size & module positions
          * <p> radians/sec
          */
@@ -47,6 +47,7 @@ public class Tunables {
         public static final double NUDGE_SPEED = 0.5;
 
         public static final double MAX_AUTO_SPEED = 1.5;
+
 
         public static final double HEADING_P = 6.0;
         public static final double HEADING_I = 0.0;
@@ -69,7 +70,7 @@ public class Tunables {
 
         /** config for the drive motor on the module */
         public static final SparkBaseConfig DRIVE_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(35).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
+                new SparkMaxConfig().smartCurrentLimit(34).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
 
         /** config for the turn motor on the module */
         public static final SparkBaseConfig TURN_MOTOR_CONFIG =
@@ -190,11 +191,11 @@ public class Tunables {
         /** the speed of the kicker when on high */
         public static final double HIGH_SPEED = 0.5;
         /** the speed of the kicker when on low */
-        public static final double LOW_SPEED = 0.2;
+        public static final double LOW_SPEED = 0.0;
         /** how long the kicker runs at the high speed before switching to the low speed */
-        public static final Time HIGH_TIME = Seconds.of(0.5);
+        public static final Time HIGH_TIME = Seconds.of(1.0);
         /** how long the kicker runs at the low speed before switching to the high speed */
-        public static final Time LOW_TIME = Seconds.of(0.2);
+        public static final Time LOW_TIME = Seconds.of(1.0);
         /** the speed the kicker runs at when not active */
         public static final double IDLE_SPEED = 0.0;
         /** the speed for the kicker to run at when moving in reverse */
