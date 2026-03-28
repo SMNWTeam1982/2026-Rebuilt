@@ -91,7 +91,7 @@ public class DriveSubsystem extends SubsystemBase {
         yController.setTolerance(DriveBaseTunables.TRANSLATION_TOLERANCE);
 
         RobotConfig config = PathplannerMeasurements.PATHPLANNER_CONFIG;
-        try{
+        try {
             config = RobotConfig.fromGUISettings();
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,8 +111,7 @@ public class DriveSubsystem extends SubsystemBase {
                                 DriveBaseTunables.TRANSLATION_I,
                                 DriveBaseTunables.TRANSLATION_D),
                         new PIDConstants(
-                                DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D)
-                        ),
+                                DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D)),
                 config, // robot config
                 () -> {
                     var alliance = DriverStation.getAlliance();
@@ -143,8 +142,6 @@ public class DriveSubsystem extends SubsystemBase {
 
         initPathPlannerLogging();
     }
-
-
 
     /*
      * Gives the trajectory for the Robot during auto so we can replay it in advantageKit

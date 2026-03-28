@@ -25,7 +25,6 @@ import frc.robot.PIDTools.PIDCommandGenerator;
 import frc.robot.SparkMaxHelper;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -107,11 +106,11 @@ public class ShooterSubsystem extends SubsystemBase {
         HotPIDFTuner.logPIDDetails("Shooter", "left RPM controller", leftVelocityController);
         HotPIDFTuner.logPIDDetails("Shooter", "right RPM controller", rightVelocityController);
 
-
         if (getCurrentCommand() == null) {
             Logger.recordOutput("Shooter/current command", "no active command");
         } else {
-            Logger.recordOutput("Shooter/current command", this.getCurrentCommand().getName());
+            Logger.recordOutput(
+                    "Shooter/current command", this.getCurrentCommand().getName());
         }
     }
 
@@ -122,9 +121,10 @@ public class ShooterSubsystem extends SubsystemBase {
         double targetRPM = targetFlywheelSpeed.in(RPM);
 
         // send an alert if the RPM target is out of bounds then clamp it
-        if (targetRPM >= ShooterTunables.SHOOTER_RPM_CEILING || targetRPM < 0.0) {
+        if (Math.abs(targetRPM) >= ShooterTunables.SHOOTER_RPM_CEILING) {
             outOfBoundsRPMTarget.set(true);
-            targetRPM = MathUtil.clamp(targetRPM, 0, ShooterTunables.SHOOTER_RPM_CEILING);
+            targetRPM = MathUtil.clamp(
+                    targetRPM, -ShooterTunables.SHOOTER_RPM_CEILING, ShooterTunables.SHOOTER_RPM_CEILING);
         } else {
             outOfBoundsRPMTarget.set(false);
         }
@@ -189,10 +189,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /** sets the RPM target to be based off of the current robot position and a given target position */
-    public Command setTarget(Supplier<Translation2d> robotPosition, Supplier<Translation2d> targetPosition){
-        return setRPMSupplier(
-            () -> ShotCalculation.calculateRPM(robotPosition.get(), targetPosition.get())
-        );
+    public Command setTarget(Supplier<Translation2d> robotPosition, Supplier<Translation2d> targetPosition) {
+        return setRPMSupplier(() -> ShotCalculation.calculateRPM(robotPosition.get(), targetPosition.get()));
     }
 
     /** changes the held RPM by the amount */

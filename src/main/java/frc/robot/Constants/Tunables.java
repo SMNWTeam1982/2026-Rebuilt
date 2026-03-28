@@ -116,9 +116,9 @@ public class Tunables {
         public static final double SHOOTER_RPM_CEILING = 5500;
 
         public static final AngularVelocity SPEED_OVERRIDE_1 = RPM.of(0);
-        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(3400);
-        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3600);
-        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3800);
+        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(-2000);
+        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(4000);
+        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3200);
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
@@ -127,16 +127,17 @@ public class Tunables {
 
         public static final int SHOT_PREDICTION_ITERATIONS = 5;
 
-        public static final Time AUTO_SPIN_UP_TIME = Seconds.of(2);
+        public static final Time AUTO_SPIN_UP_TIME = Seconds.of(3);
 
-        // brake mode on for the flywheels so that we dont get a penalty for an eranious shot while the flywheels spin down
+        // brake mode on for the flywheels so that we dont get a penalty for an eranious shot while the flywheels spin
+        // down
         // the brake mode should also help prevent jams
         // the total flywheel current should not exceed 60A (30A * 2 motors)
         // being somewhat conservative with the flywheel current limits
         public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(25)
+                .smartCurrentLimit(40)
                 .idleMode(SparkBaseConfig.IdleMode.kCoast)
-                .secondaryCurrentLimit(40);
+                .secondaryCurrentLimit(50);
     }
 
     public static final class IntakeTunables {
@@ -172,8 +173,8 @@ public class Tunables {
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
         public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.2);
 
-        public static final double MOVE_IN_SPEED = -0.2;
-        public static final double MOVE_OUT_SPEED = 0.2;
+        public static final double MOVE_IN_SPEED = -0.05;
+        public static final double MOVE_OUT_SPEED = 0.05;
 
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.85;
@@ -195,6 +196,8 @@ public class Tunables {
         public static final Time LOW_TIME = Seconds.of(0.2);
         /** the speed the kicker runs at when not active */
         public static final double IDLE_SPEED = 0.0;
+        /** the speed for the kicker to run at when moving in reverse */
+        public static final double REVERSE_SPEED = -0.5;
 
         public static final SparkBaseConfig KICKER_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(20)

@@ -17,7 +17,6 @@ import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.Supplier;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 

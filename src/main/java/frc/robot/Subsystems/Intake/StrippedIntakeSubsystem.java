@@ -55,7 +55,8 @@ public class StrippedIntakeSubsystem extends SubsystemBase {
         if (getCurrentCommand() == null) {
             Logger.recordOutput("Intake/current command", "no active command");
         } else {
-            Logger.recordOutput("Intake/current command", this.getCurrentCommand().getName());
+            Logger.recordOutput(
+                    "Intake/current command", this.getCurrentCommand().getName());
         }
     }
 

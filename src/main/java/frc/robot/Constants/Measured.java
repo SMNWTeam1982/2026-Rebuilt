@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.Kilograms;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.pathplanner.lib.config.ModuleConfig;
@@ -153,7 +152,7 @@ public class Measured {
         /// 3.567 | 3273.297 | 1.36
         /// 2.340 | 2934.641 | 1.02
         /// -----------------------
-        /// 
+        ///
         /// linear regression for flight time (t) and distance (x)
         /// t = 0.180436x + 0.637674
         /**
