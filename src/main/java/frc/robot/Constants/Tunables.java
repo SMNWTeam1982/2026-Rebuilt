@@ -127,7 +127,7 @@ public class Tunables {
 
         public static final int SHOT_PREDICTION_ITERATIONS = 5;
 
-        public static final Time AUTO_SPIN_UP_TIME = Seconds.of(3);
+        public static final Time AUTO_SPIN_UP_TIME = Seconds.of(2);
 
         // brake mode on for the flywheels so that we dont get a penalty for an eranious shot while the flywheels spin down
         // the brake mode should also help prevent jams
@@ -167,7 +167,7 @@ public class Tunables {
         public static final Time THRESHOLD_TIME = Seconds.of(0.2);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a deploy attempt */
-        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(1.2);
+        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(1.5);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
         public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.2);

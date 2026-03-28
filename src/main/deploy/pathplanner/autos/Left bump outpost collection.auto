@@ -7,19 +7,68 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Left bump to Output "
+            "pathName": "Left bump to top"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "deploy intake"
+            "name": "stop drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot & kick"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Top to tap outpost"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "deploy intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "idle shooter"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop drive"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Outpost Collection"
+            "pathName": "tap outpost to top"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop drive"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot & kick"
           }
         }
       ]
