@@ -34,7 +34,7 @@ public class Tunables {
          * configurable based on driver preference and game need
          * <p> this will be capped by the artificial max speed, so it can be set to any value & used to tune sensitivity
          * <p> meters/sec */
-        public static final double DRIVE_SPEED = 3.0; // 1 m/s
+        public static final double DRIVE_SPEED = 2.5; // 1 m/s
         /** this can end up being capped by the artificial max speed, but the cap depends on robot size & module positions
          * <p> radians/sec
          */
@@ -68,7 +68,7 @@ public class Tunables {
 
         /** config for the drive motor on the module */
         public static final SparkBaseConfig DRIVE_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(40).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
+                new SparkMaxConfig().smartCurrentLimit(35).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
 
         /** config for the turn motor on the module */
         public static final SparkBaseConfig TURN_MOTOR_CONFIG =
