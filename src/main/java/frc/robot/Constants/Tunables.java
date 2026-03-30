@@ -23,6 +23,8 @@ public class Tunables {
     public static final SparkBaseConfig DEFAULT_SPARK_MAX_CONFIG =
             new SparkMaxConfig().smartCurrentLimit(20).secondaryCurrentLimit(30).idleMode(IdleMode.kBrake);
 
+    public static final String SPECIAL_MESSAGE = "finals";
+
     /** speeds are in meters per second */
     public static final class DriveBaseTunables {
         /** the speed we limit the drive to, this MUST be below the physical max speed */
@@ -32,26 +34,26 @@ public class Tunables {
          * configurable based on driver preference and game need
          * <p> this will be capped by the artificial max speed, so it can be set to any value & used to tune sensitivity
          * <p> meters/sec */
-        public static final double DRIVE_SPEED = 2.0; // 1 m/s
+        public static final double DRIVE_SPEED = 2.8; // 1 m/s
         /** this can end up being capped by the artificial max speed, but the cap depends on robot size & module positions
          * <p> radians/sec
          */
-        public static final double TURN_SPEED = -3.5; // 3 rad/s
+        public static final double TURN_SPEED = -5.0; // 3 rad/s
         /** the amount the joystick needs to deflect before it will register an input */
         public static final double INPUT_DEADZONE = 0.1;
 
         /** a speed for the commands that fine tune the robot position robot-relative */
         public static final double NUDGE_SPEED = 0.5;
 
-        public static final double MAX_AUTO_SPEED = 0.5;
+        public static final double MAX_AUTO_SPEED = 1.5;
 
-        public static final double HEADING_P = 3.0;
+        public static final double HEADING_P = 6.0;
         public static final double HEADING_I = 0.0;
-        public static final double HEADING_D = 0.1;
+        public static final double HEADING_D = 0.2;
 
-        public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(5);
+        public static final Rotation2d HEADING_TOLERANCE = Rotation2d.fromDegrees(10);
 
-        public static final double TRANSLATION_P = 1.0;
+        public static final double TRANSLATION_P = 4.0;
         public static final double TRANSLATION_I = 0.0;
         public static final double TRANSLATION_D = 0.0;
 
@@ -66,7 +68,7 @@ public class Tunables {
 
         /** config for the drive motor on the module */
         public static final SparkBaseConfig DRIVE_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(35).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
+                new SparkMaxConfig().smartCurrentLimit(34).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
 
         /** config for the turn motor on the module */
         public static final SparkBaseConfig TURN_MOTOR_CONFIG =
@@ -109,14 +111,14 @@ public class Tunables {
 
         public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
 
-        public static final double FLYWHEEL_IDLE_RPM = 0.0;
+        public static final double FLYWHEEL_IDLE_RPM = 1000.0;
 
         public static final double SHOOTER_RPM_CEILING = 5500;
 
         public static final AngularVelocity SPEED_OVERRIDE_1 = RPM.of(0);
-        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(3400);
-        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3600);
-        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3800);
+        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(-2000);
+        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(4000);
+        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3200);
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
@@ -125,13 +127,17 @@ public class Tunables {
 
         public static final int SHOT_PREDICTION_ITERATIONS = 5;
 
-        // the flywheels should coast when disables so the motors don't have to absorb all of the momentum
-        // the total flywheel current should not exceed 40A (20A * 2 motors)
+        public static final Time AUTO_SPIN_UP_TIME = Seconds.of(3);
+
+        // brake mode on for the flywheels so that we dont get a penalty for an eranious shot while the flywheels spin
+        // down
+        // the brake mode should also help prevent jams
+        // the total flywheel current should not exceed 60A (30A * 2 motors)
         // being somewhat conservative with the flywheel current limits
         public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(30)
+                .smartCurrentLimit(40)
                 .idleMode(SparkBaseConfig.IdleMode.kCoast)
-                .secondaryCurrentLimit(40);
+                .secondaryCurrentLimit(50);
     }
 
     public static final class IntakeTunables {
@@ -162,16 +168,16 @@ public class Tunables {
         public static final Time THRESHOLD_TIME = Seconds.of(0.2);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a deploy attempt */
-        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(0.8);
+        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(1.5);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
-        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.1);
+        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.2);
 
-        public static final double MOVE_IN_SPEED = -0.5;
-        public static final double MOVE_OUT_SPEED = 0.5;
+        public static final double MOVE_IN_SPEED = -0.05;
+        public static final double MOVE_OUT_SPEED = 0.05;
 
         // percent that the intake will be set at when intaking
-        public static final double INTAKE_SPEED = 0.7;
+        public static final double INTAKE_SPEED = 0.85;
 
         public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(40)
@@ -181,15 +187,17 @@ public class Tunables {
 
     public static final class KickerTunables {
         /** the speed of the kicker when on high */
-        public static final double HIGH_SPEED = 0.8;
+        public static final double HIGH_SPEED = 0.5;
         /** the speed of the kicker when on low */
         public static final double LOW_SPEED = 0.0;
         /** how long the kicker runs at the high speed before switching to the low speed */
-        public static final Time HIGH_TIME = Seconds.of(0.5);
+        public static final Time HIGH_TIME = Seconds.of(1.0);
         /** how long the kicker runs at the low speed before switching to the high speed */
-        public static final Time LOW_TIME = Seconds.of(0.1);
+        public static final Time LOW_TIME = Seconds.of(1.0);
         /** the speed the kicker runs at when not active */
         public static final double IDLE_SPEED = 0.0;
+        /** the speed for the kicker to run at when moving in reverse */
+        public static final double REVERSE_SPEED = -0.5;
 
         public static final SparkBaseConfig KICKER_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(20)

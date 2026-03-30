@@ -17,6 +17,7 @@ import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 /**
@@ -123,11 +124,11 @@ public final class DriveBase {
     public void setModulesFromRobotRelativeSpeeds(ChassisSpeeds speeds) {
 
         // check if each drive desired movement is 0
-        if (speeds.vxMetersPerSecond == 0.0 && speeds.vyMetersPerSecond == 0.0) {
-            recievedTranslationInput.set(false);
-        } else {
-            recievedTranslationInput.set(true);
-        }
+        // if (speeds.vxMetersPerSecond == 0.0 && speeds.vyMetersPerSecond == 0.0) {
+        //     recievedTranslationInput.set(false);
+        // } else {
+        //     recievedTranslationInput.set(true);
+        // }
 
         Logger.recordOutput("DriveBase/desired robot relative speeds", speeds);
 
@@ -137,6 +138,10 @@ public final class DriveBase {
         SwerveModuleState[] moduleStates = driveKinematics.toSwerveModuleStates(discretizedSpeeds);
         // slow down the speeds of all the wheels if one has been commanded to go too fast
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DriveBaseTunables.ARTIFICIAL_MAX_SPEED);
+
+        Logger.recordOutput("DriveBase/DesiredModuleStates", new SwerveModuleState[] {
+            frontLeft.getState(), frontRight.getState(), backLeft.getState(), backRight.getState()
+        });
         setModuleStates(moduleStates);
     }
 
@@ -240,6 +245,7 @@ public final class DriveBase {
     /**
      * @return robot relative ChassisSpeeds, see the wpilib coordinate system for more info
      */
+    @AutoLogOutput(key = "DriveBase/current robot relative speeds")
     public ChassisSpeeds getRobotRelativeSpeeds() {
         return driveKinematics.toChassisSpeeds(getModuleStates());
     }
