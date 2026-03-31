@@ -243,7 +243,7 @@ public class RobotContainer {
 
     private void configureOperatorBindings() {
 
-        operatorController.a().onTrue(shooter.turnOff().andThen(kicker.turnOff()));
+        // operatorController.a().onTrue(shooter.turnOff().andThen(kicker.turnOff()));
 
         // deploy/retract the intake with a & b
         operatorController
@@ -260,7 +260,7 @@ public class RobotContainer {
         operatorController.leftBumper().debounce(0.05).onTrue(kicker.idleKicker());
 
         // automatically start/stop the kicker when the robot is ready/not ready
-        robotReadyToShoot.whileTrue(kicker.kick());
+        // robotReadyToShoot.whileTrue(kicker.kick());
 
         /**
          * Disables the velocity compensation
