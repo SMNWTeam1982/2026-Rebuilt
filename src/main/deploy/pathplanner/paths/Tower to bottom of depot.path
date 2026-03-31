@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.8,
+        "y": 4.012722226097471
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.8619538225446428,
+        "y": 4.842505580357144
+      },
+      "isLocked": false,
+      "linkedName": "Tower"
+    },
+    {
+      "anchor": {
+        "x": 1.0583226376488093,
+        "y": 5.151896449497769
+      },
+      "prevControl": {
+        "x": 1.82953125,
+        "y": 5.1750408644903265
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Bottom of depot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 141.9282759210501
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}
