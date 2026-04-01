@@ -48,14 +48,13 @@ public class RobotContainer {
      */
     @AutoLogOutput(key = "Driver info/driver can change shooter RPM")
     private boolean driverCanChangeShooterRPM = false;
-    
-    private boolean autoKickerModeEnabled = false; 
+
+    private boolean autoKickerModeEnabled = false;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
     private final LoggedDashboardChooser<Command> autoChooser;
-   
 
     // these suppliers are so that the status of the right trigger can be logged
     // if the robot is in a good spot for reliable shooting at the given rpm, the driver or operator can press the right
@@ -132,13 +131,10 @@ public class RobotContainer {
      * <p> is the shooter in shoot mode? (is it calculating the velocity from the equations?)
      */
     @AutoLogOutput(key = "Driver info/robot ready to shoot")
-    private final Trigger robotReadyToShoot = drive.atTargetHeading
-            .and(shooter.readyToShoot)
-            .and(shooter.inShootMode);
-
+    private final Trigger robotReadyToShoot =
+            drive.atTargetHeading.and(shooter.readyToShoot).and(shooter.inShootMode);
 
     private final boolean onBlueAlliance;
-
 
     public RobotContainer() {
         /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
@@ -214,42 +210,38 @@ public class RobotContainer {
                 .a()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setAimAtTarget(
-                                drive,
-                                shooter,
-                                onBlueAlliance,
-                                this::getJoystickSpeeds,
-                                calculatedHubTarget,
-                                () -> driverCanChangeShooterRPM));
+                        drive,
+                        shooter,
+                        onBlueAlliance,
+                        this::getJoystickSpeeds,
+                        calculatedHubTarget,
+                        () -> driverCanChangeShooterRPM));
 
         // set the drive controls to pass aim mode when pressed, and set the shooter rpm calculation
         driverController
                 .x()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setAimAtTarget(
-                                drive,
-                                shooter,
-                                onBlueAlliance,
-                                this::getJoystickSpeeds,
-                                calculatedPassTarget,
-                                () -> driverCanChangeShooterRPM));
+                        drive,
+                        shooter,
+                        onBlueAlliance,
+                        this::getJoystickSpeeds,
+                        calculatedPassTarget,
+                        () -> driverCanChangeShooterRPM));
 
         // sets the drive controls to standard field relative when pressed
         driverController
                 .b()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setNormalMode(
-                                drive,
-                                shooter,
-                                onBlueAlliance,
-                                this::getJoystickSpeeds,
-                                () -> driverCanChangeShooterRPM));
+                        drive, shooter, onBlueAlliance, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
 
         // sets the drive controls to robot relative when pressed
         driverController
                 .y()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setRobotRelativeMode(
-                                drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
+                        drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
 
         // sets the drive mode to hub orbit when pressed
         // driverController
@@ -278,7 +270,7 @@ public class RobotContainer {
         operatorController.leftBumper().debounce(0.05).onTrue(kicker.setIdle());
 
         // automatically start/stop the kicker when the robot is ready/not ready
-        robotReadyToShoot.and(()-> autoKickerModeEnabled).whileTrue(kicker.kick());
+        robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
 
         /**
          * Disables the velocity compensation
@@ -304,21 +296,15 @@ public class RobotContainer {
             driverCanChangeShooterRPM = false;
         }));
 
-        //Toggle Auto kicker
-        operatorController
-                .leftTrigger()
-                .debounce(.05)
-                .onTrue(Commands.runOnce(() -> {
-                  autoKickerModeEnabled = true;
-                }));
+        // Toggle Auto kicker
+        operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
+            autoKickerModeEnabled = true;
+        }));
 
-        //Disable Auto Kicker 
-        operatorController
-                .rightTrigger()
-                .debounce(.05)
-                .onTrue(Commands.runOnce(() -> {
-                  autoKickerModeEnabled = false;
-                }));
+        // Disable Auto Kicker
+        operatorController.rightTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
+            autoKickerModeEnabled = false;
+        }));
 
         // speed overides for shooter
         operatorController
