@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Commands.AutoCommands;
 import frc.robot.Commands.DriverCommands;
 import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
@@ -156,11 +159,19 @@ public class RobotContainer {
     }
 
     private void addNamedCommands() {
+        // auto commands
+        NamedCommands.registerCommand(
+                "hub shooting procedure 5 seconds", AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5)));
+        NamedCommands.registerCommand(
+                "hub shooting procedure 10 seconds", AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10)));
+        NamedCommands.registerCommand("stop and deploy intake", AutoCommands.deployIntake(drive, simpleIntake));
+
         NamedCommands.registerCommand(
                 "shoot & kick",
                 shooter.setTarget(() -> drive.getRobotPose().getTranslation(), calculatedHubTarget)
                         .andThen(shooter.runPIDs().withTimeout(ShooterTunables.AUTO_SPIN_UP_TIME))
                         .andThen(kicker.kick().alongWith(shooter.runPIDs())));
+
         // shooter
         NamedCommands.registerCommand(
                 "set shooter to target the hub",
@@ -177,13 +188,13 @@ public class RobotContainer {
         NamedCommands.registerCommand("kick 5 seconds", kicker.kick().withTimeout(5));
         NamedCommands.registerCommand("kick 7.5 seconds", kicker.kick().withTimeout(7.5));
         NamedCommands.registerCommand("kick 10 seconds", kicker.kick().withTimeout(10));
-        NamedCommands.registerCommand("start kicker", kicker.startKicker());
-        NamedCommands.registerCommand("stop kicker", kicker.idleKicker());
+        NamedCommands.registerCommand("start kicker", kicker.setHigh());
+        NamedCommands.registerCommand("stop kicker", kicker.setIdle());
         // intake
-        // NamedCommands.registerCommand("start intaking", simpleIntake.startIntaking());
-        // NamedCommands.registerCommand("stop intaking", simpleIntake.stopIntaking());
-        // NamedCommands.registerCommand("deploy intake", simpleIntake.deploy());
-        // NamedCommands.registerCommand("stow intake", simpleIntake.stow());
+        NamedCommands.registerCommand("start intaking", simpleIntake.startIntaking());
+        NamedCommands.registerCommand("stop intaking", simpleIntake.stopIntaking());
+        NamedCommands.registerCommand("deploy intake", simpleIntake.deploy());
+        NamedCommands.registerCommand("stow intake", simpleIntake.stow());
         // drive
         NamedCommands.registerCommand("stop drive", drive.stop());
     }
@@ -230,7 +241,7 @@ public class RobotContainer {
                                 onBlueAlliance,
                                 this::getJoystickSpeeds,
                                 () -> driverCanChangeShooterRPM)
-                        .andThen(kicker.idleKicker().asProxy()));
+                        .andThen(kicker.setIdle().asProxy()));
 
         // sets the drive controls to robot relative when pressed
         driverController
@@ -238,7 +249,14 @@ public class RobotContainer {
                 .debounce(0.1)
                 .onTrue(DriverCommands.setRobotRelativeMode(
                                 drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM)
-                        .andThen(kicker.idleKicker().asProxy()));
+                        .andThen(kicker.setIdle().asProxy()));
+
+        // sets the drive mode to hub orbit when pressed
+        // driverController
+        //         .povUp()
+        //         .debounce(0.1)
+        //         .onTrue(DriverCommands.setOrbitNearestHubAtCurrentDistance(
+        //                 drive, shooter, driverController::getLeftX, () -> driverCanChangeShooterRPM));
     }
 
     private void configureOperatorBindings() {
@@ -257,7 +275,7 @@ public class RobotContainer {
 
         // manually start/stop the kicker
         operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick());
-        operatorController.leftBumper().debounce(0.05).onTrue(kicker.idleKicker());
+        operatorController.leftBumper().debounce(0.05).onTrue(kicker.setIdle());
 
         // automatically start/stop the kicker when the robot is ready/not ready
         // robotReadyToShoot.whileTrue(kicker.kick());

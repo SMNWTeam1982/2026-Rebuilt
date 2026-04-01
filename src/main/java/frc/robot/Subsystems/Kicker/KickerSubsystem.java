@@ -8,8 +8,8 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.CANBus.KickerIDs;
 import frc.robot.Constants.Tunables.KickerTunables;
 import frc.robot.SparkMaxHelper;
@@ -35,8 +35,12 @@ public class KickerSubsystem extends SubsystemBase {
         }
     }
 
-    public Command startKicker() {
+    public Command setHigh() {
         return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED));
+    }
+
+    public Command setLow() {
+        return runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED));
     }
 
     public Command setReverse() {
@@ -45,15 +49,21 @@ public class KickerSubsystem extends SubsystemBase {
 
     /** while running, it switches the kicker's speed from high to low periodically */
     public Command kick() {
-        return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED))
-                .andThen(new WaitCommand(KickerTunables.HIGH_TIME))
-                .andThen(runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED)))
-                .andThen(new WaitCommand(KickerTunables.LOW_TIME))
-                .repeatedly()
+        return Commands.repeatingSequence(
+                        setHigh(),
+                        Commands.waitTime(KickerTunables.HIGH_TIME),
+                        setLow(),
+                        Commands.waitTime(KickerTunables.LOW_TIME))
                 .finallyDo(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
+        // return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED))
+        //         .andThen(new WaitCommand(KickerTunables.HIGH_TIME))
+        //         .andThen(runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED)))
+        //         .andThen(new WaitCommand(KickerTunables.LOW_TIME))
+        //         .repeatedly()
+        //         .finallyDo(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
     }
 
-    public Command idleKicker() {
+    public Command setIdle() {
         return runOnce(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
     }
 

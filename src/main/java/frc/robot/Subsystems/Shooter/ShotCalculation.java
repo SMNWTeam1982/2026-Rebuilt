@@ -81,6 +81,11 @@ public final class ShotCalculation {
         return ShooterMeasurements.distanceToFlywheelRPM(robotPosition.getDistance(targetPosition));
     }
 
+    /** returns the RPM needed to shoot into the nearest Hub */
+    public static double calculateNearestHubRPM(Translation2d robotPosition) {
+        return calculateRPM(robotPosition, getNearestHubPosition(robotPosition));
+    }
+
     public static boolean calculateShotConfidence(
             Translation2d robotPosition, Translation2d originalTargetPosition, Translation2d calculatedTargetPosition) {
         double targetDistance = robotPosition.getDistance(originalTargetPosition);

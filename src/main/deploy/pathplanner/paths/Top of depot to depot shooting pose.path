@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 1.0719849795386904,
+        "y": 6.6147866094680055
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.3274278765807648,
+        "y": 6.81298349243411
+      },
+      "isLocked": true,
+      "linkedName": "Top of depot"
+    },
+    {
+      "anchor": {
+        "x": 1.2857904343377975,
+        "y": 7.274198521205358
+      },
+      "prevControl": {
+        "x": 1.319514168438704,
+        "y": 7.010533700542597
+      },
+      "nextControl": null,
+      "isLocked": true,
+      "linkedName": "Depot shooting pose"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -44.07840537716317
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 140.76731560837516
+  },
+  "useDefaultConstraints": true
+}
