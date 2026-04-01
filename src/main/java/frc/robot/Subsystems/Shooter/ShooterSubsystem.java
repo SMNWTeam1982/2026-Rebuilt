@@ -56,15 +56,13 @@ public class ShooterSubsystem extends SubsystemBase {
             new PIDController(ShooterTunables.FLYWHEEL_P, ShooterTunables.FLYWHEEL_I, ShooterTunables.FLYWHEEL_D);
 
     @AutoLogOutput(key = "Shooter/ready to shoot")
-    public final Trigger readyToShoot = new Trigger(
-        () -> {
-            // if the shooter is jammed, just consider it up to speed
-            boolean leftReady = leftVelocityController.atSetpoint() || leftShooterJammed.getAsBoolean();
-            boolean rightReady = rightVelocityController.atSetpoint() || rightShooterJammed.getAsBoolean();
+    public final Trigger readyToShoot = new Trigger(() -> {
+        // if the shooter is jammed, just consider it up to speed
+        boolean leftReady = leftVelocityController.atSetpoint() || leftShooterJammed.getAsBoolean();
+        boolean rightReady = rightVelocityController.atSetpoint() || rightShooterJammed.getAsBoolean();
 
-            return leftReady && rightReady;
-        }
-    );
+        return leftReady && rightReady;
+    });
 
     private final Alert outOfBoundsRPMTarget = new Alert("Shooter/recieved out of bounds RPM target", AlertType.kError);
 

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Seconds;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -28,9 +30,6 @@ import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
-
-import static edu.wpi.first.units.Units.Seconds;
-
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -160,14 +159,19 @@ public class RobotContainer {
     }
 
     private void addNamedCommands() {
+        // auto commands
+        NamedCommands.registerCommand(
+                "hub shooting procedure 5 seconds", AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5)));
+        NamedCommands.registerCommand(
+                "hub shooting procedure 10 seconds", AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10)));
+        NamedCommands.registerCommand("stop and deploy intake", AutoCommands.deployIntake(drive, simpleIntake));
+
         NamedCommands.registerCommand(
                 "shoot & kick",
                 shooter.setTarget(() -> drive.getRobotPose().getTranslation(), calculatedHubTarget)
                         .andThen(shooter.runPIDs().withTimeout(ShooterTunables.AUTO_SPIN_UP_TIME))
                         .andThen(kicker.kick().alongWith(shooter.runPIDs())));
 
-        NamedCommands.registerCommand("hub shooting procedure 5 seconds", AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5)));
-        NamedCommands.registerCommand("hub shooting procedure 10 seconds", AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10)));
         // shooter
         NamedCommands.registerCommand(
                 "set shooter to target the hub",
@@ -187,10 +191,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("start kicker", kicker.setHigh());
         NamedCommands.registerCommand("stop kicker", kicker.setIdle());
         // intake
-        // NamedCommands.registerCommand("start intaking", simpleIntake.startIntaking());
-        // NamedCommands.registerCommand("stop intaking", simpleIntake.stopIntaking());
-        // NamedCommands.registerCommand("deploy intake", simpleIntake.deploy());
-        // NamedCommands.registerCommand("stow intake", simpleIntake.stow());
+        NamedCommands.registerCommand("start intaking", simpleIntake.startIntaking());
+        NamedCommands.registerCommand("stop intaking", simpleIntake.stopIntaking());
+        NamedCommands.registerCommand("deploy intake", simpleIntake.deploy());
+        NamedCommands.registerCommand("stow intake", simpleIntake.stow());
         // drive
         NamedCommands.registerCommand("stop drive", drive.stop());
     }
@@ -271,7 +275,7 @@ public class RobotContainer {
 
         // manually start/stop the kicker
         operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick());
-        operatorController.leftBumper().debounce(0.05).onTrue(kicker.idleKicker());
+        operatorController.leftBumper().debounce(0.05).onTrue(kicker.setIdle());
 
         // automatically start/stop the kicker when the robot is ready/not ready
         // robotReadyToShoot.whileTrue(kicker.kick());

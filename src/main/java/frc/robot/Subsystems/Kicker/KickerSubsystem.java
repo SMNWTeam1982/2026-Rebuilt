@@ -10,7 +10,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.CANBus.KickerIDs;
 import frc.robot.Constants.Tunables.KickerTunables;
 import frc.robot.SparkMaxHelper;
@@ -51,12 +50,11 @@ public class KickerSubsystem extends SubsystemBase {
     /** while running, it switches the kicker's speed from high to low periodically */
     public Command kick() {
         return Commands.repeatingSequence(
-            setHigh(),
-            Commands.waitTime(KickerTunables.HIGH_TIME),
-            setLow(),
-            Commands.waitTime(KickerTunables.LOW_TIME)
-        )
-        .finallyDo(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
+                        setHigh(),
+                        Commands.waitTime(KickerTunables.HIGH_TIME),
+                        setLow(),
+                        Commands.waitTime(KickerTunables.LOW_TIME))
+                .finallyDo(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
         // return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED))
         //         .andThen(new WaitCommand(KickerTunables.HIGH_TIME))
         //         .andThen(runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED)))

@@ -82,7 +82,7 @@ public final class ShotCalculation {
     }
 
     /** returns the RPM needed to shoot into the nearest Hub */
-    public static double calculateNearestHubRPM(Translation2d robotPosition){
+    public static double calculateNearestHubRPM(Translation2d robotPosition) {
         return calculateRPM(robotPosition, getNearestHubPosition(robotPosition));
     }
 
