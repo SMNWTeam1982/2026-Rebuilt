@@ -105,6 +105,7 @@ public class Measured {
     }
 
     public static final class ShooterMeasurements {
+       
 
         public static final double MAX_SCHOOL_FLYWHEEL_RPM =
                 4750; // the balls will hit the cieling in the cafeteria above this speed

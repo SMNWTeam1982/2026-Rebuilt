@@ -16,13 +16,16 @@ public class DriverCommands {
      * <p> sets the shooter's rpm calculation to the rpm for the supplied target
      * <p> this is a runOnce type command
      */
-    public static Command setAimAtTarget(
-            DriveSubsystem drive,
-            ShooterSubsystem shooter,
-            boolean onBlueAlliance,
-            Supplier<ChassisSpeeds> joystickSpeeds,
-            Supplier<Translation2d> calculatedTarget,
-            BooleanSupplier changeShooterRPM) {
+    public static DriveSubsystem drive;
+
+    public static ShooterSubsystem shooter;
+    public static boolean onBlueAlliance;
+    public static Supplier<ChassisSpeeds> joystickSpeeds;
+    public static Supplier<Translation2d> calculatedTarget;
+    public static BooleanSupplier changeShooterRPM;
+    public static DoubleSupplier orbitVelocity;
+
+    public static Command setAimAtTarget() {
 
         Supplier<ChassisSpeeds> fieldRelativeSpeeds =
                 () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), onBlueAlliance);
@@ -36,12 +39,7 @@ public class DriverCommands {
     }
 
     /** sets the shooter to its idle speed, sets the drive mode to the default mode */
-    public static Command setNormalMode(
-            DriveSubsystem drive,
-            ShooterSubsystem shooter,
-            boolean onBlueAlliance,
-            Supplier<ChassisSpeeds> joystickSpeeds,
-            BooleanSupplier changeShooterRPM) {
+    public static Command setNormalMode() {
         Supplier<ChassisSpeeds> fieldRelativeSpeeds =
                 () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), onBlueAlliance);
         return drive.runOnce(() -> drive.setDefaultCommand(
@@ -51,11 +49,7 @@ public class DriverCommands {
     }
 
     /** sets the shooter to idle speed, sets the robot to be driven robot-relative */
-    public static Command setRobotRelativeMode(
-            DriveSubsystem drive,
-            ShooterSubsystem shooter,
-            Supplier<ChassisSpeeds> joystickSpeeds,
-            BooleanSupplier changeShooterRPM) {
+    public static Command setRobotRelativeMode() {
         // the conversion from blue drivers station to field speeds does the same thing that controller to robot
         // relative would do
         Supplier<ChassisSpeeds> robotRelativeSpeeds =
@@ -69,11 +63,7 @@ public class DriverCommands {
     /** will calculate the nearest hub and then set the robot to orbit it at the current distance from it
      * <p> sets the shooter to a calculated rpm based on the distance from the hub
      */
-    public static Command setOrbitNearestHubAtCurrentDistance(
-            DriveSubsystem drive,
-            ShooterSubsystem shooter,
-            DoubleSupplier orbitVelocity,
-            BooleanSupplier changeShooterRPM) {
+    public static Command setOrbitNearestHubAtCurrentDistance() {
         return drive.defer(() -> {
                     Translation2d currentRobotTranslation = drive.getRobotPose().getTranslation();
                     Translation2d nearestHub = ShotCalculation.getNearestHubPosition(currentRobotTranslation);
