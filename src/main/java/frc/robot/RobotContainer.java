@@ -283,8 +283,6 @@ public class RobotContainer {
         // automatically start/stop the kicker when the robot is ready/not ready
         robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
 
-        defenseMode.whileTrue(kicker.dontMove().alongWith(shooter.dontMove()).alongWith(simpleIntake.stopIntaking()));
-        
         /**
          * Disables the velocity compensation
          */
@@ -309,8 +307,14 @@ public class RobotContainer {
             driverCanChangeShooterRPM = false;
         }));
 
-        operatorController.rightTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
-            defenseModeEnabled = true;
+        // enable defense mode
+        operatorController.rightTrigger().debounce(.05).onTrue(
+            Commands.parallel(
+                shooter.turnOff(),
+                kicker.turnOff()
+            )
+        );
+
         // Toggle Auto kicker
         operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
             autoKickerModeEnabled = true;

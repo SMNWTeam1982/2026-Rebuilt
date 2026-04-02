@@ -95,6 +95,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     private boolean idle = true;
 
+    // if the boolean is true, the subsystem will behave the same except
+    // for the fact that the motor will be sent a value of 0 instead of the output of the pidf
+    @AutoLogOutput(key = "Shooter/right flywheel disabled")
+    private boolean rightFlywheelDisabled = false;
+    @AutoLogOutput(key = "Shooter/left flywheel disabled")
+    private boolean leftFlywheelDisabled = false;
+
     public ShooterSubsystem() {
         rightMotor.configure(
                 ShooterTunables.FLYWHEEL_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -153,7 +160,7 @@ public class ShooterSubsystem extends SubsystemBase {
         leftVelocityController.setSetpoint(targetRPM);
     }
 
-    private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder) {
+    private void runFlywheelPID(PIDController pid, SparkMax motor, RelativeEncoder encoder, boolean flywheelDisabled) {
         // give the pid RPM
         double pidOutput;
 
@@ -168,7 +175,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
         double clampedOutput = MathUtil.clamp(totalOutput, -12.0, 12.0);
 
-        motor.setVoltage(clampedOutput);
+        if(flywheelDisabled){ // if we don't want the flywheel to try and move
+            motor.setVoltage(0);
+        }else{
+            motor.setVoltage(clampedOutput);
+        }
     }
 
     /** runs the velocity control, the RPM target will change if set to shoot mode */
@@ -178,8 +189,8 @@ public class ShooterSubsystem extends SubsystemBase {
                 // update the target RPM if the shooter is NOT in idle mode
                 setTargetAngularVelocity(RPM.of(rpmCalculation.getAsDouble()));
             }
-            runFlywheelPID(rightVelocityController, rightMotor, rightEncoder);
-            runFlywheelPID(leftVelocityController, leftMotor, leftEncoder);
+            runFlywheelPID(rightVelocityController, rightMotor, rightEncoder, rightFlywheelDisabled);
+            runFlywheelPID(leftVelocityController, leftMotor, leftEncoder, leftFlywheelDisabled);
         });
     }
 
@@ -219,14 +230,6 @@ public class ShooterSubsystem extends SubsystemBase {
                 () -> velocityControllerCommands.setTarget(RPM.of(rpmNudge + rightVelocityController.getSetpoint())));
     }
 
-    /** a command that just sets the motor voltage and doesn't do anything fancy with pids */
-    public Command setFlywheelMotorVoltages(double motorVoltage) {
-        return runOnce(() -> {
-            rightMotor.setVoltage(motorVoltage);
-            leftMotor.setVoltage(motorVoltage);
-        });
-    }
-
     /** returns the right flywheel velocity in RPM */
     public double getRightFlywheelVelocity() {
         return rightEncoder.getVelocity();
@@ -247,28 +250,21 @@ public class ShooterSubsystem extends SubsystemBase {
         return !idle;
     }
 
-    /** disables the motors and sets their current limits to 0, their pid gains to 0, and their ff gains to 0 */
+    /** sets both flywheel motors to not move */
     public Command turnOff() {
         return runOnce(() -> {
-            Logger.recordOutput("Shooter/turned off", true);
-            rightMotor.disable();
-            leftMotor.disable();
+            rightMotor.stopMotor();
+            leftMotor.stopMotor();
 
-            SparkBaseConfig disabledConfig = new SparkMaxConfig()
-                    .idleMode(IdleMode.kBrake)
-                    .smartCurrentLimit(0)
-                    .secondaryCurrentLimit(0.0);
-            rightMotor.configure(disabledConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-            leftMotor.configure(disabledConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+            rightFlywheelDisabled = true;
+            leftFlywheelDisabled = true;
+        });
+    }
 
-            flywheelFeedforward.setKa(0.0);
-            flywheelFeedforward.setKs(0.0);
-            flywheelFeedforward.setKv(0.0);
-
-            rightVelocityController.setPID(0.0, 0.0, 0.0);
-            leftVelocityController.setPID(0.0, 0.0, 0.0);
-
-            setDefaultCommand(dontMove());
+    public Command turnOn() {
+        return runOnce(() -> {
+            rightFlywheelDisabled = false;
+            leftFlywheelDisabled = false;
         });
     }
 
