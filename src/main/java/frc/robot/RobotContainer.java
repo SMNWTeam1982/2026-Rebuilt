@@ -313,14 +313,20 @@ public class RobotContainer {
         }));
 
         // enable defense mode
-        operatorController.rightTrigger().debounce(.05).onTrue(Commands.parallel(shooter.turnOff(), kicker.turnOff(), intake.turnOff()));
+        operatorController
+                .rightTrigger()
+                .debounce(.05)
+                .onTrue(Commands.parallel(shooter.turnOff(), kicker.turnOff(), intake.turnOff()));
 
-        //Disable defense mode
-        operatorController.leftTrigger().debounce(.05).onTrue(Commands.parallel(shooter.turnOn(), kicker.turnOn(), intake.turnOn()));
+        // Disable defense mode
+        operatorController
+                .leftTrigger()
+                .debounce(.05)
+                .onTrue(Commands.parallel(shooter.turnOn(), kicker.turnOn(), intake.turnOn()));
 
         // Toggle Auto kicker
-        //CHANGE BUTTON
-        operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> { 
+        // CHANGE BUTTON
+        operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
             autoKickerModeEnabled = true;
         }));
 

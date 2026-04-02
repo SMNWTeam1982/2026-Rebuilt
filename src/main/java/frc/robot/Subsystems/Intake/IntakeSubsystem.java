@@ -52,17 +52,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** sets the intake motor to the intake speed */
     public Command startIntaking() {
-        return runOnce(
-            () -> {
-                if (intakeDisabled == true){
-                    intakeMotor.set(0);
-                    pivotMotor.set(0);
-                }
-                else{
-                    intakeMotor.set(IntakeTunables.INTAKE_SPEED);
-                }
+        return runOnce(() -> {
+            if (intakeDisabled == true) {
+                intakeMotor.set(0);
+                pivotMotor.set(0);
+            } else {
+                intakeMotor.set(IntakeTunables.INTAKE_SPEED);
             }
-        );
+        });
     }
 
     /** sets the intake motor to 0 */
@@ -73,48 +70,44 @@ public class IntakeSubsystem extends SubsystemBase {
     /** sets the pivot motor to move IN at a constant speed while running, then stops the motor when it ends */
     public Command moveIn() {
         return startEnd(
-            () -> {
-                if (intakeDisabled == true){
-                    intakeMotor.set(0);
-                    pivotMotor.set(0);
-                }
-                else {
-                    pivotMotor.set(IntakeTunables.MOVE_IN_SPEED);
-                }
-            },
-            () -> {
-                pivotMotor.set(0.0);
-            });
-        }
+                () -> {
+                    if (intakeDisabled == true) {
+                        intakeMotor.set(0);
+                        pivotMotor.set(0);
+                    } else {
+                        pivotMotor.set(IntakeTunables.MOVE_IN_SPEED);
+                    }
+                },
+                () -> {
+                    pivotMotor.set(0.0);
+                });
+    }
 
     /** sets the pivot motor to move OUT at a constant speed while running, then stops the motor when it ends */
     public Command moveOut() {
         return startEnd(
-            () -> {
-                if (intakeDisabled == true){
-                    intakeMotor.set(0);
-                    pivotMotor.set(0);
-                }
-                else{
-                    pivotMotor.set(IntakeTunables.MOVE_OUT_SPEED);  
-                }  
-            },
-            () -> {
-                pivotMotor.set(0.0);
-            });
-        }
+                () -> {
+                    if (intakeDisabled == true) {
+                        intakeMotor.set(0);
+                        pivotMotor.set(0);
+                    } else {
+                        pivotMotor.set(IntakeTunables.MOVE_OUT_SPEED);
+                    }
+                },
+                () -> {
+                    pivotMotor.set(0.0);
+                });
+    }
 
     /** sets the intake to stop intaking, and to move in until it passes the stow threshold
      * <p> will automatically end after a tunable number of seconds (IntakeTunables.RETRACT_ATTEMPT_TIME)
      */
     public Command stow() {
         if (intakeDisabled == true) {
-            return runOnce(
-                () -> {
-                    intakeMotor.set(0);
-                    pivotMotor.set(0);
-                }
-            );
+            return runOnce(() -> {
+                intakeMotor.set(0);
+                pivotMotor.set(0);
+            });
         } else {
             return stopIntaking().andThen(moveIn()).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME);
         }
@@ -125,12 +118,10 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public Command deploy() {
         if (intakeDisabled == true) {
-            return runOnce(
-                () -> {
-                    intakeMotor.set(0);
-                    pivotMotor.set(0);
-                }
-            );
+            return runOnce(() -> {
+                intakeMotor.set(0);
+                pivotMotor.set(0);
+            });
         } else {
             return startIntaking().andThen(moveOut()).withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME);
         }
