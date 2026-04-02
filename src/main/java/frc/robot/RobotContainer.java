@@ -279,14 +279,8 @@ public class RobotContainer {
         // operatorController.a().onTrue(shooter.turnOff().andThen(kicker.turnOff()));
 
         // deploy/retract the intake with a & b
-        operatorController
-                .a()
-                .debounce(0.05)
-                .whileTrue(intake.startIntaking().andThen(intake.moveOut()));
-        operatorController
-                .b()
-                .debounce(0.05)
-                .whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
+        operatorController.a().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
+        operatorController.b().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
 
         // manually start/stop the kicker
         operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick().alongWith(Commands.runOnce(() -> {
