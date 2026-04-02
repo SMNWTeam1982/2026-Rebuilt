@@ -19,13 +19,13 @@ public class DriverCommands {
     public static Command setAimAtTarget(
             DriveSubsystem drive,
             ShooterSubsystem shooter,
-            boolean onBlueAlliance,
+            BooleanSupplier onBlueAlliance,
             Supplier<ChassisSpeeds> joystickSpeeds,
             Supplier<Translation2d> calculatedTarget,
             BooleanSupplier changeShooterRPM) {
 
-        Supplier<ChassisSpeeds> fieldRelativeSpeeds =
-                () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), onBlueAlliance);
+        Supplier<ChassisSpeeds> fieldRelativeSpeeds = () ->
+                DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), onBlueAlliance.getAsBoolean());
         DoubleSupplier calculatedRPM =
                 () -> ShotCalculation.calculateRPM(drive.getRobotPose().getTranslation(), calculatedTarget.get());
         return drive.runOnce(
@@ -39,11 +39,11 @@ public class DriverCommands {
     public static Command setNormalMode(
             DriveSubsystem drive,
             ShooterSubsystem shooter,
-            boolean onBlueAlliance,
+            BooleanSupplier onBlueAlliance,
             Supplier<ChassisSpeeds> joystickSpeeds,
             BooleanSupplier changeShooterRPM) {
-        Supplier<ChassisSpeeds> fieldRelativeSpeeds =
-                () -> DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), onBlueAlliance);
+        Supplier<ChassisSpeeds> fieldRelativeSpeeds = () ->
+                DriveSubsystem.joystickSpeedsToFieldRelativeSpeeds(joystickSpeeds.get(), onBlueAlliance.getAsBoolean());
         return drive.runOnce(() -> drive.setDefaultCommand(
                         drive.driveFieldRelative(fieldRelativeSpeeds).withName("DS relative")))
                 .andThen(shooter.setIdle().onlyIf(changeShooterRPM))
@@ -66,24 +66,25 @@ public class DriverCommands {
                 .withName("set robot relative drive mode");
     }
 
-    /** will calculate the nearest hub and then set the robot to orbit it at the current distance from it
-     * <p> sets the shooter to a calculated rpm based on the distance from the hub
-     */
-    public static Command setOrbitNearestHubAtCurrentDistance(
-            DriveSubsystem drive,
-            ShooterSubsystem shooter,
-            DoubleSupplier orbitVelocity,
-            BooleanSupplier changeShooterRPM) {
-        return drive.defer(() -> {
-                    Translation2d currentRobotTranslation = drive.getRobotPose().getTranslation();
-                    Translation2d nearestHub = ShotCalculation.getNearestHubPosition(currentRobotTranslation);
-                    DoubleSupplier calculatedRPM = () ->
-                            ShotCalculation.calculateRPM(drive.getRobotPose().getTranslation(), nearestHub);
-                    return drive.runOnce(() -> drive.setDefaultCommand(drive.orbitPoint(
-                                            orbitVelocity, nearestHub, currentRobotTranslation.getDistance(nearestHub))
-                                    .withName("orbit")))
-                            .andThen(shooter.setRPMSupplier(calculatedRPM).onlyIf(changeShooterRPM));
-                })
-                .withName("set orbit nearest hub");
-    }
+    //     /** will calculate the nearest hub and then set the robot to orbit it at the current distance from it
+    //      * <p> sets the shooter to a calculated rpm based on the distance from the hub
+    //      */
+    //     public static Command setOrbitNearestHubAtCurrentDistance(
+    //             DriveSubsystem drive,
+    //             ShooterSubsystem shooter,
+    //             DoubleSupplier orbitVelocity,
+    //             BooleanSupplier changeShooterRPM) {
+    //         return drive.defer(() -> {
+    //                     Translation2d currentRobotTranslation = drive.getRobotPose().getTranslation();
+    //                     Translation2d nearestHub = ShotCalculation.getNearestHubPosition(currentRobotTranslation);
+    //                     DoubleSupplier calculatedRPM = () ->
+    //                             ShotCalculation.calculateRPM(drive.getRobotPose().getTranslation(), nearestHub);
+    //                     return drive.runOnce(() -> drive.setDefaultCommand(drive.orbitPoint(
+    //                                             orbitVelocity, nearestHub,
+    // currentRobotTranslation.getDistance(nearestHub))
+    //                                     .withName("orbit")))
+    //                             .andThen(shooter.setRPMSupplier(calculatedRPM).onlyIf(changeShooterRPM));
+    //                 })
+    //                 .withName("set orbit nearest hub");
+    //     }
 }

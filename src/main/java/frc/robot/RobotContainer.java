@@ -37,6 +37,10 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
+
+    private final BooleanSupplier onBlueAlliance =
+            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
+
     /** allows the ability to toggle the velocity Compensation
      * in the case that the velocity Compensation is not working correctly
      * you can toggle it on or off(true or false)*/
@@ -69,17 +73,19 @@ public class RobotContainer {
             driverController.rightTrigger().debounce(0.05)::getAsBoolean;
 
     private final VisionSubsystem vision = new VisionSubsystem();
-    private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult);
+    private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult, onBlueAlliance);
 
     // @AutoLogOutput(key = "Driver info/calculated hub target")
     private final Supplier<Translation2d> calculatedHubTarget = () -> {
         if (velocityCompensationEnabled) {
             var buf = ShotCalculation.getHubTarget(
-                    drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
+                    drive.getRobotPose().getTranslation(),
+                    drive.getFieldRelativeVelocity(),
+                    onBlueAlliance.getAsBoolean());
             Logger.recordOutput("Driver info/calculated hub target", buf);
             return buf;
         } else {
-            var buf = ShotCalculation.getNearestHubPosition(drive.getRobotPose().getTranslation());
+            var buf = ShotCalculation.getAllianceHubPosition(onBlueAlliance.getAsBoolean());
             Logger.recordOutput("Driver info/calculated hub target", buf);
             return buf;
         }
@@ -89,10 +95,12 @@ public class RobotContainer {
     private final Supplier<Translation2d> calculatedPassTarget = () -> {
         if (velocityCompensationEnabled) {
             return ShotCalculation.getPassTarget(
-                    drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity());
+                    drive.getRobotPose().getTranslation(),
+                    drive.getFieldRelativeVelocity(),
+                    onBlueAlliance.getAsBoolean());
         } else {
-            return ShotCalculation.getNearestPassTargetPosition(
-                    drive.getRobotPose().getTranslation());
+            return ShotCalculation.getNearestAlliancePassTarget(
+                    drive.getRobotPose().getTranslation(), onBlueAlliance.getAsBoolean());
         }
     };
 
@@ -106,7 +114,7 @@ public class RobotContainer {
     @AutoLogOutput(key = "Driver info/robot in alliance zone") // autologging this trigger should call it every period
     private final Trigger inAllianceZone = new Trigger(() -> {
                 Translation2d robotPosition = drive.getRobotPose().getTranslation();
-                Translation2d nearestHub = ShotCalculation.getNearestHubPosition(robotPosition);
+                Translation2d nearestHub = ShotCalculation.getAllianceHubPosition(onBlueAlliance.getAsBoolean());
                 Logger.recordOutput("Driver info/distance from nearest hub", robotPosition.getDistance(nearestHub));
 
                 if (nearestHub == FieldMeasurements.BLUE_HUB_CENTER) {
@@ -134,11 +142,7 @@ public class RobotContainer {
     private final Trigger robotReadyToShoot =
             drive.atTargetHeading.and(shooter.readyToShoot).and(shooter.inShootMode);
 
-    private final boolean onBlueAlliance;
-
     public RobotContainer() {
-        /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
-        onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
         CameraServer.startAutomaticCapture(0);
         CameraServer.startAutomaticCapture(1);
 
@@ -161,9 +165,11 @@ public class RobotContainer {
     private void addNamedCommands() {
         // auto commands
         NamedCommands.registerCommand(
-                "hub shooting procedure 5 seconds", AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5)));
+                "hub shooting procedure 5 seconds",
+                AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5), onBlueAlliance));
         NamedCommands.registerCommand(
-                "hub shooting procedure 10 seconds", AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10)));
+                "hub shooting procedure 10 seconds",
+                AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10), onBlueAlliance));
         NamedCommands.registerCommand("stop and deploy intake", AutoCommands.deployIntake(drive, simpleIntake));
 
         NamedCommands.registerCommand(
@@ -236,9 +242,22 @@ public class RobotContainer {
                 .onTrue(DriverCommands.setNormalMode(
                         drive, shooter, onBlueAlliance, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
 
-        // sets the drive controls to robot relative when pressed
+        // set the drive controls to pass aim mode when pressed, and set the shooter rpm calculation
         driverController
                 .y()
+                .debounce(0.1)
+                .onTrue(DriverCommands.setAimAtTarget(
+                        drive,
+                        shooter,
+                        onBlueAlliance,
+                        this::getJoystickSpeeds,
+                        () -> ShotCalculation.getNearestNeutralZonePassTarget(
+                                drive.getRobotPose().getTranslation()),
+                        () -> driverCanChangeShooterRPM));
+
+        // sets the drive controls to robot relative when pressed
+        driverController
+                .povUp()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setRobotRelativeMode(
                         drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
