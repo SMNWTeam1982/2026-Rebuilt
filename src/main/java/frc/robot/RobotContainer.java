@@ -314,10 +314,6 @@ public class RobotContainer {
             autoKickerModeEnabled = true;
         }));
 
-        // Disable Auto Kicker
-        operatorController.rightTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
-            autoKickerModeEnabled = false;
-        }));
 
         // speed overides for shooter
         operatorController
