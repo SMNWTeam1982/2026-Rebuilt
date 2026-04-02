@@ -9,11 +9,13 @@ import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
+import java.util.function.BooleanSupplier;
 
 public class AutoCommands {
-    public static Command setShooterNearestHubRPMSupplier(DriveSubsystem drive, ShooterSubsystem shooter) {
-        return shooter.setRPMSupplier(() ->
-                ShotCalculation.calculateNearestHubRPM(drive.getRobotPose().getTranslation()));
+    public static Command setShooterAllianceHubRPMSupplier(
+            DriveSubsystem drive, ShooterSubsystem shooter, BooleanSupplier onBlueAlliance) {
+        return shooter.setRPMSupplier(() -> ShotCalculation.calculateAllianceHubRPM(
+                drive.getRobotPose().getTranslation(), onBlueAlliance.getAsBoolean()));
     }
 
     /** stops the drive,
@@ -23,10 +25,14 @@ public class AutoCommands {
      * <p>while it is waiting and kickin it will rotate to face the nearest hub
      * <p>when done it sets the shooter to it's idle speed, and stops the drive and kicker */
     public static Command shootIntoHub(
-            DriveSubsystem drive, ShooterSubsystem shooter, KickerSubsystem kicker, Time shootingTime) {
+            DriveSubsystem drive,
+            ShooterSubsystem shooter,
+            KickerSubsystem kicker,
+            Time shootingTime,
+            BooleanSupplier onBlueAlliance) {
         return Commands.sequence(
                 drive.stop(),
-                setShooterNearestHubRPMSupplier(drive, shooter)
+                setShooterAllianceHubRPMSupplier(drive, shooter, onBlueAlliance)
                         .asProxy(), // run the shooter commands as proxies so that the PID can run in background
                 Commands.deadline(
                         Commands.sequence(
@@ -35,8 +41,7 @@ public class AutoCommands {
                                 kicker.kick().withTimeout(shootingTime)),
                         drive.driveAndPointAtTarget(
                                 () -> new ChassisSpeeds(),
-                                () -> ShotCalculation.getNearestHubPosition(
-                                        drive.getRobotPose().getTranslation()))),
+                                () -> ShotCalculation.getAllianceHubPosition(onBlueAlliance.getAsBoolean()))),
                 kicker.setIdle(),
                 shooter.setIdle().asProxy(),
                 drive.stop());

@@ -11,7 +11,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,9 +22,9 @@ import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Constants.Tunables.FieldTunables;
 import frc.robot.PIDTools.HotPIDFTuner;
 import frc.robot.PIDTools.PIDCommandGenerator;
-import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionData;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
@@ -70,7 +69,7 @@ public class DriveSubsystem extends SubsystemBase {
     public final Trigger atTargetTranslation = new Trigger(xController::atSetpoint).and(yController::atSetpoint);
 
     /** set pid settings */
-    public DriveSubsystem(Supplier<Optional<VisionData>> visionResults) {
+    public DriveSubsystem(Supplier<Optional<VisionData>> visionResults, BooleanSupplier onBlueAlliance) {
         driveBase = new DriveBase(visionResults);
         swerveModuleRotationCommands = new PIDCommandGenerator<Rotation2d>(
                 (target) -> {
@@ -113,13 +112,7 @@ public class DriveSubsystem extends SubsystemBase {
                         new PIDConstants(
                                 DriveBaseTunables.HEADING_P, DriveBaseTunables.HEADING_I, DriveBaseTunables.HEADING_D)),
                 config, // robot config
-                () -> {
-                    var alliance = DriverStation.getAlliance();
-                    if (alliance.isPresent()) {
-                        return alliance.get() == DriverStation.Alliance.Red; //
-                    }
-                    return false;
-                },
+                () -> !onBlueAlliance.getAsBoolean(), // flip if on red
                 this // reference to this subsytem to set requirements
                 );
 
@@ -170,17 +163,17 @@ public class DriveSubsystem extends SubsystemBase {
         teleopField.setRobotPose(getRobotPose());
         autoField.setRobotPose(getRobotPose());
 
-        teleopField
-                .getObject("Nearest passing target")
-                .setPose(new Pose2d(
-                        ShotCalculation.getNearestPassTargetPosition(
-                                getRobotPose().getTranslation()),
-                        new Rotation2d()));
+        // teleopField
+        //         .getObject("Nearest passing target")
+        //         .setPose(new Pose2d(
+        //                 ShotCalculation.getNearestPassTargetPosition(
+        //                         getRobotPose().getTranslation()),
+        //                 new Rotation2d()));
 
-        teleopField
-                .getObject("Nearest hub")
-                .setPose(new Pose2d(
-                        ShotCalculation.getNearestHubPosition(getRobotPose().getTranslation()), new Rotation2d()));
+        // teleopField
+        //         .getObject("Nearest hub")
+        //         .setPose(new Pose2d(
+        //                 ShotCalculation.getNearestHubPosition(getRobotPose().getTranslation()), new Rotation2d()));
 
         if (getCurrentCommand() == null) {
             Logger.recordOutput("Drive/drive command", "no active command");
