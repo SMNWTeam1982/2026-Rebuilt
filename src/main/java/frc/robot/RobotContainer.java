@@ -140,12 +140,6 @@ public class RobotContainer {
     private final Trigger robotReadyToShoot =
             drive.atTargetHeading.and(shooter.readyToShoot).and(shooter.inShootMode);
 
-    private boolean defenseModeEnabled = false;
-
-    private Trigger defenseMode = new Trigger(() -> {
-        return defenseModeEnabled;
-    });
-
     public RobotContainer() {
         CameraServer.startAutomaticCapture(0);
         CameraServer.startAutomaticCapture(1);
@@ -294,8 +288,6 @@ public class RobotContainer {
         // automatically start/stop the kicker when the robot is ready/not ready
         robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
 
-        defenseMode.whileTrue(kicker.turnOff().alongWith(shooter.turnOff()).alongWith(intake.turnOff()));
-
         /**
          * Disables the velocity compensation
          */
@@ -321,10 +313,14 @@ public class RobotContainer {
         }));
 
         // enable defense mode
-        operatorController.rightTrigger().debounce(.05).onTrue(Commands.parallel(shooter.turnOff(), kicker.turnOff()));
+        operatorController.rightTrigger().debounce(.05).onTrue(Commands.parallel(shooter.turnOff(), kicker.turnOff(), intake.turnOff()));
+
+        //Disable defense mode
+        operatorController.leftTrigger().debounce(.05).onTrue(Commands.parallel(shooter.turnOn(), kicker.turnOn(), intake.turnOn()));
 
         // Toggle Auto kicker
-        operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
+        //CHANGE BUTTON
+        operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> { 
             autoKickerModeEnabled = true;
         }));
 
