@@ -267,11 +267,11 @@ public class RobotContainer {
 
         // manually start/stop the kicker
         operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick().alongWith(Commands.runOnce(() -> {
-            autoKickerModeEnabled = true;
+            autoKickerModeEnabled = false;
         })));
 
         operatorController.leftBumper().debounce(0.05).onTrue(kicker.setIdle().alongWith(Commands.runOnce(() -> {
-            autoKickerModeEnabled = true;
+            autoKickerModeEnabled = false;
         })));
 
         // automatically start/stop the kicker when the robot is ready/not ready
