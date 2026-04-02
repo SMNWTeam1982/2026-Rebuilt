@@ -106,9 +106,7 @@ public class RobotContainer {
 
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final KickerSubsystem kicker = new KickerSubsystem();
-    // private final IntakeSubsystem intake = new IntakeSubsystem();
-    private final IntakeSubsystem simpleIntake = new IntakeSubsystem();
-    // private final ClimberSubsystem climber = new ClimberSubsystem();
+    private final IntakeSubsystem intake = new IntakeSubsystem();
 
     /** make sure that we are in the correct area for at least 1 second */
     @AutoLogOutput(key = "Driver info/robot in alliance zone") // autologging this trigger should call it every period
@@ -141,8 +139,6 @@ public class RobotContainer {
     @AutoLogOutput(key = "Driver info/robot ready to shoot")
     private final Trigger robotReadyToShoot =
             drive.atTargetHeading.and(shooter.readyToShoot).and(shooter.inShootMode);
-
-    private final boolean onBlueAlliance;
 
     private boolean defenseModeEnabled = false;
 
@@ -178,7 +174,7 @@ public class RobotContainer {
         NamedCommands.registerCommand(
                 "hub shooting procedure 10 seconds",
                 AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10), onBlueAlliance));
-        NamedCommands.registerCommand("stop and deploy intake", AutoCommands.deployIntake(drive, simpleIntake));
+        NamedCommands.registerCommand("stop and deploy intake", AutoCommands.deployIntake(drive, intake));
 
         NamedCommands.registerCommand(
                 "shoot & kick",
@@ -205,10 +201,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("start kicker", kicker.setHigh());
         NamedCommands.registerCommand("stop kicker", kicker.setIdle());
         // intake
-        NamedCommands.registerCommand("start intaking", simpleIntake.startIntaking());
-        NamedCommands.registerCommand("stop intaking", simpleIntake.stopIntaking());
-        NamedCommands.registerCommand("deploy intake", simpleIntake.deploy());
-        NamedCommands.registerCommand("stow intake", simpleIntake.stow());
+        NamedCommands.registerCommand("start intaking", intake.startIntaking());
+        NamedCommands.registerCommand("stop intaking", intake.stopIntaking());
+        NamedCommands.registerCommand("deploy intake", intake.deploy());
+        NamedCommands.registerCommand("stow intake", intake.stow());
         // drive
         NamedCommands.registerCommand("stop drive", drive.stop());
     }
@@ -286,11 +282,11 @@ public class RobotContainer {
         operatorController
                 .a()
                 .debounce(0.05)
-                .whileTrue(simpleIntake.startIntaking().andThen(simpleIntake.moveOut()));
+                .whileTrue(intake.startIntaking().andThen(intake.moveOut()));
         operatorController
                 .b()
                 .debounce(0.05)
-                .whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
+                .whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
 
         // manually start/stop the kicker
         operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick().alongWith(Commands.runOnce(() -> {
@@ -304,7 +300,7 @@ public class RobotContainer {
         // automatically start/stop the kicker when the robot is ready/not ready
         robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
 
-        defenseMode.whileTrue(kicker.turnOff().alongWith(shooter.turnOff()).alongWith(simpleIntake.turnOff()));
+        defenseMode.whileTrue(kicker.turnOff().alongWith(shooter.turnOff()).alongWith(intake.turnOff()));
 
         /**
          * Disables the velocity compensation

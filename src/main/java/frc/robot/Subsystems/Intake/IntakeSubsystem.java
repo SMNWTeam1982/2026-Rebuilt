@@ -27,19 +27,6 @@ public class IntakeSubsystem extends SubsystemBase {
     @AutoLogOutput(key = "Intake Disabled")
     private boolean intakeDisabled = false;
 
-    // /** the absolue throughbore encoder attatched to the hex shaft */
-    // private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
-
-    // @AutoLogOutput(key = "Intake/is stowed")
-    // public final Trigger stowed = new Trigger(
-    //                 () -> pivotEncoder.getAbsolutePosition().getValueAsDouble() < IntakeTunables.STOWED_THRESHOLD)
-    //         .debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
-
-    // @AutoLogOutput(key = "Intake/is deployed")
-    // public final Trigger deployed = new Trigger(
-    //                 () -> pivotEncoder.getAbsolutePosition().getValueAsDouble() > IntakeTunables.DEPLOYED_THRESHOLD)
-    //         .debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
-
     public IntakeSubsystem() {
         pivotMotor.configure(
                 IntakeTunables.PIVOT_MOTOR_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
