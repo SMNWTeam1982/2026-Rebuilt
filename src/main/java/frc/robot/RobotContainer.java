@@ -136,6 +136,12 @@ public class RobotContainer {
 
     private final boolean onBlueAlliance;
 
+    private boolean defenseModeEnabled = false;
+
+    private Trigger defenseMode = new Trigger(() -> {
+        return defenseModeEnabled;
+    });
+
     public RobotContainer() {
         /** make sure that the robot is turned on once on the field, because this cannot change without restarting the code */
         onBlueAlliance = DriverStation.getAlliance().get() == Alliance.Blue;
@@ -280,6 +286,8 @@ public class RobotContainer {
         // automatically start/stop the kicker when the robot is ready/not ready
         // robotReadyToShoot.whileTrue(kicker.kick());
 
+        defenseMode.whileTrue(kicker.dontMove().alongWith(shooter.dontMove()).alongWith(simpleIntake.stopIntaking()));
+        
         /**
          * Disables the velocity compensation
          */
@@ -302,6 +310,10 @@ public class RobotContainer {
         // the shooter's rpm will NOT be set when the driver changes mode
         operatorController.y().debounce(0.05).onTrue(Commands.runOnce(() -> {
             driverCanChangeShooterRPM = false;
+        }));
+
+        operatorController.rightTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
+            defenseModeEnabled = true;
         }));
 
         // speed overides for shooter
