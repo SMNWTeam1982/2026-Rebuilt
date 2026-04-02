@@ -38,7 +38,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 
-    private final BooleanSupplier onBlueAlliance = () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
+    private final BooleanSupplier onBlueAlliance =
+            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
 
     /** allows the ability to toggle the velocity Compensation
      * in the case that the velocity Compensation is not working correctly
@@ -76,7 +77,9 @@ public class RobotContainer {
     private final Supplier<Translation2d> calculatedHubTarget = () -> {
         if (velocityCompensationEnabled) {
             var buf = ShotCalculation.getHubTarget(
-                    drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity(), onBlueAlliance.getAsBoolean());
+                    drive.getRobotPose().getTranslation(),
+                    drive.getFieldRelativeVelocity(),
+                    onBlueAlliance.getAsBoolean());
             Logger.recordOutput("Driver info/calculated hub target", buf);
             return buf;
         } else {
@@ -90,7 +93,9 @@ public class RobotContainer {
     private final Supplier<Translation2d> calculatedPassTarget = () -> {
         if (velocityCompensationEnabled) {
             return ShotCalculation.getPassTarget(
-                    drive.getRobotPose().getTranslation(), drive.getFieldRelativeVelocity(), onBlueAlliance.getAsBoolean());
+                    drive.getRobotPose().getTranslation(),
+                    drive.getFieldRelativeVelocity(),
+                    onBlueAlliance.getAsBoolean());
         } else {
             return ShotCalculation.getNearestAlliancePassTarget(
                     drive.getRobotPose().getTranslation(), onBlueAlliance.getAsBoolean());
@@ -160,9 +165,11 @@ public class RobotContainer {
     private void addNamedCommands() {
         // auto commands
         NamedCommands.registerCommand(
-                "hub shooting procedure 5 seconds", AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5), onBlueAlliance));
+                "hub shooting procedure 5 seconds",
+                AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5), onBlueAlliance));
         NamedCommands.registerCommand(
-                "hub shooting procedure 10 seconds", AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10), onBlueAlliance));
+                "hub shooting procedure 10 seconds",
+                AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10), onBlueAlliance));
         NamedCommands.registerCommand("stop and deploy intake", AutoCommands.deployIntake(drive, simpleIntake));
 
         NamedCommands.registerCommand(
@@ -247,13 +254,13 @@ public class RobotContainer {
                 .y()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setAimAtTarget(
-                                drive,
-                                shooter,
-                                onBlueAlliance,
-                                this::getJoystickSpeeds,
-                                () -> ShotCalculation.getNearestNeutralZonePassTarget(drive.getRobotPose().getTranslation()),
-                                () -> driverCanChangeShooterRPM));
-
+                        drive,
+                        shooter,
+                        onBlueAlliance,
+                        this::getJoystickSpeeds,
+                        () -> ShotCalculation.getNearestNeutralZonePassTarget(
+                                drive.getRobotPose().getTranslation()),
+                        () -> driverCanChangeShooterRPM));
 
         // sets the drive controls to robot relative when pressed
         driverController

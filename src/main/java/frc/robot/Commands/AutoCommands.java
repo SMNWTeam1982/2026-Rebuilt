@@ -1,7 +1,5 @@
 package frc.robot.Commands;
 
-import java.util.function.BooleanSupplier;
-
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,11 +9,13 @@ import frc.robot.Subsystems.Intake.StrippedIntakeSubsystem;
 import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
+import java.util.function.BooleanSupplier;
 
 public class AutoCommands {
-    public static Command setShooterAllianceHubRPMSupplier(DriveSubsystem drive, ShooterSubsystem shooter, BooleanSupplier onBlueAlliance) {
-        return shooter.setRPMSupplier(() ->
-                ShotCalculation.calculateAllianceHubRPM(drive.getRobotPose().getTranslation(), onBlueAlliance.getAsBoolean()));
+    public static Command setShooterAllianceHubRPMSupplier(
+            DriveSubsystem drive, ShooterSubsystem shooter, BooleanSupplier onBlueAlliance) {
+        return shooter.setRPMSupplier(() -> ShotCalculation.calculateAllianceHubRPM(
+                drive.getRobotPose().getTranslation(), onBlueAlliance.getAsBoolean()));
     }
 
     /** stops the drive,
@@ -25,7 +25,11 @@ public class AutoCommands {
      * <p>while it is waiting and kickin it will rotate to face the nearest hub
      * <p>when done it sets the shooter to it's idle speed, and stops the drive and kicker */
     public static Command shootIntoHub(
-            DriveSubsystem drive, ShooterSubsystem shooter, KickerSubsystem kicker, Time shootingTime, BooleanSupplier onBlueAlliance) {
+            DriveSubsystem drive,
+            ShooterSubsystem shooter,
+            KickerSubsystem kicker,
+            Time shootingTime,
+            BooleanSupplier onBlueAlliance) {
         return Commands.sequence(
                 drive.stop(),
                 setShooterAllianceHubRPMSupplier(drive, shooter, onBlueAlliance)

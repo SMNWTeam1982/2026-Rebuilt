@@ -99,10 +99,8 @@ public class Tunables {
 
         public static final Translation2d RED_TOP_PASSING_TARGET = flipY(RED_BOTTOM_PASSING_TARGET);
 
-        public static final Translation2d NEUTRAL_ZONE_BOTTOM_PASSING_TARGET = new Translation2d(
-            FieldMeasurements.FIELD_CENTER.getX(),
-            2
-        );
+        public static final Translation2d NEUTRAL_ZONE_BOTTOM_PASSING_TARGET =
+                new Translation2d(FieldMeasurements.FIELD_CENTER.getX(), 2);
 
         public static final Translation2d NEUTRAL_ZONE_TOP_PASSING_TARGET = flipY(NEUTRAL_ZONE_BOTTOM_PASSING_TARGET);
     }

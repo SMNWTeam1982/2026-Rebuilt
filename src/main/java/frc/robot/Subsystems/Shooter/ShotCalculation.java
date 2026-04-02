@@ -22,39 +22,27 @@ public final class ShotCalculation {
     //             FieldTunables.RED_TOP_PASSING_TARGET));
     // }
 
-    public static Translation2d getAllianceHubPosition(boolean onBlueAlliance){
-        if (onBlueAlliance){
+    public static Translation2d getAllianceHubPosition(boolean onBlueAlliance) {
+        if (onBlueAlliance) {
             return FieldMeasurements.BLUE_HUB_CENTER;
-        }else{
+        } else {
             return FieldMeasurements.RED_HUB_CENTER;
         }
     }
 
-    public static Translation2d getNearestAlliancePassTarget(Translation2d robotPosition, boolean onBlueAlliance){
-        if (onBlueAlliance){
+    public static Translation2d getNearestAlliancePassTarget(Translation2d robotPosition, boolean onBlueAlliance) {
+        if (onBlueAlliance) {
             return robotPosition.nearest(
-                Arrays.asList(
-                    FieldTunables.BLUE_TOP_PASSING_TARGET,
-                    FieldTunables.BLUE_BOTTOM_PASSING_TARGET
-                )
-            );
-        }else{
+                    Arrays.asList(FieldTunables.BLUE_TOP_PASSING_TARGET, FieldTunables.BLUE_BOTTOM_PASSING_TARGET));
+        } else {
             return robotPosition.nearest(
-                Arrays.asList(
-                    FieldTunables.RED_TOP_PASSING_TARGET,
-                    FieldTunables.RED_BOTTOM_PASSING_TARGET
-                )
-            );
+                    Arrays.asList(FieldTunables.RED_TOP_PASSING_TARGET, FieldTunables.RED_BOTTOM_PASSING_TARGET));
         }
     }
 
-    public static Translation2d getNearestNeutralZonePassTarget(Translation2d robotPosition){
-        return robotPosition.nearest(
-            Arrays.asList(
-                FieldTunables.NEUTRAL_ZONE_TOP_PASSING_TARGET,
-                FieldTunables.NEUTRAL_ZONE_BOTTOM_PASSING_TARGET
-            )
-        );
+    public static Translation2d getNearestNeutralZonePassTarget(Translation2d robotPosition) {
+        return robotPosition.nearest(Arrays.asList(
+                FieldTunables.NEUTRAL_ZONE_TOP_PASSING_TARGET, FieldTunables.NEUTRAL_ZONE_BOTTOM_PASSING_TARGET));
     }
 
     /**
@@ -94,7 +82,8 @@ public final class ShotCalculation {
     }
 
     /** returns the hub target that robot should shoot at to compensate for its velocity */
-    public static Translation2d getHubTarget(Translation2d robotPosition, ChassisSpeeds robotVelocity, boolean onBlueAlliance) {
+    public static Translation2d getHubTarget(
+            Translation2d robotPosition, ChassisSpeeds robotVelocity, boolean onBlueAlliance) {
         return calculateTargetPositionMultiStep(
                 robotPosition,
                 robotVelocity,
@@ -103,7 +92,8 @@ public final class ShotCalculation {
     }
 
     /** returns the pass target that robot should shoot at to compensate for its velocity */
-    public static Translation2d getPassTarget(Translation2d robotPosition, ChassisSpeeds robotVelocity, boolean onBlueAlliance) {
+    public static Translation2d getPassTarget(
+            Translation2d robotPosition, ChassisSpeeds robotVelocity, boolean onBlueAlliance) {
         return calculateTargetPositionMultiStep(
                 robotPosition,
                 robotVelocity,
