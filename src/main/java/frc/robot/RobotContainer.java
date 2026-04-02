@@ -49,6 +49,8 @@ public class RobotContainer {
     @AutoLogOutput(key = "Driver info/driver can change shooter RPM")
     private boolean driverCanChangeShooterRPM = false;
 
+    private boolean autoKickerModeEnabled = false;
+
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
 
@@ -100,7 +102,7 @@ public class RobotContainer {
     private final StrippedIntakeSubsystem simpleIntake = new StrippedIntakeSubsystem();
     // private final ClimberSubsystem climber = new ClimberSubsystem();
 
-    /** make sure that we are in the corret area for at least 1 second */
+    /** make sure that we are in the correct area for at least 1 second */
     @AutoLogOutput(key = "Driver info/robot in alliance zone") // autologging this trigger should call it every period
     private final Trigger inAllianceZone = new Trigger(() -> {
                 Translation2d robotPosition = drive.getRobotPose().getTranslation();
@@ -123,16 +125,14 @@ public class RobotContainer {
             .debounce(1);
 
     private final Trigger robotEnabled = new Trigger(DriverStation::isEnabled);
-
     /**
      * is the drive at the target heading?
      * <p> are the flywheels at the target speed?
      * <p> is the shooter in shoot mode? (is it calculating the velocity from the equations?)
      */
     @AutoLogOutput(key = "Driver info/robot ready to shoot")
-    private final Trigger robotReadyToShoot = drive.atTargetHeading
-            .and(shooter.velocityControllerCommands.atSetpoint)
-            .and(shooter.inShootMode);
+    private final Trigger robotReadyToShoot =
+            drive.atTargetHeading.and(shooter.readyToShoot).and(shooter.inShootMode);
 
     private final boolean onBlueAlliance;
 
@@ -216,46 +216,38 @@ public class RobotContainer {
                 .a()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setAimAtTarget(
-                                drive,
-                                shooter,
-                                onBlueAlliance,
-                                this::getJoystickSpeeds,
-                                calculatedHubTarget,
-                                () -> driverCanChangeShooterRPM)
-                        .andThen(kicker.kick().asProxy()));
+                        drive,
+                        shooter,
+                        onBlueAlliance,
+                        this::getJoystickSpeeds,
+                        calculatedHubTarget,
+                        () -> driverCanChangeShooterRPM));
 
         // set the drive controls to pass aim mode when pressed, and set the shooter rpm calculation
         driverController
                 .x()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setAimAtTarget(
-                                drive,
-                                shooter,
-                                onBlueAlliance,
-                                this::getJoystickSpeeds,
-                                calculatedPassTarget,
-                                () -> driverCanChangeShooterRPM)
-                        .andThen(kicker.kick().asProxy()));
+                        drive,
+                        shooter,
+                        onBlueAlliance,
+                        this::getJoystickSpeeds,
+                        calculatedPassTarget,
+                        () -> driverCanChangeShooterRPM));
 
         // sets the drive controls to standard field relative when pressed
         driverController
                 .b()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setNormalMode(
-                                drive,
-                                shooter,
-                                onBlueAlliance,
-                                this::getJoystickSpeeds,
-                                () -> driverCanChangeShooterRPM)
-                        .andThen(kicker.setIdle().asProxy()));
+                        drive, shooter, onBlueAlliance, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
 
         // sets the drive controls to robot relative when pressed
         driverController
                 .y()
                 .debounce(0.1)
                 .onTrue(DriverCommands.setRobotRelativeMode(
-                                drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM)
-                        .andThen(kicker.setIdle().asProxy()));
+                        drive, shooter, this::getJoystickSpeeds, () -> driverCanChangeShooterRPM));
 
         // sets the drive mode to hub orbit when pressed
         // driverController
@@ -280,11 +272,16 @@ public class RobotContainer {
                 .whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
 
         // manually start/stop the kicker
-        operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick());
-        operatorController.leftBumper().debounce(0.05).onTrue(kicker.setIdle());
+        operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick().alongWith(Commands.runOnce(() -> {
+            autoKickerModeEnabled = false;
+        })));
+
+        operatorController.leftBumper().debounce(0.05).onTrue(kicker.setIdle().alongWith(Commands.runOnce(() -> {
+            autoKickerModeEnabled = false;
+        })));
 
         // automatically start/stop the kicker when the robot is ready/not ready
-        // robotReadyToShoot.whileTrue(kicker.kick());
+        robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
 
         defenseMode.whileTrue(kicker.dontMove().alongWith(shooter.dontMove()).alongWith(simpleIntake.stopIntaking()));
         
@@ -314,6 +311,9 @@ public class RobotContainer {
 
         operatorController.rightTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
             defenseModeEnabled = true;
+        // Toggle Auto kicker
+        operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
+            autoKickerModeEnabled = true;
         }));
 
         // speed overides for shooter
