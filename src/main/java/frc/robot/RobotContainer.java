@@ -266,21 +266,13 @@ public class RobotContainer {
                 .whileTrue(simpleIntake.stopIntaking().andThen(simpleIntake.moveIn()));
 
         // manually start/stop the kicker
-        operatorController
-                .rightBumper()
-                .debounce(0.05)
-                .onTrue(kicker.kick()
-                .alongWith(Commands.runOnce(() -> {
-                  autoKickerModeEnabled = true;
-                })));
-                
-        operatorController
-                .leftBumper()
-                .debounce(0.05)
-                .onTrue(kicker.setIdle()
-                .alongWith(Commands.runOnce(() -> {
-                  autoKickerModeEnabled = true;
-                })));
+        operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick().alongWith(Commands.runOnce(() -> {
+            autoKickerModeEnabled = true;
+        })));
+
+        operatorController.leftBumper().debounce(0.05).onTrue(kicker.setIdle().alongWith(Commands.runOnce(() -> {
+            autoKickerModeEnabled = true;
+        })));
 
         // automatically start/stop the kicker when the robot is ready/not ready
         robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
@@ -313,7 +305,6 @@ public class RobotContainer {
         operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
             autoKickerModeEnabled = true;
         }));
-
 
         // speed overides for shooter
         operatorController
