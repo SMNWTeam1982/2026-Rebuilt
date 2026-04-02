@@ -25,7 +25,7 @@ import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
-import frc.robot.Subsystems.Intake.StrippedIntakeSubsystem;
+import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
@@ -99,7 +99,7 @@ public class RobotContainer {
     private final ShooterSubsystem shooter = new ShooterSubsystem();
     private final KickerSubsystem kicker = new KickerSubsystem();
     // private final IntakeSubsystem intake = new IntakeSubsystem();
-    private final StrippedIntakeSubsystem simpleIntake = new StrippedIntakeSubsystem();
+    private final IntakeSubsystem simpleIntake = new IntakeSubsystem();
     // private final ClimberSubsystem climber = new ClimberSubsystem();
 
     /** make sure that we are in the correct area for at least 1 second */
@@ -283,6 +283,8 @@ public class RobotContainer {
         // automatically start/stop the kicker when the robot is ready/not ready
         robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
 
+        defenseMode.whileTrue(kicker.turnOff().alongWith(shooter.turnOff()).alongWith(simpleIntake.turnOff()));
+        
         /**
          * Disables the velocity compensation
          */

@@ -1,24 +1,19 @@
 package frc.robot.Subsystems.Intake;
 
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.IntakeIDs;
-import frc.robot.Constants.Measured.IntakeMeasurements;
 import frc.robot.Constants.Tunables;
 import frc.robot.Constants.Tunables.IntakeTunables;
-import frc.robot.PIDTools.HotPIDFTuner;
-import frc.robot.PIDTools.PIDCommandGenerator;
+import frc.robot.SparkMaxHelper;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-/** controls the pivoting of the intake and the roller bar */
+/** since we are having issues with the intake pivot motor, a stripped down version without complicated PIDF control is being created as a backup */
 public class IntakeSubsystem extends SubsystemBase {
     /** for pulling in fuel */
     private final SparkMax intakeMotor = new SparkMax(IntakeIDs.INTAKE, SparkMax.MotorType.kBrushless);
@@ -26,31 +21,24 @@ public class IntakeSubsystem extends SubsystemBase {
     /** for deploying the intake */
     private final SparkMax pivotMotor = new SparkMax(IntakeIDs.PIVOT, SparkMax.MotorType.kBrushless);
 
-    /** the absolue throughbore encoder attatched to the hex shaft */
-    private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
+    @AutoLogOutput(key = "Intake/intake motor is hot")
+    private final Trigger intakeMotorHot = new Trigger(() -> intakeMotor.getMotorTemperature() >= 60);
 
-    private final PIDController pivotController =
-            new PIDController(IntakeTunables.PIVOT_P, IntakeTunables.PIVOT_I, IntakeTunables.PIVOT_D);
+    @AutoLogOutput(key = "Intake Disabled")
+    private boolean intakeDisabled = false;
+    
+    // /** the absolue throughbore encoder attatched to the hex shaft */
+    // private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
 
-    public final PIDCommandGenerator<Rotation2d> pivotControllerCommands = new PIDCommandGenerator<Rotation2d>(
-            (target) -> {
-                double setpoint = MathUtil.angleModulus(target.getRadians());
-                Logger.recordOutput("intake/supplied setpoint (post-modulus)", setpoint);
+    // @AutoLogOutput(key = "Intake/is stowed")
+    // public final Trigger stowed = new Trigger(
+    //                 () -> pivotEncoder.getAbsolutePosition().getValueAsDouble() < IntakeTunables.STOWED_THRESHOLD)
+    //         .debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
 
-                double clampedSetpoint = MathUtil.clamp(
-                        setpoint,
-                        IntakeMeasurements.FULLY_RETRACTED_ANGLE.getRadians(),
-                        IntakeMeasurements.FULLY_DEPLOYED_ANGLE.getRadians());
-                Logger.recordOutput("intake/clamped setpoint (sent to pid)", clampedSetpoint);
-
-                pivotController.setSetpoint(clampedSetpoint);
-            },
-            this,
-            pivotController);
-
-    /** for gravity compensation */
-    public final ArmFeedforward pivotFeedforward =
-            new ArmFeedforward(IntakeTunables.PIVOT_S, IntakeTunables.PIVOT_G, IntakeTunables.PIVOT_V);
+    // @AutoLogOutput(key = "Intake/is deployed")
+    // public final Trigger deployed = new Trigger(
+    //                 () -> pivotEncoder.getAbsolutePosition().getValueAsDouble() > IntakeTunables.DEPLOYED_THRESHOLD)
+    //         .debounce(IntakeTunables.THRESHOLD_TIME.in(Seconds));
 
     public IntakeSubsystem() {
         pivotMotor.configure(
@@ -58,68 +46,115 @@ public class IntakeSubsystem extends SubsystemBase {
 
         intakeMotor.configure(
                 Tunables.DEFAULT_SPARK_MAX_CONFIG, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-        pivotController.setTolerance(IntakeTunables.PIVOT_TOLERANCE.getRadians());
-        pivotController.setSetpoint(IntakeTunables.STOW_POSITION.getRadians());
-
-        setDefaultCommand(runPID());
     }
 
     @Override
     public void periodic() {
-        Logger.recordOutput("intake/Target Angle (Radians)", pivotController.getSetpoint());
-        Logger.recordOutput(
-                "intake/Current Angle (Radians)", getIntakePosition().getRadians());
-        Logger.recordOutput("intake/Intake position", getIntakePosition());
+        // Logger.recordOutput("Intake/absolute position", pivotEncoder.getAbsolutePosition().getValueAsDouble());
 
-        Logger.recordOutput(
-                "intake/raw encoder value", pivotEncoder.getPosition().getValueAsDouble());
+        SparkMaxHelper.logMotorDetails("Intake", "pivot motor", pivotMotor);
+        SparkMaxHelper.logMotorDetails("Intake", "intake motor", intakeMotor);
 
-        HotPIDFTuner.logPIDDetails("intake", "intake pivot", pivotController);
-    }
-
-    /** runs the feedback and feedforward control and sets the motor */
-    public Command runPID() {
-        return runEnd(
-                () -> {
-                    double intakeRotation = getIntakePosition().getRadians();
-
-                    // pid loop tuned to output in volts
-                    double pidOutput = pivotController.calculate(intakeRotation);
-
-                    double feedForwardOutput = pivotFeedforward.calculate(pivotController.getSetpoint(), 0);
-
-                    double outputVoltage = MathUtil.clamp(feedForwardOutput + pidOutput, -12, 12);
-
-                    pivotMotor.setVoltage(outputVoltage);
-                },
-                () -> {
-                    pivotMotor.set(0);
-                    pivotController.reset();
-                });
-    }
-    /** sets the intake to start intaking and the intake target to the deploy position */
-    public Command deploy() {
-        return startIntaking().andThen(pivotControllerCommands.setTarget(IntakeTunables.DEPLOY_POSITION));
-    }
-
-    /** sets the intake to stop intaking and the intake target to the stow position */
-    public Command retract() {
-        return stopIntaking().andThen(pivotControllerCommands.setTarget(IntakeTunables.STOW_POSITION));
+        if (getCurrentCommand() == null) {
+            Logger.recordOutput("Intake/current command", "no active command");
+        } else {
+            Logger.recordOutput(
+                    "Intake/current command", this.getCurrentCommand().getName());
+        }
     }
 
     /** sets the intake motor to the intake speed */
     public Command startIntaking() {
-        return runOnce(() -> intakeMotor.set(IntakeTunables.INTAKE_SPEED));
+        if (intakeDisabled == true){
+            return turnOff();
+        }
+        else {
+            return runOnce(() -> intakeMotor.set(IntakeTunables.INTAKE_SPEED));
+        }
     }
 
     /** sets the intake motor to 0 */
     public Command stopIntaking() {
-        return runOnce(() -> intakeMotor.set(0));
+        if (intakeDisabled == true){
+            return turnOff();
+        }
+        else {
+            return runOnce(() -> intakeMotor.set(0));
+        }
     }
 
-    /** the absolute position of the intake from the throughbore encoder */
-    public Rotation2d getIntakePosition() {
-        return Rotation2d.fromRotations(pivotEncoder.getPosition().getValueAsDouble());
+    /** sets the pivot motor to move IN at a constant speed while running, then stops the motor when it ends */
+    public Command moveIn() {
+        if (intakeDisabled == true){
+            return turnOff();
+        }
+        else {
+        return startEnd(
+                () -> {
+                    pivotMotor.set(IntakeTunables.MOVE_IN_SPEED);
+                },
+                () -> {
+                    pivotMotor.set(0.0);
+                }
+            );
+        }
+    }
+
+    /** sets the pivot motor to move OUT at a constant speed while running, then stops the motor when it ends */
+    public Command moveOut() {
+        if (intakeDisabled == true){
+            return turnOff();
+        }
+        else {
+            return startEnd(
+                    () -> {
+                        pivotMotor.set(IntakeTunables.MOVE_OUT_SPEED);
+                    },
+                    () -> {
+                        pivotMotor.set(0.0);
+                    }
+            );
+        }
+    }
+
+    /** sets the intake to stop intaking, and to move in until it passes the stow threshold
+     * <p> will automatically end after a tunable number of seconds (IntakeTunables.RETRACT_ATTEMPT_TIME)
+     */
+    public Command stow() {
+        if (intakeDisabled == true){
+            return turnOff();
+        }
+        else {
+            return stopIntaking().andThen(moveIn()).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME);
+        }
+    }
+
+    /** sets the intake to start intaking, and to move out until it passes the deploy threshold
+     * <p> will automatically end after a tunable number of seconds (IntakeTunables.DEPLOY_ATTEMPT_TIME)
+     */
+    public Command deploy() {
+        if (intakeDisabled == true){
+            return turnOff();
+        }
+        else {
+            return startIntaking().andThen(moveOut()).withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME);
+        }
+    }
+
+    public Command turnOff(){
+        return runOnce(
+            () -> {
+                intakeMotor.stopMotor();
+                intakeDisabled = true;
+            }
+        );
+    }
+
+    public Command turnOn(){
+        return runOnce(
+            () -> {
+                intakeDisabled = false; 
+            }
+        );
     }
 }

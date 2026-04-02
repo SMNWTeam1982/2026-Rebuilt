@@ -5,7 +5,7 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
-import frc.robot.Subsystems.Intake.StrippedIntakeSubsystem;
+import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Kicker.KickerSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
@@ -43,7 +43,7 @@ public class AutoCommands {
     }
 
     /** stops the drive, then deploys the intake, ends when the intake deploy command is done */
-    public static Command deployIntake(DriveSubsystem drive, StrippedIntakeSubsystem intake) {
+    public static Command deployIntake(DriveSubsystem drive, IntakeSubsystem intake) {
         return Commands.sequence(drive.stop(), intake.deploy());
     }
 }
