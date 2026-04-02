@@ -9,17 +9,52 @@ import frc.robot.Constants.Tunables.ShooterTunables;
 import java.util.Arrays;
 
 public final class ShotCalculation {
-    public static Translation2d getNearestHubPosition(Translation2d robotPosition) {
-        return robotPosition.nearest(
-                Arrays.asList(FieldMeasurements.BLUE_HUB_CENTER, FieldMeasurements.RED_HUB_CENTER));
+    // public static Translation2d getNearestHubPosition(Translation2d robotPosition) {
+    //     return robotPosition.nearest(
+    //             Arrays.asList(FieldMeasurements.BLUE_HUB_CENTER, FieldMeasurements.RED_HUB_CENTER));
+    // }
+
+    // public static Translation2d getNearestPassTargetPosition(Translation2d robotPosition) {
+    //     return robotPosition.nearest(Arrays.asList(
+    //             FieldTunables.BLUE_BOTTOM_PASSING_TARGET,
+    //             FieldTunables.BLUE_TOP_PASSING_TARGET,
+    //             FieldTunables.RED_BOTTOM_PASSING_TARGET,
+    //             FieldTunables.RED_TOP_PASSING_TARGET));
+    // }
+
+    public static Translation2d getAllianceHubPosition(boolean onBlueAlliance){
+        if (onBlueAlliance){
+            return FieldMeasurements.BLUE_HUB_CENTER;
+        }else{
+            return FieldMeasurements.RED_HUB_CENTER;
+        }
     }
 
-    public static Translation2d getNearestPassTargetPosition(Translation2d robotPosition) {
-        return robotPosition.nearest(Arrays.asList(
-                FieldTunables.BLUE_BOTTOM_PASSING_TARGET,
-                FieldTunables.BLUE_TOP_PASSING_TARGET,
-                FieldTunables.RED_BOTTOM_PASSING_TARGET,
-                FieldTunables.RED_TOP_PASSING_TARGET));
+    public static Translation2d getNearestAlliancePassTarget(Translation2d robotPosition, boolean onBlueAlliance){
+        if (onBlueAlliance){
+            return robotPosition.nearest(
+                Arrays.asList(
+                    FieldTunables.BLUE_TOP_PASSING_TARGET,
+                    FieldTunables.BLUE_BOTTOM_PASSING_TARGET
+                )
+            );
+        }else{
+            return robotPosition.nearest(
+                Arrays.asList(
+                    FieldTunables.RED_TOP_PASSING_TARGET,
+                    FieldTunables.RED_BOTTOM_PASSING_TARGET
+                )
+            );
+        }
+    }
+
+    public static Translation2d getNearestNeutralZonePassTarget(Translation2d robotPosition){
+        return robotPosition.nearest(
+            Arrays.asList(
+                FieldTunables.NEUTRAL_ZONE_TOP_PASSING_TARGET,
+                FieldTunables.NEUTRAL_ZONE_BOTTOM_PASSING_TARGET
+            )
+        );
     }
 
     /**
@@ -59,20 +94,20 @@ public final class ShotCalculation {
     }
 
     /** returns the hub target that robot should shoot at to compensate for its velocity */
-    public static Translation2d getHubTarget(Translation2d robotPosition, ChassisSpeeds robotVelocity) {
+    public static Translation2d getHubTarget(Translation2d robotPosition, ChassisSpeeds robotVelocity, boolean onBlueAlliance) {
         return calculateTargetPositionMultiStep(
                 robotPosition,
                 robotVelocity,
-                getNearestHubPosition(robotPosition),
+                getAllianceHubPosition(onBlueAlliance),
                 ShooterTunables.SHOT_PREDICTION_ITERATIONS);
     }
 
     /** returns the pass target that robot should shoot at to compensate for its velocity */
-    public static Translation2d getPassTarget(Translation2d robotPosition, ChassisSpeeds robotVelocity) {
+    public static Translation2d getPassTarget(Translation2d robotPosition, ChassisSpeeds robotVelocity, boolean onBlueAlliance) {
         return calculateTargetPositionMultiStep(
                 robotPosition,
                 robotVelocity,
-                getNearestPassTargetPosition(robotPosition),
+                getNearestAlliancePassTarget(robotPosition, onBlueAlliance),
                 ShooterTunables.SHOT_PREDICTION_ITERATIONS);
     }
 
@@ -81,9 +116,9 @@ public final class ShotCalculation {
         return ShooterMeasurements.distanceToFlywheelRPM(robotPosition.getDistance(targetPosition));
     }
 
-    /** returns the RPM needed to shoot into the nearest Hub */
-    public static double calculateNearestHubRPM(Translation2d robotPosition) {
-        return calculateRPM(robotPosition, getNearestHubPosition(robotPosition));
+    /** returns the RPM needed to shoot into the alliance hub with no fancy velocity functions */
+    public static double calculateAllianceHubRPM(Translation2d robotPosition, boolean onBlueAlliance) {
+        return calculateRPM(robotPosition, getAllianceHubPosition(onBlueAlliance));
     }
 
     public static boolean calculateShotConfidence(
