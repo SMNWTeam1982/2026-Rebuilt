@@ -7,9 +7,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -99,6 +96,7 @@ public class ShooterSubsystem extends SubsystemBase {
     // for the fact that the motor will be sent a value of 0 instead of the output of the pidf
     @AutoLogOutput(key = "Shooter/right flywheel disabled")
     private boolean rightFlywheelDisabled = false;
+
     @AutoLogOutput(key = "Shooter/left flywheel disabled")
     private boolean leftFlywheelDisabled = false;
 
@@ -175,9 +173,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
         double clampedOutput = MathUtil.clamp(totalOutput, -12.0, 12.0);
 
-        if(flywheelDisabled){ // if we don't want the flywheel to try and move
+        if (flywheelDisabled) { // if we don't want the flywheel to try and move
             motor.setVoltage(0);
-        }else{
+        } else {
             motor.setVoltage(clampedOutput);
         }
     }

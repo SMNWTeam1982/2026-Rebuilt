@@ -308,12 +308,7 @@ public class RobotContainer {
         }));
 
         // enable defense mode
-        operatorController.rightTrigger().debounce(.05).onTrue(
-            Commands.parallel(
-                shooter.turnOff(),
-                kicker.turnOff()
-            )
-        );
+        operatorController.rightTrigger().debounce(.05).onTrue(Commands.parallel(shooter.turnOff(), kicker.turnOff()));
 
         // Toggle Auto kicker
         operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {

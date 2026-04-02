@@ -4,9 +4,6 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -37,36 +34,34 @@ public class KickerSubsystem extends SubsystemBase {
         }
     }
 
-    public Command setSpeed(double speed){
-        return runOnce(
-            () -> {
-                if(kickerDisabled){
-                    kickerMotor.set(0.0);
-                }else{
-                    kickerMotor.set(speed);
-                }
+    public Command setSpeed(double speed) {
+        return runOnce(() -> {
+            if (kickerDisabled) {
+                kickerMotor.set(0.0);
+            } else {
+                kickerMotor.set(speed);
             }
-        );
+        });
     }
 
     public Command setHigh() {
         return setSpeed(KickerTunables.HIGH_SPEED);
-        //return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED));
+        // return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED));
     }
 
     public Command setLow() {
         return setSpeed(KickerTunables.LOW_SPEED);
-        //return runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED));
+        // return runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED));
     }
 
     public Command setReverse() {
         return setSpeed(KickerTunables.REVERSE_SPEED);
-        //return runOnce(() -> kickerMotor.set(KickerTunables.REVERSE_SPEED));
+        // return runOnce(() -> kickerMotor.set(KickerTunables.REVERSE_SPEED));
     }
 
     public Command setIdle() {
         return setSpeed(KickerTunables.IDLE_SPEED);
-        //return runOnce(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
+        // return runOnce(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
     }
 
     /** while running, it switches the kicker's speed from high to low periodically */
@@ -76,15 +71,13 @@ public class KickerSubsystem extends SubsystemBase {
                         Commands.waitTime(KickerTunables.HIGH_TIME),
                         setLow(),
                         Commands.waitTime(KickerTunables.LOW_TIME))
-                .finallyDo(
-                    () -> {
-                        if(kickerDisabled){
-                            kickerMotor.set(0.0);
-                        }else{
-                            kickerMotor.set(KickerTunables.IDLE_SPEED);
-                        }
+                .finallyDo(() -> {
+                    if (kickerDisabled) {
+                        kickerMotor.set(0.0);
+                    } else {
+                        kickerMotor.set(KickerTunables.IDLE_SPEED);
                     }
-                );
+                });
         // return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED))
         //         .andThen(new WaitCommand(KickerTunables.HIGH_TIME))
         //         .andThen(runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED)))
@@ -102,11 +95,9 @@ public class KickerSubsystem extends SubsystemBase {
     }
 
     public Command turnOn() {
-        return runOnce(
-            () -> {
-                kickerDisabled = false;
-            }
-        );
+        return runOnce(() -> {
+            kickerDisabled = false;
+        });
     }
 
     public Command dontMove() {
