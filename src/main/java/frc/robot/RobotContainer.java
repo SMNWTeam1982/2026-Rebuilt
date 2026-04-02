@@ -305,7 +305,7 @@ public class RobotContainer {
         robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
 
         defenseMode.whileTrue(kicker.turnOff().alongWith(shooter.turnOff()).alongWith(simpleIntake.turnOff()));
-        
+
         /**
          * Disables the velocity compensation
          */

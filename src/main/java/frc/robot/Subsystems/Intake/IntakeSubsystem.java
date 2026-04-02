@@ -26,7 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @AutoLogOutput(key = "Intake Disabled")
     private boolean intakeDisabled = false;
-    
+
     // /** the absolue throughbore encoder attatched to the hex shaft */
     // private final CANcoder pivotEncoder = new CANcoder(IntakeIDs.PIVOT_ENCODER);
 
@@ -65,55 +65,49 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** sets the intake motor to the intake speed */
     public Command startIntaking() {
-        if (intakeDisabled == true){
+        if (intakeDisabled == true) {
             return turnOff();
-        }
-        else {
+        } else {
             return runOnce(() -> intakeMotor.set(IntakeTunables.INTAKE_SPEED));
         }
     }
 
     /** sets the intake motor to 0 */
     public Command stopIntaking() {
-        if (intakeDisabled == true){
+        if (intakeDisabled == true) {
             return turnOff();
-        }
-        else {
+        } else {
             return runOnce(() -> intakeMotor.set(0));
         }
     }
 
     /** sets the pivot motor to move IN at a constant speed while running, then stops the motor when it ends */
     public Command moveIn() {
-        if (intakeDisabled == true){
+        if (intakeDisabled == true) {
             return turnOff();
-        }
-        else {
-        return startEnd(
-                () -> {
-                    pivotMotor.set(IntakeTunables.MOVE_IN_SPEED);
-                },
-                () -> {
-                    pivotMotor.set(0.0);
-                }
-            );
+        } else {
+            return startEnd(
+                    () -> {
+                        pivotMotor.set(IntakeTunables.MOVE_IN_SPEED);
+                    },
+                    () -> {
+                        pivotMotor.set(0.0);
+                    });
         }
     }
 
     /** sets the pivot motor to move OUT at a constant speed while running, then stops the motor when it ends */
     public Command moveOut() {
-        if (intakeDisabled == true){
+        if (intakeDisabled == true) {
             return turnOff();
-        }
-        else {
+        } else {
             return startEnd(
                     () -> {
                         pivotMotor.set(IntakeTunables.MOVE_OUT_SPEED);
                     },
                     () -> {
                         pivotMotor.set(0.0);
-                    }
-            );
+                    });
         }
     }
 
@@ -121,10 +115,9 @@ public class IntakeSubsystem extends SubsystemBase {
      * <p> will automatically end after a tunable number of seconds (IntakeTunables.RETRACT_ATTEMPT_TIME)
      */
     public Command stow() {
-        if (intakeDisabled == true){
+        if (intakeDisabled == true) {
             return turnOff();
-        }
-        else {
+        } else {
             return stopIntaking().andThen(moveIn()).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME);
         }
     }
@@ -133,28 +126,23 @@ public class IntakeSubsystem extends SubsystemBase {
      * <p> will automatically end after a tunable number of seconds (IntakeTunables.DEPLOY_ATTEMPT_TIME)
      */
     public Command deploy() {
-        if (intakeDisabled == true){
+        if (intakeDisabled == true) {
             return turnOff();
-        }
-        else {
+        } else {
             return startIntaking().andThen(moveOut()).withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME);
         }
     }
 
-    public Command turnOff(){
-        return runOnce(
-            () -> {
-                intakeMotor.stopMotor();
-                intakeDisabled = true;
-            }
-        );
+    public Command turnOff() {
+        return runOnce(() -> {
+            intakeMotor.stopMotor();
+            intakeDisabled = true;
+        });
     }
 
-    public Command turnOn(){
-        return runOnce(
-            () -> {
-                intakeDisabled = false; 
-            }
-        );
+    public Command turnOn() {
+        return runOnce(() -> {
+            intakeDisabled = false;
+        });
     }
 }
