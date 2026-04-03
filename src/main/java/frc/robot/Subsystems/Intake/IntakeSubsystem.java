@@ -13,7 +13,6 @@ import frc.robot.SparkMaxHelper;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-/** since we are having issues with the intake pivot motor, a stripped down version without complicated PIDF control is being created as a backup */
 public class IntakeSubsystem extends SubsystemBase {
     /** for pulling in fuel */
     private final SparkMax intakeMotor = new SparkMax(IntakeIDs.INTAKE, SparkMax.MotorType.kBrushless);
@@ -24,8 +23,11 @@ public class IntakeSubsystem extends SubsystemBase {
     @AutoLogOutput(key = "Intake/intake motor is hot")
     private final Trigger intakeMotorHot = new Trigger(() -> intakeMotor.getMotorTemperature() >= 60);
 
-    @AutoLogOutput(key = "Intake Disabled")
+    @AutoLogOutput(key = "Intake/intake motor disabled")
     private boolean intakeDisabled = false;
+
+    @AutoLogOutput(key = "Intake/pivot motor disabled")
+    private boolean pivotDisabled = false;
 
     public IntakeSubsystem() {
         pivotMotor.configure(
@@ -37,8 +39,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Logger.recordOutput("Intake/absolute position", pivotEncoder.getAbsolutePosition().getValueAsDouble());
-
         SparkMaxHelper.logMotorDetails("Intake", "pivot motor", pivotMotor);
         SparkMaxHelper.logMotorDetails("Intake", "intake motor", intakeMotor);
 
@@ -50,81 +50,60 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
+    private void setIntake(double intakeSpeed){
+        if (intakeDisabled){
+            intakeMotor.set(0);
+        }else{
+            intakeMotor.set(intakeSpeed);
+        }
+    }
+
+    private void setPivot(double pivotSpeed){
+        if(pivotDisabled){
+            pivotMotor.set(0);
+        }else{
+            pivotMotor.set(pivotSpeed);
+        }
+    }
+
     /** sets the intake motor to the intake speed */
     public Command startIntaking() {
-        return runOnce(() -> {
-            if (intakeDisabled == true) {
-                intakeMotor.set(0);
-                pivotMotor.set(0);
-            } else {
-                intakeMotor.set(IntakeTunables.INTAKE_SPEED);
-            }
-        });
+        return runOnce(() -> setIntake(IntakeTunables.INTAKE_SPEED));
     }
 
     /** sets the intake motor to 0 */
     public Command stopIntaking() {
-        return runOnce(() -> intakeMotor.set(0));
+        return runOnce(() -> setIntake(0));
     }
 
     /** sets the pivot motor to move IN at a constant speed while running, then stops the motor when it ends */
     public Command moveIn() {
         return startEnd(
-                () -> {
-                    if (intakeDisabled == true) {
-                        intakeMotor.set(0);
-                        pivotMotor.set(0);
-                    } else {
-                        pivotMotor.set(IntakeTunables.MOVE_IN_SPEED);
-                    }
-                },
-                () -> {
-                    pivotMotor.set(0.0);
-                });
+                () -> setPivot(IntakeTunables.MOVE_IN_SPEED),
+                () -> setPivot(0)
+            );
     }
 
     /** sets the pivot motor to move OUT at a constant speed while running, then stops the motor when it ends */
     public Command moveOut() {
         return startEnd(
-                () -> {
-                    if (intakeDisabled == true) {
-                        intakeMotor.set(0);
-                        pivotMotor.set(0);
-                    } else {
-                        pivotMotor.set(IntakeTunables.MOVE_OUT_SPEED);
-                    }
-                },
-                () -> {
-                    pivotMotor.set(0.0);
-                });
+                () -> setPivot(IntakeTunables.MOVE_OUT_SPEED),
+                () -> setPivot(0)
+            );
     }
 
     /** sets the intake to stop intaking, and to move in until it passes the stow threshold
      * <p> will automatically end after a tunable number of seconds (IntakeTunables.RETRACT_ATTEMPT_TIME)
      */
     public Command stow() {
-        if (intakeDisabled == true) {
-            return runOnce(() -> {
-                intakeMotor.set(0);
-                pivotMotor.set(0);
-            });
-        } else {
-            return stopIntaking().andThen(moveIn()).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME);
-        }
+        return stopIntaking().andThen(moveIn()).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME);
     }
 
     /** sets the intake to start intaking, and to move out until it passes the deploy threshold
      * <p> will automatically end after a tunable number of seconds (IntakeTunables.DEPLOY_ATTEMPT_TIME)
      */
     public Command deploy() {
-        if (intakeDisabled == true) {
-            return runOnce(() -> {
-                intakeMotor.set(0);
-                pivotMotor.set(0);
-            });
-        } else {
-            return startIntaking().andThen(moveOut()).withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME);
-        }
+        return startIntaking().andThen(moveOut()).withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME);
     }
 
     public Command turnOff() {
@@ -132,12 +111,14 @@ public class IntakeSubsystem extends SubsystemBase {
             intakeMotor.stopMotor();
             pivotMotor.stopMotor();
             intakeDisabled = true;
+            pivotDisabled = true;
         });
     }
 
     public Command turnOn() {
         return runOnce(() -> {
             intakeDisabled = false;
+            pivotDisabled = false;
         });
     }
 }
