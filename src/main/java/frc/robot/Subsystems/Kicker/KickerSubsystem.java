@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.KickerIDs;
 import frc.robot.Constants.Tunables.KickerTunables;
 import frc.robot.SparkMaxHelper;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 

@@ -50,18 +50,18 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
-    private void setIntake(double intakeSpeed){
-        if (intakeDisabled){
+    private void setIntake(double intakeSpeed) {
+        if (intakeDisabled) {
             intakeMotor.set(0);
-        }else{
+        } else {
             intakeMotor.set(intakeSpeed);
         }
     }
 
-    private void setPivot(double pivotSpeed){
-        if(pivotDisabled){
+    private void setPivot(double pivotSpeed) {
+        if (pivotDisabled) {
             pivotMotor.set(0);
-        }else{
+        } else {
             pivotMotor.set(pivotSpeed);
         }
     }
@@ -78,18 +78,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** sets the pivot motor to move IN at a constant speed while running, then stops the motor when it ends */
     public Command moveIn() {
-        return startEnd(
-                () -> setPivot(IntakeTunables.MOVE_IN_SPEED),
-                () -> setPivot(0)
-            );
+        return startEnd(() -> setPivot(IntakeTunables.MOVE_IN_SPEED), () -> setPivot(0));
     }
 
     /** sets the pivot motor to move OUT at a constant speed while running, then stops the motor when it ends */
     public Command moveOut() {
-        return startEnd(
-                () -> setPivot(IntakeTunables.MOVE_OUT_SPEED),
-                () -> setPivot(0)
-            );
+        return startEnd(() -> setPivot(IntakeTunables.MOVE_OUT_SPEED), () -> setPivot(0));
     }
 
     /** sets the intake to stop intaking, and to move in until it passes the stow threshold
