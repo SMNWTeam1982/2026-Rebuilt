@@ -168,13 +168,7 @@ public class Measured {
     }
 
     public static final class IntakeMeasurements {
-        public static final Rotation2d FULLY_RETRACTED_ANGLE = new Rotation2d();
-        public static final Rotation2d FULLY_DEPLOYED_ANGLE = new Rotation2d();
 
-        /** the absolute position of the intake encoder when fully retracted */
-        public static final double RAW_FULLY_RETRACTED_POSITION = 0.0;
-        /** the absolute position of the intake encoder when fully deployed */
-        public static final double RAW_FULLY_DEPLOYED_POSITION = 0.0;
     }
 
     public static final class VisionMeasurements {

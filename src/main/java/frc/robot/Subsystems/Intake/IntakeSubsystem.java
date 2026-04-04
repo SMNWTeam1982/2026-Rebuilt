@@ -3,6 +3,8 @@ package frc.robot.Subsystems.Intake;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
+
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -28,6 +30,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @AutoLogOutput(key = "Intake/pivot motor disabled")
     private boolean pivotDisabled = false;
+
+    private final SlewRateLimiter pivotOutputLimiter = new SlewRateLimiter(IntakeTunables.PIVOT_OUTPUT_RATE_LIMIT);
 
     public IntakeSubsystem() {
         pivotMotor.configure(
@@ -66,6 +70,17 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
+    /** sets the pivot using the rate limiter */
+    private void movePivot(double desiredPivotSpeed){
+        setPivot(pivotOutputLimiter.calculate(desiredPivotSpeed));
+    }
+
+    /** sets the pivot motor to 0 and resets the rate limiter */
+    private void stopPivot(){
+        setPivot(0);
+        pivotOutputLimiter.reset(0);
+    }
+
     /** sets the intake motor to the intake speed */
     public Command startIntaking() {
         return runOnce(() -> setIntake(IntakeTunables.INTAKE_SPEED));
@@ -78,12 +93,12 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** sets the pivot motor to move IN at a constant speed while running, then stops the motor when it ends */
     public Command moveIn() {
-        return startEnd(() -> setPivot(IntakeTunables.MOVE_IN_SPEED), () -> setPivot(0));
+        return startEnd(() -> movePivot(IntakeTunables.PIVOT_MOVE_IN_SPEED), () -> stopPivot());
     }
 
     /** sets the pivot motor to move OUT at a constant speed while running, then stops the motor when it ends */
     public Command moveOut() {
-        return startEnd(() -> setPivot(IntakeTunables.MOVE_OUT_SPEED), () -> setPivot(0));
+        return startEnd(() -> movePivot(IntakeTunables.PIVOT_MOVE_OUT_SPEED), () -> stopPivot());
     }
 
     /** sets the intake to stop intaking, and to move in until it passes the stow threshold
@@ -102,6 +117,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public Command turnOff() {
         return runOnce(() -> {
+            stopPivot();
             intakeMotor.stopMotor();
             pivotMotor.stopMotor();
             intakeDisabled = true;

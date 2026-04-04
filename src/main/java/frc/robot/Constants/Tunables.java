@@ -146,31 +146,6 @@ public class Tunables {
     }
 
     public static final class IntakeTunables {
-        // pid gains for the deploy/retraction of the intake
-        public static final double PIVOT_P = 1.0;
-        public static final double PIVOT_I = 0.0;
-        public static final double PIVOT_D = 0.0;
-
-        public static final Rotation2d PIVOT_TOLERANCE = Rotation2d.fromDegrees(1);
-
-        // feedforward gains for the gravity compensation
-        public static final double PIVOT_S = 0.0;
-        public static final double PIVOT_G = 0.0;
-        public static final double PIVOT_V = 0.0;
-
-        public static final Rotation2d STOW_POSITION = new Rotation2d();
-        public static final Rotation2d DEPLOY_POSITION = new Rotation2d();
-
-        /** if the absolute position of the intake encoder is LESS than this the intake is considered STOWED */
-        public static final double STOWED_THRESHOLD = 0.0;
-
-        /** if the absolute position of the intake encoder is GREATER than this the intake is considered DEPLOYED */
-        public static final double DEPLOYED_THRESHOLD = 0.0;
-
-        /** how long does the intake position need to be past the stowed/deployed threshold before it considers it activated
-         * <p> this will be used to debounce the stowed/deployed Trigger
-         */
-        public static final Time THRESHOLD_TIME = Seconds.of(0.2);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a deploy attempt */
         public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(1.5);
@@ -178,8 +153,10 @@ public class Tunables {
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
         public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.2);
 
-        public static final double MOVE_IN_SPEED = -0.05;
-        public static final double MOVE_OUT_SPEED = 0.05;
+        public static final double PIVOT_OUTPUT_RATE_LIMIT = 0.05;
+
+        public static final double PIVOT_MOVE_IN_SPEED = -0.1;
+        public static final double PIVOT_MOVE_OUT_SPEED = 0.1;
 
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.85;
