@@ -3,7 +3,6 @@ package frc.robot.Subsystems.Intake;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
-
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -71,12 +70,12 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /** sets the pivot using the rate limiter */
-    private void movePivot(double desiredPivotSpeed){
+    private void movePivot(double desiredPivotSpeed) {
         setPivot(pivotOutputLimiter.calculate(desiredPivotSpeed));
     }
 
     /** sets the pivot motor to 0 and resets the rate limiter */
-    private void stopPivot(){
+    private void stopPivot() {
         setPivot(0);
         pivotOutputLimiter.reset(0);
     }

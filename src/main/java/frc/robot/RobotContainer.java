@@ -446,11 +446,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.sequence(
-            enterManualMode(),
-            autoChooser.get(),
-            exitManualMode()
-        );
+        return Commands.sequence(enterManualMode(), autoChooser.get(), exitManualMode());
         // return drive.nudgeBack()
         //         .withTimeout(3)
         //         .andThen(DriverCommands.setAimAtTarget(
