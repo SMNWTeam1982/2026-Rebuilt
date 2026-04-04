@@ -12,11 +12,6 @@ import frc.robot.Subsystems.Shooter.ShotCalculation;
 import java.util.function.BooleanSupplier;
 
 public class AutoCommands {
-    public static Command setShooterAllianceHubRPMSupplier(
-            DriveSubsystem drive, ShooterSubsystem shooter, BooleanSupplier onBlueAlliance) {
-        return shooter.setRPMSupplier(() -> ShotCalculation.calculateAllianceHubRPM(
-                drive.getRobotPose().getTranslation(), onBlueAlliance.getAsBoolean()));
-    }
 
     /** stops the drive,
      * and spins up the shooter flywheels with the RPM calculation function,
@@ -32,7 +27,7 @@ public class AutoCommands {
             BooleanSupplier onBlueAlliance) {
         return Commands.sequence(
                 drive.stop(),
-                setShooterAllianceHubRPMSupplier(drive, shooter, onBlueAlliance)
+                RobotCommands.setShooterRPMSupplierForAllianceHub(drive, shooter, onBlueAlliance)
                         .asProxy(), // run the shooter commands as proxies so that the PID can run in background
                 Commands.deadline(
                         Commands.sequence(

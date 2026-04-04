@@ -69,7 +69,8 @@ public class Measured {
          * <p> distance traveled by the wheel per rotation of the drive motor
          */
         public static final double DRIVE_ENCODER_POSITION_TO_METERS_MULTIPLIER =
-                Units.inchesToMeters(12.5) / 6.75; // measured on march 7 2026, old 2025 number: -0.31927 / 6.75;
+                Units.inchesToMeters(12.8) / 6.75; // measured on march 7 2026, old 2025 number: -0.31927 / 6.75;
+                // swerve treads changed for GKC, old circumference = 12.5 inches
 
         /** position to meters / 60seconds */
         public static final double DRIVE_ENCODER_RPM_TO_MPS_MULTIPLIER =

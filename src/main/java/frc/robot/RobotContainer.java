@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Commands.AutoCommands;
 import frc.robot.Commands.DriverCommands;
+import frc.robot.Commands.RobotCommands;
 import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
@@ -51,9 +52,9 @@ public class RobotContainer {
      * controls if the set drive mode commands triggered by the driver will also change the shooter RPM
      */
     @AutoLogOutput(key = "Driver info/driver can change shooter RPM")
-    private boolean driverCanChangeShooterRPM = false;
+    private boolean driverCanChangeShooterRPM = true;
 
-    private boolean autoKickerModeEnabled = false;
+    private boolean autoKickerModeEnabled = true;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
     private final CommandXboxController operatorController = new CommandXboxController(1);
@@ -203,6 +204,24 @@ public class RobotContainer {
         NamedCommands.registerCommand("stop drive", drive.stop());
     }
 
+    private Command enterManualMode(){
+        return Commands.runOnce(
+            () -> {
+                autoKickerModeEnabled = false;
+                driverCanChangeShooterRPM = false;
+            }
+        );
+    }
+
+    private Command exitManualMode(){
+        return Commands.runOnce(
+            () -> {
+                autoKickerModeEnabled = true;
+                driverCanChangeShooterRPM = true;
+            }
+        );
+    }
+
     private void configureDriverBindings() {
 
         // use right/left bumbers to extend/retract the climber
@@ -277,58 +296,70 @@ public class RobotContainer {
         operatorController.b().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
 
         // manually start/stop the kicker
-        operatorController.rightBumper().debounce(0.05).onTrue(kicker.kick().alongWith(Commands.runOnce(() -> {
-            autoKickerModeEnabled = false;
-        })));
+        operatorController.rightBumper().debounce(0.05).onTrue(
+                Commands.runOnce(() -> {autoKickerModeEnabled = false;})
+                .andThen(
+                        kicker.kick()
+                ));
 
-        operatorController.leftBumper().debounce(0.05).onTrue(kicker.setIdle().alongWith(Commands.runOnce(() -> {
-            autoKickerModeEnabled = false;
-        })));
+        operatorController.leftBumper().debounce(0.05).onTrue(
+                Commands.runOnce(() -> {autoKickerModeEnabled = false;})
+                .andThen(
+                        kicker.setIdle()
+                ));
 
         // automatically start/stop the kicker when the robot is ready/not ready
         robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
 
-        /**
-         * Disables the velocity compensation
-         */
-        operatorController.back().debounce(0.05).onTrue(Commands.runOnce(() -> {
-            velocityCompensationEnabled = false;
-        }));
+        operatorController.x().onTrue(
+                exitManualMode()
+        );
 
-        /**
-         * Reenables the velocity compensation
-         */
-        operatorController.start().debounce(0.05).onTrue(Commands.runOnce(() -> {
-            velocityCompensationEnabled = true;
-        }));
+        operatorController.y().onTrue(
+                enterManualMode()
+        );
+
+        // /**
+        //  * Disables the velocity compensation
+        //  */
+        // operatorController.back().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        //     velocityCompensationEnabled = false;
+        // }));
+
+        // /**
+        //  * Reenables the velocity compensation
+        //  */
+        // operatorController.start().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        //     velocityCompensationEnabled = true;
+        // }));
 
         // the shooter's rpm WILL be set when the driver changes mode
-        operatorController.x().debounce(0.05).onTrue(Commands.runOnce(() -> {
-            driverCanChangeShooterRPM = true;
-        }));
+        // operatorController.x().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        //     driverCanChangeShooterRPM = true;
+        // }));
 
-        // the shooter's rpm will NOT be set when the driver changes mode
-        operatorController.y().debounce(0.05).onTrue(Commands.runOnce(() -> {
-            driverCanChangeShooterRPM = false;
-        }));
+        // // the shooter's rpm will NOT be set when the driver changes mode
+        // operatorController.y().debounce(0.05).onTrue(Commands.runOnce(() -> {
+        //     driverCanChangeShooterRPM = false;
+        // }));
 
         // enable defense mode
         operatorController
-                .rightTrigger()
+                .back()
                 .debounce(.05)
-                .onTrue(Commands.parallel(shooter.turnOff(), kicker.turnOff(), intake.turnOff()));
+                .onTrue(RobotCommands.enterDefenseMode(shooter, kicker, intake).andThen(enterManualMode()));
 
         // Disable defense mode
         operatorController
-                .leftTrigger()
+                .start()
                 .debounce(.05)
-                .onTrue(Commands.parallel(shooter.turnOn(), kicker.turnOn(), intake.turnOn()));
+                .onTrue(RobotCommands.exitDefenseMode(shooter, kicker, intake).andThen(exitManualMode()));
 
         // Toggle Auto kicker
         // CHANGE BUTTON
-        operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
-            autoKickerModeEnabled = true;
-        }));
+        // operatorController.leftTrigger().debounce(.05).onTrue(Commands.runOnce(() -> {
+        //     autoKickerModeEnabled = true;
+        // }));
 
         // speed overides for shooter
         operatorController
@@ -348,11 +379,11 @@ public class RobotContainer {
                 .debounce(0.05)
                 .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_4));
 
-        Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
-        Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
+        // Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
+        // Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
 
-        leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(100));
-        leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-100));
+        // leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(100));
+        // leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-100));
     }
 
     private void configureTestingBindings() {
