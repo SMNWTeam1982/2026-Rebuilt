@@ -204,22 +204,18 @@ public class RobotContainer {
         NamedCommands.registerCommand("stop drive", drive.stop());
     }
 
-    private Command enterManualMode(){
-        return Commands.runOnce(
-            () -> {
-                autoKickerModeEnabled = false;
-                driverCanChangeShooterRPM = false;
-            }
-        );
+    private Command enterManualMode() {
+        return Commands.runOnce(() -> {
+            autoKickerModeEnabled = false;
+            driverCanChangeShooterRPM = false;
+        });
     }
 
-    private Command exitManualMode(){
-        return Commands.runOnce(
-            () -> {
-                autoKickerModeEnabled = true;
-                driverCanChangeShooterRPM = true;
-            }
-        );
+    private Command exitManualMode() {
+        return Commands.runOnce(() -> {
+            autoKickerModeEnabled = true;
+            driverCanChangeShooterRPM = true;
+        });
     }
 
     private void configureDriverBindings() {
@@ -296,28 +292,28 @@ public class RobotContainer {
         operatorController.b().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
 
         // manually start/stop the kicker
-        operatorController.rightBumper().debounce(0.05).onTrue(
-                Commands.runOnce(() -> {autoKickerModeEnabled = false;})
-                .andThen(
-                        kicker.kick()
-                ));
+        operatorController
+                .rightBumper()
+                .debounce(0.05)
+                .onTrue(Commands.runOnce(() -> {
+                            autoKickerModeEnabled = false;
+                        })
+                        .andThen(kicker.kick()));
 
-        operatorController.leftBumper().debounce(0.05).onTrue(
-                Commands.runOnce(() -> {autoKickerModeEnabled = false;})
-                .andThen(
-                        kicker.setIdle()
-                ));
+        operatorController
+                .leftBumper()
+                .debounce(0.05)
+                .onTrue(Commands.runOnce(() -> {
+                            autoKickerModeEnabled = false;
+                        })
+                        .andThen(kicker.setIdle()));
 
         // automatically start/stop the kicker when the robot is ready/not ready
         robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
 
-        operatorController.x().onTrue(
-                exitManualMode()
-        );
+        operatorController.x().onTrue(exitManualMode());
 
-        operatorController.y().onTrue(
-                enterManualMode()
-        );
+        operatorController.y().onTrue(enterManualMode());
 
         // /**
         //  * Disables the velocity compensation
