@@ -4,19 +4,20 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANBus.KickerIDs;
 import frc.robot.Constants.Tunables.KickerTunables;
 import frc.robot.SparkMaxHelper;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 public class KickerSubsystem extends SubsystemBase {
     private final SparkMax kickerMotor = new SparkMax(KickerIDs.KICKER, MotorType.kBrushless);
+
+    @AutoLogOutput(key = "Kicker/kicker disabled")
+    private boolean kickerDisabled = false;
 
     public KickerSubsystem() {
         kickerMotor.configure(
@@ -35,16 +36,32 @@ public class KickerSubsystem extends SubsystemBase {
         }
     }
 
+    public void setSpeed(double speed) {
+        if (kickerDisabled) {
+            kickerMotor.set(0.0);
+        } else {
+            kickerMotor.set(speed);
+        }
+    }
+
     public Command setHigh() {
-        return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED));
+        return runOnce(() -> setSpeed(KickerTunables.HIGH_SPEED));
+        // return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED));
     }
 
     public Command setLow() {
-        return runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED));
+        return runOnce(() -> setSpeed(KickerTunables.LOW_SPEED));
+        // return runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED));
     }
 
     public Command setReverse() {
-        return runOnce(() -> kickerMotor.set(KickerTunables.REVERSE_SPEED));
+        return runOnce(() -> setSpeed(KickerTunables.REVERSE_SPEED));
+        // return runOnce(() -> kickerMotor.set(KickerTunables.REVERSE_SPEED));
+    }
+
+    public Command setIdle() {
+        return runOnce(() -> setSpeed(KickerTunables.IDLE_SPEED));
+        // return runOnce(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
     }
 
     /** while running, it switches the kicker's speed from high to low periodically */
@@ -54,7 +71,7 @@ public class KickerSubsystem extends SubsystemBase {
                         Commands.waitTime(KickerTunables.HIGH_TIME),
                         setLow(),
                         Commands.waitTime(KickerTunables.LOW_TIME))
-                .finallyDo(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
+                .finallyDo(() -> setSpeed(KickerTunables.IDLE_SPEED));
         // return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED))
         //         .andThen(new WaitCommand(KickerTunables.HIGH_TIME))
         //         .andThen(runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED)))
@@ -63,23 +80,17 @@ public class KickerSubsystem extends SubsystemBase {
         //         .finallyDo(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
     }
 
-    public Command setIdle() {
-        return runOnce(() -> kickerMotor.set(KickerTunables.IDLE_SPEED));
-    }
-
     /** disables the motors and sets their current limits to 0, their pid gains to 0, and their ff gains to 0 */
     public Command turnOff() {
         return runOnce(() -> {
-            Logger.recordOutput("Kicker/turned off", true);
-            kickerMotor.disable();
+            kickerMotor.stopMotor();
+            kickerDisabled = true;
+        });
+    }
 
-            SparkBaseConfig disabledConfig = new SparkMaxConfig()
-                    .idleMode(IdleMode.kBrake)
-                    .smartCurrentLimit(0)
-                    .secondaryCurrentLimit(0.0);
-            kickerMotor.configure(disabledConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
-            setDefaultCommand(dontMove());
+    public Command turnOn() {
+        return runOnce(() -> {
+            kickerDisabled = false;
         });
     }
 
