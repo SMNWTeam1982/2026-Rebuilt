@@ -25,7 +25,7 @@ public class CANBus {
         public static final int INTAKE = 9;
         public static final int PIVOT = 10;
 
-        public static final int PIVOT_ENCODER = 19;
+        public static final int SWITCH_DIO_CHANNEL = 0;
     }
 
     public static final class ShooterIDs {

@@ -155,10 +155,10 @@ public class Tunables {
     public static final class IntakeTunables {
 
         /** the maximuma mount of time that the intake will run the pivot motor during a deploy attempt */
-        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(1.2);
+        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(0.8);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
-        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1);
+        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(0.7);
 
         // 1 second to change by 0.6, 0.5 seconds to change by 0.3
         public static final double PIVOT_OUTPUT_RATE_LIMIT = 0.6;
@@ -177,7 +177,7 @@ public class Tunables {
         public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(40)
                 .secondaryCurrentLimit(60)
-                .idleMode(SparkBaseConfig.IdleMode.kBrake);
+                .idleMode(SparkBaseConfig.IdleMode.kCoast);
     }
 
     public static final class KickerTunables {
@@ -193,6 +193,8 @@ public class Tunables {
         public static final double IDLE_SPEED = -0.05;
         /** the speed for the kicker to run at when moving in reverse */
         public static final double REVERSE_SPEED = -0.5;
+
+        public static final double ROBOT_MAX_SPEED_WHEN_KICKING = 0.05;
 
         public static final SparkBaseConfig KICKER_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(20)

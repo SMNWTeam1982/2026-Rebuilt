@@ -24,6 +24,7 @@ import frc.robot.Commands.DriverCommands;
 import frc.robot.Commands.RobotCommands;
 import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
+import frc.robot.Constants.Tunables.KickerTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
@@ -137,8 +138,10 @@ public class RobotContainer {
      * <p> is the shooter in shoot mode? (is it calculating the velocity from the equations?)
      */
     @AutoLogOutput(key = "Driver info/robot ready to shoot")
-    private final Trigger robotReadyToShoot =
-            drive.atTargetHeading.and(shooter.readyToShoot).and(shooter.inShootMode);
+    private final Trigger robotReadyToShoot = drive.atTargetHeading
+            .and(shooter.readyToShoot)
+            .and(shooter.inShootMode)
+            .and(() -> drive.getLinearSpeed() <= KickerTunables.ROBOT_MAX_SPEED_WHEN_KICKING);
 
     public RobotContainer() {
         CameraServer.startAutomaticCapture(0);
@@ -286,13 +289,11 @@ public class RobotContainer {
 
         // operatorController.a().onTrue(shooter.turnOff().andThen(kicker.turnOff()));
 
-        operatorController.rightTrigger().and(operatorController.leftTrigger()).debounce(1.0).onTrue(
-                RobotCommands.tryUnjam(
-                        shooter,
-                        kicker,
-                        intake
-                )
-        );
+        operatorController
+                .rightTrigger()
+                .and(operatorController.leftTrigger())
+                .debounce(1.0)
+                .onTrue(RobotCommands.tryUnjam(shooter, kicker, intake));
 
         // deploy/retract the intake with a & b
         operatorController.a().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));

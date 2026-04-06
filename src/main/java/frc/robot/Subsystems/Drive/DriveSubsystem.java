@@ -353,6 +353,15 @@ public class DriveSubsystem extends SubsystemBase {
         return driveBase.getFieldRelativeSpeeds();
     }
 
+    public double getLinearSpeed() {
+        ChassisSpeeds currentRobotRelativeVelocity = driveBase.getRobotRelativeSpeeds();
+
+        double vx = currentRobotRelativeVelocity.vxMetersPerSecond;
+        double vy = currentRobotRelativeVelocity.vyMetersPerSecond;
+
+        return Math.sqrt(vx * vx + vy * vy);
+    }
+
     /**
      * Resets the pose estimator to the specified pose.
      *
