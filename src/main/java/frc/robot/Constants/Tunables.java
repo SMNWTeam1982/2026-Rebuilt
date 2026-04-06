@@ -171,7 +171,7 @@ public class Tunables {
         public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(40)
                 .secondaryCurrentLimit(60)
-                .idleMode(SparkBaseConfig.IdleMode.kCoast);
+                .idleMode(SparkBaseConfig.IdleMode.kBrake);
     }
 
     public static final class KickerTunables {
@@ -184,7 +184,7 @@ public class Tunables {
         /** how long the kicker runs at the low speed before switching to the high speed */
         public static final Time LOW_TIME = Seconds.of(1.0);
         /** the speed the kicker runs at when not active */
-        public static final double IDLE_SPEED = 0.0;
+        public static final double IDLE_SPEED = -0.05;
         /** the speed for the kicker to run at when moving in reverse */
         public static final double REVERSE_SPEED = -0.5;
 

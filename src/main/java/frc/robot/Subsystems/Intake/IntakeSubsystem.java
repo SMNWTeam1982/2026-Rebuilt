@@ -124,8 +124,7 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public Command deploy() {
         return startIntaking()
-                .andThen(moveOut())
-                .withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME)
+                .andThen(moveOut().withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME))
                 .handleInterrupt(this::stopPivot);
     }
 
@@ -140,10 +139,9 @@ public class IntakeSubsystem extends SubsystemBase {
                         run(() -> movePivot(IntakeTunables.PIVOT_MOVE_IN_SPEED))
                                 .withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)), // accelerate
                         run(() -> movePivot(0))
-                                .withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)), // deccelerate
-                        runOnce(this::stopPivot) // stop & reset rate limiter
+                                .withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)) // deccelerate
                         )
-                .handleInterrupt(this::stopPivot);
+                .finallyDo(this::stopPivot);
     }
 
     /**
@@ -156,10 +154,27 @@ public class IntakeSubsystem extends SubsystemBase {
                         runOnce(this::stopPivot), // stop & reset rate limiter
                         run(() -> movePivot(IntakeTunables.PIVOT_MOVE_OUT_SPEED))
                                 .withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME.div(2.0)), // accelerate
-                        run(() -> movePivot(0)).withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME.div(2.0)), // deccelerate
-                        runOnce(this::stopPivot) // stop & reset rate limiter
+                        run(() -> movePivot(0)).withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME.div(2.0)) // deccelerate
                         )
-                .handleInterrupt(this::stopPivot);
+                .finallyDo(this::stopPivot);
+    }
+
+    public Command suddenStow() {
+        return Commands.sequence(
+            stopIntaking(),
+            runOnce(this::stopPivot),
+            runOnce(() -> setPivot(IntakeTunables.PIVOT_MOVE_IN_SPEED)),
+            Commands.waitTime(IntakeTunables.RETRACT_ATTEMPT_TIME)
+        ).finallyDo(this::stopPivot);
+    }
+
+    public Command suddenDeploy() {
+        return Commands.sequence(
+            startIntaking(),
+            runOnce(this::stopPivot),
+            runOnce(() -> setPivot(IntakeTunables.PIVOT_MOVE_OUT_SPEED)),
+            Commands.waitTime(IntakeTunables.DEPLOY_ATTEMPT_TIME)
+        ).finallyDo(this::stopPivot);
     }
 
     public Command turnOff() {
