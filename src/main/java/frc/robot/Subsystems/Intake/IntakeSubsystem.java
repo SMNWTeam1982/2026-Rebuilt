@@ -138,8 +138,7 @@ public class IntakeSubsystem extends SubsystemBase {
                         runOnce(this::stopPivot), // stop & reset rate limiter
                         run(() -> movePivot(IntakeTunables.PIVOT_MOVE_IN_SPEED))
                                 .withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)), // accelerate
-                        run(() -> movePivot(0))
-                                .withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)) // deccelerate
+                        run(() -> movePivot(0)).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)) // deccelerate
                         )
                 .finallyDo(this::stopPivot);
     }
@@ -161,20 +160,20 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public Command suddenStow() {
         return Commands.sequence(
-            stopIntaking(),
-            runOnce(this::stopPivot),
-            runOnce(() -> setPivot(IntakeTunables.PIVOT_MOVE_IN_SPEED)),
-            Commands.waitTime(IntakeTunables.RETRACT_ATTEMPT_TIME)
-        ).finallyDo(this::stopPivot);
+                        stopIntaking(),
+                        runOnce(this::stopPivot),
+                        runOnce(() -> setPivot(IntakeTunables.PIVOT_MOVE_IN_SPEED)),
+                        Commands.waitTime(IntakeTunables.RETRACT_ATTEMPT_TIME))
+                .finallyDo(this::stopPivot);
     }
 
     public Command suddenDeploy() {
         return Commands.sequence(
-            startIntaking(),
-            runOnce(this::stopPivot),
-            runOnce(() -> setPivot(IntakeTunables.PIVOT_MOVE_OUT_SPEED)),
-            Commands.waitTime(IntakeTunables.DEPLOY_ATTEMPT_TIME)
-        ).finallyDo(this::stopPivot);
+                        startIntaking(),
+                        runOnce(this::stopPivot),
+                        runOnce(() -> setPivot(IntakeTunables.PIVOT_MOVE_OUT_SPEED)),
+                        Commands.waitTime(IntakeTunables.DEPLOY_ATTEMPT_TIME))
+                .finallyDo(this::stopPivot);
     }
 
     public Command turnOff() {
