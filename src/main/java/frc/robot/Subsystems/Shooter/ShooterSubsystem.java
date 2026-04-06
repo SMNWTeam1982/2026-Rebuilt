@@ -38,11 +38,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     @AutoLogOutput(key = "Shooter/right jammed")
     public final Trigger rightShooterJammed =
-            new Trigger(() -> rightMotor.getOutputCurrent() >= 30.0 && Math.abs(rightEncoder.getVelocity()) <= 400);
+            new Trigger(() -> rightMotor.getOutputCurrent() >= ShooterTunables.FLYWHEEL_MOTOR_JAM_CURRENT_THRESHHOLD
+                    && Math.abs(rightEncoder.getVelocity()) <= 400);
 
     @AutoLogOutput(key = "Shooter/left jammed")
     public final Trigger leftShooterJammed =
-            new Trigger(() -> leftMotor.getOutputCurrent() >= 30.0 && Math.abs(leftEncoder.getVelocity()) <= 400);
+            new Trigger(() -> leftMotor.getOutputCurrent() >= ShooterTunables.FLYWHEEL_MOTOR_JAM_CURRENT_THRESHHOLD
+                    && Math.abs(leftEncoder.getVelocity()) <= 400);
 
     /** input RPM, outputs volts */
     private final PIDController rightVelocityController =

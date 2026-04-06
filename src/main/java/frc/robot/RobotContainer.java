@@ -54,6 +54,7 @@ public class RobotContainer {
     @AutoLogOutput(key = "Driver info/driver can change shooter RPM")
     private boolean driverCanChangeShooterRPM = true;
 
+    @AutoLogOutput(key = "Driver info/auto kick enabled")
     private boolean autoKickerModeEnabled = true;
 
     private final CommandXboxController driverController = new CommandXboxController(0);
@@ -130,8 +131,6 @@ public class RobotContainer {
                 }
             })
             .debounce(1);
-
-    private final Trigger robotEnabled = new Trigger(DriverStation::isEnabled);
     /**
      * is the drive at the target heading?
      * <p> are the flywheels at the target speed?
@@ -146,7 +145,7 @@ public class RobotContainer {
         CameraServer.startAutomaticCapture(1);
 
         // automatically disable the vision LED mode when teleOp is enabled
-        robotEnabled.onTrue(vision.deactivateLEDMode());
+        // robotEnabled.onTrue(vision.deactivateLEDMode());
         // automatically disable the vision LED mode when teleOp is enabled
         // robotEnabled.onFalse(vision.activateLEDMode());
 
@@ -383,6 +382,15 @@ public class RobotContainer {
     }
 
     private void configureTestingBindings() {
+        operatorController.a().debounce(0.05).onTrue(intake.deploy());
+        operatorController.b().debounce(0.05).onTrue(intake.stow());
+
+        operatorController.x().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
+        operatorController.y().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
+
+        operatorController.rightBumper().debounce(0.05).onTrue(intake.smoothDeploy());
+        operatorController.leftBumper().debounce(0.05).onTrue(intake.smoothStow());
+
         // operatorController.a().debounce(0.1).onTrue(simpleIntake.deploy());
         // operatorController.b().debounce(0.1).onTrue(simpleIntake.stow());
 
@@ -441,7 +449,10 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.get();
+        return Commands.sequence(enterManualMode(), autoChooser.get()).finallyDo(() -> {
+            autoKickerModeEnabled = true;
+            driverCanChangeShooterRPM = true;
+        });
         // return drive.nudgeBack()
         //         .withTimeout(3)
         //         .andThen(DriverCommands.setAimAtTarget(

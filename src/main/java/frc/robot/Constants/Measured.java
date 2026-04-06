@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -167,15 +166,7 @@ public class Measured {
         }
     }
 
-    public static final class IntakeMeasurements {
-        public static final Rotation2d FULLY_RETRACTED_ANGLE = new Rotation2d();
-        public static final Rotation2d FULLY_DEPLOYED_ANGLE = new Rotation2d();
-
-        /** the absolute position of the intake encoder when fully retracted */
-        public static final double RAW_FULLY_RETRACTED_POSITION = 0.0;
-        /** the absolute position of the intake encoder when fully deployed */
-        public static final double RAW_FULLY_DEPLOYED_POSITION = 0.0;
-    }
+    public static final class IntakeMeasurements {}
 
     public static final class VisionMeasurements {
         public static final Transform3d PHOTON_CAM_RELATIVE_TO_ROBOT = new Transform3d(
