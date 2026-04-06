@@ -23,7 +23,9 @@ public class Tunables {
     public static final SparkBaseConfig DEFAULT_SPARK_MAX_CONFIG =
             new SparkMaxConfig().smartCurrentLimit(20).secondaryCurrentLimit(30).idleMode(IdleMode.kBrake);
 
-    public static final String SPECIAL_MESSAGE = "finals";
+    public static final String SPECIAL_MESSAGE = "";
+
+    public static final Time UNJAM_ATTEMPT_TIME = Seconds.of(5.0);
 
     /** speeds are in meters per second */
     public static final class DriveBaseTunables {
@@ -118,12 +120,14 @@ public class Tunables {
 
         public static final double FLYWHEEL_IDLE_RPM = 1000.0;
 
+        public static final AngularVelocity FLYWHEEL_REVERSE_RPM = RPM.of(-2000.0);
+
         public static final double SHOOTER_RPM_CEILING = 5500;
 
         public static final AngularVelocity SPEED_OVERRIDE_1 = RPM.of(0);
-        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(-2000);
-        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(4000);
-        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(3200);
+        public static final AngularVelocity SPEED_OVERRIDE_2 = RPM.of(2500);
+        public static final AngularVelocity SPEED_OVERRIDE_3 = RPM.of(3500);
+        public static final AngularVelocity SPEED_OVERRIDE_4 = RPM.of(4500);
 
         /** the maximum deviation from the ideal shooting position where the shot can still be made */
         public static final double SHOOTING_POSITION_TOLERANCE = 0.1;
@@ -164,6 +168,8 @@ public class Tunables {
 
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.8;
+
+        public static final double INTAKE_REVERSE_SPEED = -0.8;
 
         /** if the motor is drawing more than this and is moving slow then the motor is considered jammed */
         public static final double INTAKE_MOTOR_JAM_CURRENT_THRESHHOLD = 15.0;

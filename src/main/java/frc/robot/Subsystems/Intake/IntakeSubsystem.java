@@ -176,6 +176,25 @@ public class IntakeSubsystem extends SubsystemBase {
                 .finallyDo(this::stopPivot);
     }
 
+    public Command setReverse() {
+        return runOnce(
+            () -> {
+                stopPivot();
+                setIntake(IntakeTunables.INTAKE_REVERSE_SPEED);
+            }
+        );
+    }
+
+    public Command turnOffJammedIntake(){
+        return runOnce(
+            () -> {
+                if(intakeMotorJammed.getAsBoolean()){
+                    intakeDisabled = true;
+                }
+            }
+        );
+    }
+
     public Command turnOff() {
         return runOnce(() -> {
             stopPivot();
