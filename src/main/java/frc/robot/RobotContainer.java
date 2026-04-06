@@ -286,6 +286,14 @@ public class RobotContainer {
 
         // operatorController.a().onTrue(shooter.turnOff().andThen(kicker.turnOff()));
 
+        operatorController.rightTrigger().and(operatorController.leftTrigger()).debounce(1.0).onTrue(
+                RobotCommands.tryUnjam(
+                        shooter,
+                        kicker,
+                        intake
+                )
+        );
+
         // deploy/retract the intake with a & b
         operatorController.a().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
         operatorController.b().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
@@ -374,11 +382,11 @@ public class RobotContainer {
                 .debounce(0.05)
                 .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_4));
 
-        // Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
-        // Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
+        Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
+        Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
 
-        // leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(100));
-        // leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-100));
+        leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(200));
+        leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-200));
     }
 
     private void configureTestingBindings() {
@@ -390,6 +398,9 @@ public class RobotContainer {
 
         operatorController.rightBumper().debounce(0.05).onTrue(intake.smoothDeploy());
         operatorController.leftBumper().debounce(0.05).onTrue(intake.smoothStow());
+
+        operatorController.povDown().debounce(0.05).onTrue(intake.suddenStow());
+        operatorController.povUp().debounce(0.05).onTrue(intake.suddenDeploy());
 
         // operatorController.a().debounce(0.1).onTrue(simpleIntake.deploy());
         // operatorController.b().debounce(0.1).onTrue(simpleIntake.stow());
