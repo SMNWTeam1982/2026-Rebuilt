@@ -114,7 +114,7 @@ public class Tunables {
         public static final double FLYWHEEL_V = 0.128; // 26 Feb 2026
         public static final double FLYWHEEL_A = 0;
 
-        public static final double FLYWHEEL_RPM_TOLERANCE = 50.0;
+        public static final double FLYWHEEL_RPM_TOLERANCE = 100.0;
 
         public static final double FLYWHEEL_IDLE_RPM = 1000.0;
 
@@ -134,6 +134,9 @@ public class Tunables {
 
         public static final Time AUTO_SPIN_UP_TIME = Seconds.of(3);
 
+        /** if the motor is drawing more than this and is moving slow then the motor is considered jammed */
+        public static final double FLYWHEEL_MOTOR_JAM_CURRENT_THRESHHOLD = 30.0;
+
         // brake mode on for the flywheels so that we dont get a penalty for an eranious shot while the flywheels spin
         // down
         // the brake mode should also help prevent jams
@@ -148,18 +151,22 @@ public class Tunables {
     public static final class IntakeTunables {
 
         /** the maximuma mount of time that the intake will run the pivot motor during a deploy attempt */
-        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(1.5);
+        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(1);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
-        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.2);
+        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1);
 
-        public static final double PIVOT_OUTPUT_RATE_LIMIT = 0.05;
+        // 1 second to change by 0.6, 0.5 seconds to change by 0.3
+        public static final double PIVOT_OUTPUT_RATE_LIMIT = 0.6;
 
-        public static final double PIVOT_MOVE_IN_SPEED = -0.1;
-        public static final double PIVOT_MOVE_OUT_SPEED = 0.1;
+        public static final double PIVOT_MOVE_IN_SPEED = -0.3;
+        public static final double PIVOT_MOVE_OUT_SPEED = 0.3;
 
         // percent that the intake will be set at when intaking
-        public static final double INTAKE_SPEED = 0.85;
+        public static final double INTAKE_SPEED = 0.8;
+
+        /** if the motor is drawing more than this and is moving slow then the motor is considered jammed */
+        public static final double INTAKE_MOTOR_JAM_CURRENT_THRESHHOLD = 15.0;
 
         public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(40)

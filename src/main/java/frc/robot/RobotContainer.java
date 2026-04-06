@@ -382,11 +382,14 @@ public class RobotContainer {
     }
 
     private void configureTestingBindings() {
-        operatorController.a().debounce(0.05).whileTrue(intake.deploy());
-        operatorController.b().debounce(0.05).whileTrue(intake.stow());
+        operatorController.a().debounce(0.05).onTrue(intake.deploy());
+        operatorController.b().debounce(0.05).onTrue(intake.stow());
 
         operatorController.x().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
         operatorController.y().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
+
+        operatorController.rightBumper().debounce(0.05).onTrue(intake.smoothDeploy());
+        operatorController.leftBumper().debounce(0.05).onTrue(intake.smoothStow());
 
         // operatorController.a().debounce(0.1).onTrue(simpleIntake.deploy());
         // operatorController.b().debounce(0.1).onTrue(simpleIntake.stow());

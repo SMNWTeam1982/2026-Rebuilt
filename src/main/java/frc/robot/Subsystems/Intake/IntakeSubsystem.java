@@ -1,10 +1,12 @@
 package frc.robot.Subsystems.Intake;
 
 import com.revrobotics.PersistMode;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.IntakeIDs;
@@ -18,6 +20,8 @@ public class IntakeSubsystem extends SubsystemBase {
     /** for pulling in fuel */
     private final SparkMax intakeMotor = new SparkMax(IntakeIDs.INTAKE, SparkMax.MotorType.kBrushless);
 
+    private final RelativeEncoder intakeEncoder = intakeMotor.getEncoder();
+
     /** for deploying the intake */
     private final SparkMax pivotMotor = new SparkMax(IntakeIDs.PIVOT, SparkMax.MotorType.kBrushless);
 
@@ -29,6 +33,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @AutoLogOutput(key = "Intake/pivot motor disabled")
     private boolean pivotDisabled = false;
+
+    @AutoLogOutput(key = "Intake/intake motor jammed")
+    public final Trigger intakeMotorJammed =
+            new Trigger(() -> intakeMotor.getOutputCurrent() >= IntakeTunables.INTAKE_MOTOR_JAM_CURRENT_THRESHHOLD
+                    && Math.abs(intakeEncoder.getVelocity()) <= 400);
 
     private final SlewRateLimiter pivotOutputLimiter = new SlewRateLimiter(IntakeTunables.PIVOT_OUTPUT_RATE_LIMIT);
 
@@ -100,18 +109,57 @@ public class IntakeSubsystem extends SubsystemBase {
         return runEnd(() -> movePivot(IntakeTunables.PIVOT_MOVE_OUT_SPEED), () -> stopPivot());
     }
 
-    /** sets the intake to stop intaking, and to move in until it passes the stow threshold
-     * <p> will automatically end after a tunable number of seconds (IntakeTunables.RETRACT_ATTEMPT_TIME)
+    /**
+     * sets the intake to stop intaking, and to move in for a tunable number of seconds (IntakeTunables.RETRACT_ATTEMPT_TIME)
+     * <p> stops the intake and resets the rate limiter on interupt
      */
     public Command stow() {
-        return stopIntaking().andThen(moveIn().withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME));
+        return stopIntaking()
+                .andThen(moveIn().withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME))
+                .handleInterrupt(this::stopPivot);
     }
 
-    /** sets the intake to start intaking, and to move out until it passes the deploy threshold
-     * <p> will automatically end after a tunable number of seconds (IntakeTunables.DEPLOY_ATTEMPT_TIME)
+    /**
+     * sets the intake to start intaking, and to move out for a tunable number of seconds (IntakeTunables.DEPLOY_ATTEMPT_TIME)
      */
     public Command deploy() {
-        return startIntaking().andThen(moveOut()).withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME);
+        return startIntaking()
+                .andThen(moveOut())
+                .withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME)
+                .handleInterrupt(this::stopPivot);
+    }
+
+    /**
+     * stops the intake then slowly ramps up and ramps down the speed of the pivot for a smoother retraction
+     * <p> will stop the pivot and reset the rate limiter on end or interrupt
+     */
+    public Command smoothStow() {
+        return Commands.sequence(
+                        stopIntaking(), // stop intaking
+                        runOnce(this::stopPivot), // stop & reset rate limiter
+                        run(() -> movePivot(IntakeTunables.PIVOT_MOVE_IN_SPEED))
+                                .withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)), // accelerate
+                        run(() -> movePivot(0))
+                                .withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)), // deccelerate
+                        runOnce(this::stopPivot) // stop & reset rate limiter
+                        )
+                .handleInterrupt(this::stopPivot);
+    }
+
+    /**
+     * starts the intake then slowly ramps up and ramps down the speed of the pivot for a smoother deploy
+     * <p> will stop the pivot and reset the rate limiter on end or interrupt
+     */
+    public Command smoothDeploy() {
+        return Commands.sequence(
+                        startIntaking(), // start intaking
+                        runOnce(this::stopPivot), // stop & reset rate limiter
+                        run(() -> movePivot(IntakeTunables.PIVOT_MOVE_OUT_SPEED))
+                                .withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME.div(2.0)), // accelerate
+                        run(() -> movePivot(0)).withTimeout(IntakeTunables.DEPLOY_ATTEMPT_TIME.div(2.0)), // deccelerate
+                        runOnce(this::stopPivot) // stop & reset rate limiter
+                        )
+                .handleInterrupt(this::stopPivot);
     }
 
     public Command turnOff() {
