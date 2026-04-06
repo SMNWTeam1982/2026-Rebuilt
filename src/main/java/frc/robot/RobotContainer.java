@@ -449,7 +449,12 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.sequence(enterManualMode(), autoChooser.get(), exitManualMode());
+        return Commands.sequence(enterManualMode(), autoChooser.get()).finallyDo(
+                () -> {
+                        autoKickerModeEnabled = true;
+                        driverCanChangeShooterRPM = true;
+                }
+        );
         // return drive.nudgeBack()
         //         .withTimeout(3)
         //         .andThen(DriverCommands.setAimAtTarget(
