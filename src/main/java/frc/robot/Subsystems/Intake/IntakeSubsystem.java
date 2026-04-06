@@ -92,19 +92,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** sets the pivot motor to move IN at a constant speed while running, then stops the motor when it ends */
     public Command moveIn() {
-        return startEnd(() -> movePivot(IntakeTunables.PIVOT_MOVE_IN_SPEED), () -> stopPivot());
+        return runEnd(() -> movePivot(IntakeTunables.PIVOT_MOVE_IN_SPEED), () -> stopPivot());
     }
 
     /** sets the pivot motor to move OUT at a constant speed while running, then stops the motor when it ends */
     public Command moveOut() {
-        return startEnd(() -> movePivot(IntakeTunables.PIVOT_MOVE_OUT_SPEED), () -> stopPivot());
+        return runEnd(() -> movePivot(IntakeTunables.PIVOT_MOVE_OUT_SPEED), () -> stopPivot());
     }
 
     /** sets the intake to stop intaking, and to move in until it passes the stow threshold
      * <p> will automatically end after a tunable number of seconds (IntakeTunables.RETRACT_ATTEMPT_TIME)
      */
     public Command stow() {
-        return stopIntaking().andThen(moveIn()).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME);
+        return stopIntaking().andThen(moveIn().withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME));
     }
 
     /** sets the intake to start intaking, and to move out until it passes the deploy threshold
