@@ -3,13 +3,18 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.111,
-        "y": 4.012
+        "x": 1.8,
+        "y": 4.013
       },
       "prevControl": null,
       "nextControl": {
+<<<<<<< Updated upstream:src/main/deploy/pathplanner/paths/Middle to right trench.path
         "x": 1.8258962698906163,
         "y": 2.216754706757546
+=======
+        "x": 1.514896269890616,
+        "y": 2.2177547067575465
+>>>>>>> Stashed changes:src/main/deploy/pathplanner/paths/Middle to right trench .path
       },
       "isLocked": false,
       "linkedName": null

@@ -286,13 +286,11 @@ public class RobotContainer {
 
         // operatorController.a().onTrue(shooter.turnOff().andThen(kicker.turnOff()));
 
-        operatorController.rightTrigger().and(operatorController.leftTrigger()).debounce(1.0).onTrue(
-                RobotCommands.tryUnjam(
-                        shooter,
-                        kicker,
-                        intake
-                )
-        );
+        operatorController
+                .rightTrigger()
+                .and(operatorController.leftTrigger())
+                .debounce(1.0)
+                .onTrue(RobotCommands.tryUnjam(shooter, kicker, intake));
 
         // deploy/retract the intake with a & b
         operatorController.a().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
