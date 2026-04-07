@@ -26,7 +26,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final DigitalInput intakeSwitch = new DigitalInput(IntakeIDs.SWITCH_DIO_CHANNEL);
 
     @AutoLogOutput(key = "Intake/intake switch status")
-    public final Trigger switchState = new Trigger(() -> intakeSwitch.get());
+    public final Trigger switchState = new Trigger(() -> !intakeSwitch.get()).debounce(0.05);
 
     /** for deploying the intake */
     private final SparkMax pivotMotor = new SparkMax(IntakeIDs.PIVOT, SparkMax.MotorType.kBrushless);
@@ -121,7 +121,7 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public Command stow() {
         return stopIntaking()
-                .andThen(moveIn().withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME))
+                .andThen(moveIn().until(switchState).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME))
                 .handleInterrupt(this::stopPivot);
     }
 
@@ -145,7 +145,7 @@ public class IntakeSubsystem extends SubsystemBase {
                         run(() -> movePivot(IntakeTunables.PIVOT_MOVE_IN_SPEED))
                                 .withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)), // accelerate
                         run(() -> movePivot(0)).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)) // deccelerate
-                        )
+                        ).until(switchState)
                 .finallyDo(this::stopPivot);
     }
 
@@ -169,7 +169,7 @@ public class IntakeSubsystem extends SubsystemBase {
                         stopIntaking(),
                         runOnce(this::stopPivot),
                         runOnce(() -> setPivot(IntakeTunables.PIVOT_MOVE_IN_SPEED)),
-                        Commands.waitTime(IntakeTunables.RETRACT_ATTEMPT_TIME))
+                        Commands.waitTime(IntakeTunables.RETRACT_ATTEMPT_TIME)).until(switchState)
                 .finallyDo(this::stopPivot);
     }
 

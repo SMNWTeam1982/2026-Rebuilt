@@ -116,7 +116,7 @@ public class Tunables {
         public static final double FLYWHEEL_V = 0.128; // 26 Feb 2026
         public static final double FLYWHEEL_A = 0;
 
-        public static final double FLYWHEEL_RPM_TOLERANCE = 100.0;
+        public static final double FLYWHEEL_RPM_TOLERANCE = 300.0;
 
         public static final double FLYWHEEL_IDLE_RPM = 1000.0;
 
@@ -155,16 +155,15 @@ public class Tunables {
     public static final class IntakeTunables {
 
         /** the maximuma mount of time that the intake will run the pivot motor during a deploy attempt */
-        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(0.8);
+        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(1.8);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
-        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(0.7);
+        public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.5);
 
-        // 1 second to change by 0.6, 0.5 seconds to change by 0.3
-        public static final double PIVOT_OUTPUT_RATE_LIMIT = 0.6;
+        public static final double PIVOT_OUTPUT_RATE_LIMIT = 1.0;
 
-        public static final double PIVOT_MOVE_IN_SPEED = -0.3;
-        public static final double PIVOT_MOVE_OUT_SPEED = 0.3;
+        public static final double PIVOT_MOVE_IN_SPEED = 0.2;
+        public static final double PIVOT_MOVE_OUT_SPEED = -0.5;
 
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.8;
@@ -182,9 +181,9 @@ public class Tunables {
 
     public static final class KickerTunables {
         /** the speed of the kicker when on high */
-        public static final double HIGH_SPEED = 0.5;
+        public static final double HIGH_SPEED = 0.6;
         /** the speed of the kicker when on low */
-        public static final double LOW_SPEED = 0.0;
+        public static final double LOW_SPEED = 0.6;
         /** how long the kicker runs at the high speed before switching to the low speed */
         public static final Time HIGH_TIME = Seconds.of(1.0);
         /** how long the kicker runs at the low speed before switching to the high speed */
@@ -194,7 +193,7 @@ public class Tunables {
         /** the speed for the kicker to run at when moving in reverse */
         public static final double REVERSE_SPEED = -0.5;
 
-        public static final double ROBOT_MAX_SPEED_WHEN_KICKING = 0.05;
+        public static final double ROBOT_MAX_SPEED_WHEN_KICKING = 0.1;
 
         public static final SparkBaseConfig KICKER_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(20)

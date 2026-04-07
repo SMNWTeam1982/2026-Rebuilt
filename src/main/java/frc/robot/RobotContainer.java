@@ -160,14 +160,14 @@ public class RobotContainer {
         autoChooser = new LoggedDashboardChooser<Command>("auto chooser", AutoBuilder.buildAutoChooser());
 
         // temporary, will not be called during comp code
-        // configureTestingBindings();
+        //configureTestingBindings();
     }
 
     private void addNamedCommands() {
         // auto commands
         NamedCommands.registerCommand(
                 "hub shooting procedure 5 seconds",
-                AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5), onBlueAlliance));
+                AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(3), onBlueAlliance));
         NamedCommands.registerCommand(
                 "hub shooting procedure 10 seconds",
                 AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10), onBlueAlliance));
@@ -391,9 +391,11 @@ public class RobotContainer {
     }
 
     private void configureTestingBindings() {
+        // this deploy command works (use for auto)
         operatorController.a().debounce(0.05).onTrue(intake.deploy());
         operatorController.b().debounce(0.05).onTrue(intake.stow());
 
+        // use this deploy for teleOp
         operatorController.x().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
         operatorController.y().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
 
