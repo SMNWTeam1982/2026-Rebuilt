@@ -177,22 +177,18 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Command setReverse() {
-        return runOnce(
-            () -> {
-                stopPivot();
-                setIntake(IntakeTunables.INTAKE_REVERSE_SPEED);
-            }
-        );
+        return runOnce(() -> {
+            stopPivot();
+            setIntake(IntakeTunables.INTAKE_REVERSE_SPEED);
+        });
     }
 
-    public Command turnOffJammedIntake(){
-        return runOnce(
-            () -> {
-                if(intakeMotorJammed.getAsBoolean()){
-                    intakeDisabled = true;
-                }
+    public Command turnOffJammedIntake() {
+        return runOnce(() -> {
+            if (intakeMotorJammed.getAsBoolean()) {
+                intakeDisabled = true;
             }
-        );
+        });
     }
 
     public Command turnOff() {
