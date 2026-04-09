@@ -5,6 +5,8 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,6 +36,9 @@ public class VisionSubsystem extends SubsystemBase {
     private final PhotonPoseEstimator photonPoseEstimator;
     private Optional<VisionData> lastVisionResult = Optional.empty();
 
+    private final AddressableLED shooterLED;
+    private final AddressableLEDBuffer shooterLEDBuffer;
+
     @AutoLogOutput(key = "Vision/has a tag result")
     public final Trigger hasVisionResult = new Trigger(lastVisionResult::isPresent);
 
@@ -47,6 +52,8 @@ public class VisionSubsystem extends SubsystemBase {
                 AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField),
                 VisionMeasurements.PHOTON_CAM_RELATIVE_TO_ROBOT);
         instanceCamera = new PhotonCamera(VisionConstants.limeLightCameraName);
+        shooterLED = new AddressableLED(0);
+        shooterLEDBuffer = new AddressableLEDBuffer(30);
 
         hasVisionResult
                 .debounce(1.0, DebounceType.kFalling)
@@ -68,13 +75,21 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Command turnLEDsOn() {
-        return runOnce(() -> instanceCamera.setLED(VisionLEDMode.kOn))
+        return runOnce(() -> {
+            // instanceCamera.setLED(VisionLEDMode.kOn);
+            VisionTunables.greenSolid.applyTo(shooterLEDBuffer);
+            shooterLED.setData(shooterLEDBuffer);
+        })
                 .onlyIf(() -> useLEDs)
                 .ignoringDisable(true);
     }
 
     public Command turnLEDsOff() {
-        return runOnce(() -> instanceCamera.setLED(VisionLEDMode.kOff))
+        return runOnce(() -> {
+            instanceCamera.setLED(VisionLEDMode.kOff);
+            VisionTunables.redSolid.applyTo(shooterLEDBuffer);
+            shooterLED.setData(shooterLEDBuffer);
+        })
                 .onlyIf(() -> useLEDs)
                 .ignoringDisable(true);
     }
@@ -82,6 +97,10 @@ public class VisionSubsystem extends SubsystemBase {
     /** when LED mode is enabled, the LEDs on the limelight will turn on when it sees an april tag */
     public Command activateLEDMode() {
         return runOnce(() -> {
+                    VisionTunables.rainbowGradient.applyTo(shooterLEDBuffer);
+                    shooterLED.setData(shooterLEDBuffer);
+                    shooterLED.setLength(shooterLEDBuffer.getLength());
+                    shooterLED.start();
                     useLEDs = true;
                 })
                 .ignoringDisable(true);
@@ -91,6 +110,7 @@ public class VisionSubsystem extends SubsystemBase {
     public Command deactivateLEDMode() {
         return runOnce(() -> {
                     useLEDs = false;
+                    shooterLED.stop();
                 })
                 .ignoringDisable(true);
     }
