@@ -36,7 +36,8 @@ public class RobotCommands {
                                 .withTimeout(Tunables.UNJAM_ATTEMPT_TIME), // give subsystems some time to try and unjam
                         Commands.parallel( // if the subsystems are still jammed after then disable their jammed
                                 // components
-                                shooter.turnOffJammedChannels(), intake.turnOffJammedIntake(), kicker.setIdle()))
+                                shooter.turnOffJammedChannels(), intake.turnOffJammedIntake()),
+                        Commands.parallel(shooter.setIdle(), kicker.setIdle(), intake.stopIntaking()))
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
 }

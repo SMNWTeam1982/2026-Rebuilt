@@ -40,6 +40,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 
+    @AutoLogOutput(key = "Driver info/onBlueAlliance")
     private final BooleanSupplier onBlueAlliance =
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
 
@@ -160,17 +161,21 @@ public class RobotContainer {
         autoChooser = new LoggedDashboardChooser<Command>("auto chooser", AutoBuilder.buildAutoChooser());
 
         // temporary, will not be called during comp code
-        //configureTestingBindings();
+        // configureTestingBindings();
     }
 
     private void addNamedCommands() {
         // auto commands
         NamedCommands.registerCommand(
-                "hub shooting procedure 5 seconds",
+                "hub shooting procedure 3 seconds",
                 AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(3), onBlueAlliance));
+        NamedCommands.registerCommand(
+                "hub shooting procedure 5 seconds",
+                AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5), onBlueAlliance));
         NamedCommands.registerCommand(
                 "hub shooting procedure 10 seconds",
                 AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10), onBlueAlliance));
+
         NamedCommands.registerCommand("stop and deploy intake", AutoCommands.deployIntake(drive, intake));
 
         NamedCommands.registerCommand(
@@ -383,11 +388,11 @@ public class RobotContainer {
                 .debounce(0.05)
                 .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_4));
 
-        Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
-        Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
+        // Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
+        // Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
 
-        leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(200));
-        leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-200));
+        // leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(200));
+        // leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-200));
     }
 
     private void configureTestingBindings() {
