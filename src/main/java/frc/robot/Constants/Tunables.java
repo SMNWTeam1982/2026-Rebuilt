@@ -221,7 +221,7 @@ public class Tunables {
         /** Static animation speed for LEDs */
         private static final LinearVelocity LED_SCROLL_SPEED = MetersPerSecond.of(1);
         /** Number of LEDs per meter of LED Strip */
-        private static final Distance LED_SPACING = Meters.of(1 / 60);
+        private static final Distance LED_SPACING = Meters.of(1 / 60.0);
         // Number of LEDs on a single strip
         public static final int SHOOTER_LED_STRIP_LENGTH = 28;
         public static final int HOPPER_LEFT_STRIP_LENGTH = 45;
@@ -230,7 +230,7 @@ public class Tunables {
         public static final LEDPattern RED_SOLID = LEDPattern.solid(Color.kRed);
         public static final LEDPattern GREEN_SOLID = LEDPattern.solid(Color.kGreen);
         public static final LEDPattern RAINBOW_ANIMATION =
-                LEDPattern.rainbow(255, 128);
+                LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
         public static final LEDPattern BLUE_ALLIANCE_ANIMATION = LEDPattern.gradient(
                         LEDPattern.GradientType.kDiscontinuous, Color.kOrange, Color.kBlue)
                 .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
