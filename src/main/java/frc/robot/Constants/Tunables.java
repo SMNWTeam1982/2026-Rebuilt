@@ -15,6 +15,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
@@ -213,8 +215,27 @@ public class Tunables {
     public static final class VisionTunables {
         public static final Matrix<N3, N1> STANDARD_DEVIATIONS = VecBuilder.fill(.7, .7, .3);
         public static final Matrix<N3, N1> MULTI_TAG_STANDARD_DEVIATIONS = VecBuilder.fill(0.15, 0.15, 0.1);
-        public static final LEDPattern redSolid = LEDPattern.solid(Color.kRed);
-        public static final LEDPattern greenSolid = LEDPattern.solid(Color.kGreen);
-        public static final LEDPattern rainbowGradient = LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(MetersPerSecond.of(1), Meters.of(1/60));
+    }
+
+    public static final class LEDTunables {
+        /** Static animation speed for LEDs */
+        private static final LinearVelocity LED_SCROLL_SPEED = MetersPerSecond.of(1);
+        /** Number of LEDs per meter of LED Strip */
+        private static final Distance LED_SPACING = Meters.of(1 / 60);
+        // Number of LEDs on a single strip
+        public static final int SHOOTER_LED_STRIP_LENGTH = 30;
+        public static final int HOPPER_LEFT_STRIP_LENGTH = 45;
+        public static final int HOPPER_RIGHT_STRIP_LENGTH = 45;
+        // Common LED patterns
+        public static final LEDPattern RED_SOLID = LEDPattern.solid(Color.kRed);
+        public static final LEDPattern GREEN_SOLID = LEDPattern.solid(Color.kGreen);
+        public static final LEDPattern RAINBOW_ANIMATION =
+                LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
+        public static final LEDPattern BLUE_ALLIANCE_ANIMATION = LEDPattern.gradient(
+                        LEDPattern.GradientType.kDiscontinuous, Color.kOrange, Color.kBlue)
+                .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
+        public static final LEDPattern RED_ALLIANCE_ANIMATION = LEDPattern.gradient(
+                        LEDPattern.GradientType.kDiscontinuous, Color.kOrange, Color.kRed)
+                .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
     }
 }

@@ -29,6 +29,7 @@ import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Kicker.KickerSubsystem;
+import frc.robot.Subsystems.LEDs.LEDSubsystem;
 import frc.robot.Subsystems.Shooter.ShooterSubsystem;
 import frc.robot.Subsystems.Shooter.ShotCalculation;
 import frc.robot.Subsystems.Vision.VisionSubsystem;
@@ -78,6 +79,7 @@ public class RobotContainer {
 
     private final VisionSubsystem vision = new VisionSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult, onBlueAlliance);
+    private final LEDSubsystem lights = new LEDSubsystem();
 
     // @AutoLogOutput(key = "Driver info/calculated hub target")
     private final Supplier<Translation2d> calculatedHubTarget = () -> {
@@ -144,16 +146,23 @@ public class RobotContainer {
             .and(shooter.inShootMode)
             .and(() -> drive.getLinearSpeed() <= KickerTunables.ROBOT_MAX_SPEED_WHEN_KICKING);
 
-    private final Trigger robotEnabled = new Trigger(() -> DriverStation.isTeleopEnabled());
+    private final Trigger teleopEnabled = new Trigger(() -> DriverStation.isTeleopEnabled());
+    private final Trigger autoEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
+    private final Trigger robotDisabled = new Trigger(() -> DriverStation.isDisabled());
 
     public RobotContainer() {
         CameraServer.startAutomaticCapture(0);
         CameraServer.startAutomaticCapture(1);
 
         // automatically disable the vision LED mode when teleOp is enabled
-        robotEnabled.onTrue(vision.deactivateLEDMode()).onTrue(vision.setLEDsIdle());
+        // robotEnabled.onTrue(vision.deactivateLEDMode()).onTrue(vision.setLEDsIdle());
         // automatically disable the vision LED mode when teleOp is enabled
-        robotEnabled.onFalse(vision.activateLEDMode());
+        // robotEnabled.onFalse(vision.activateLEDMode());
+
+        // Run corresponding LED Animations based on Robot enable/disable state
+        robotDisabled.onTrue(lights.runIdleAnimation());
+        autoEnabled.onTrue(lights.runVisionAnimation(() -> vision.hasVisionResult.getAsBoolean()));
+        teleopEnabled.onTrue(lights.runAllianceAnimation(onBlueAlliance));
 
         configureDriverBindings();
         configureOperatorBindings();
