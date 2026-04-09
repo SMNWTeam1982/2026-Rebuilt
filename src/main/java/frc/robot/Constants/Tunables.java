@@ -230,7 +230,7 @@ public class Tunables {
         public static final LEDPattern RED_SOLID = LEDPattern.solid(Color.kRed);
         public static final LEDPattern GREEN_SOLID = LEDPattern.solid(Color.kGreen);
         public static final LEDPattern RAINBOW_ANIMATION =
-                LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
+                LEDPattern.rainbow(255, 128);
         public static final LEDPattern BLUE_ALLIANCE_ANIMATION = LEDPattern.gradient(
                         LEDPattern.GradientType.kDiscontinuous, Color.kOrange, Color.kBlue)
                 .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
