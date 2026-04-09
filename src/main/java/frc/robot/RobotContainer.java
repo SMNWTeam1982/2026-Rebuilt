@@ -304,6 +304,8 @@ public class RobotContainer {
         operatorController.a().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
         operatorController.b().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
 
+        operatorController.rightTrigger().debounce(0.05).whileTrue(intake.moveIn());
+
         // manually start/stop the kicker
         operatorController
                 .rightBumper()

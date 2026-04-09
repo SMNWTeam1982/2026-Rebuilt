@@ -162,7 +162,7 @@ public class Tunables {
 
         public static final double PIVOT_OUTPUT_RATE_LIMIT = 1.0;
 
-        public static final double PIVOT_MOVE_IN_SPEED = 0.2;
+        public static final double PIVOT_MOVE_IN_SPEED = 0.4;
         public static final double PIVOT_MOVE_OUT_SPEED = -0.5;
 
         // percent that the intake will be set at when intaking
@@ -183,11 +183,11 @@ public class Tunables {
         /** the speed of the kicker when on high */
         public static final double HIGH_SPEED = 0.6;
         /** the speed of the kicker when on low */
-        public static final double LOW_SPEED = 0.6;
+        public static final double LOW_SPEED = -0.6;
         /** how long the kicker runs at the high speed before switching to the low speed */
         public static final Time HIGH_TIME = Seconds.of(1.0);
         /** how long the kicker runs at the low speed before switching to the high speed */
-        public static final Time LOW_TIME = Seconds.of(1.0);
+        public static final Time LOW_TIME = Seconds.of(0.1);
         /** the speed the kicker runs at when not active */
         public static final double IDLE_SPEED = -0.05;
         /** the speed for the kicker to run at when moving in reverse */
@@ -196,9 +196,9 @@ public class Tunables {
         public static final double ROBOT_MAX_SPEED_WHEN_KICKING = 0.1;
 
         public static final SparkBaseConfig KICKER_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(20)
+                .smartCurrentLimit(25)
                 .secondaryCurrentLimit(30)
-                .idleMode(IdleMode.kCoast);
+                .idleMode(IdleMode.kBrake);
     }
 
     public static final class ClimberTunables {
