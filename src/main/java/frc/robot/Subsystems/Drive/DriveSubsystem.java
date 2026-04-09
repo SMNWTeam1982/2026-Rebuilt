@@ -143,9 +143,12 @@ public class DriveSubsystem extends SubsystemBase {
         PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
             // i'd keep this just in case.
             autoField.getObject("Pathplanner Target").setPose(pose);
-            Logger.recordOutput("Drive/Auto/TargetX", pose.getX());
-            Logger.recordOutput("Drive/Auto/TargetY", pose.getY());
-            Logger.recordOutput("Drive/Auto/TargetTheta", pose.getRotation().getRadians());
+            Logger.recordOutput("Drive/Pathplanner target pose", pose);
+        });
+        PathPlannerLogging.setLogActivePathCallback((path) -> {
+            autoField.getObject("Pathplanner active path").setPoses(path);
+            Pose2d[] pathplannerPathArray = path.toArray(new Pose2d[0]);
+            Logger.recordOutput("Drive/Pathplanner active path", pathplannerPathArray);
         });
     }
 

@@ -40,6 +40,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 
+    @AutoLogOutput(key = "Driver info/onBlueAlliance")
     private final BooleanSupplier onBlueAlliance =
             () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
 
@@ -160,7 +161,7 @@ public class RobotContainer {
         autoChooser = new LoggedDashboardChooser<Command>("auto chooser", AutoBuilder.buildAutoChooser());
 
         // temporary, will not be called during comp code
-        //configureTestingBindings();
+        // configureTestingBindings();
     }
 
     private void addNamedCommands() {
@@ -176,8 +177,6 @@ public class RobotContainer {
                 AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10), onBlueAlliance));
 
         NamedCommands.registerCommand("stop and deploy intake", AutoCommands.deployIntake(drive, intake));
-
-
 
         NamedCommands.registerCommand(
                 "shoot & kick",
