@@ -166,12 +166,18 @@ public class RobotContainer {
     private void addNamedCommands() {
         // auto commands
         NamedCommands.registerCommand(
-                "hub shooting procedure 5 seconds",
+                "hub shooting procedure 3 seconds",
                 AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(3), onBlueAlliance));
+        NamedCommands.registerCommand(
+                "hub shooting procedure 5 seconds",
+                AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5), onBlueAlliance));
         NamedCommands.registerCommand(
                 "hub shooting procedure 10 seconds",
                 AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10), onBlueAlliance));
+
         NamedCommands.registerCommand("stop and deploy intake", AutoCommands.deployIntake(drive, intake));
+
+
 
         NamedCommands.registerCommand(
                 "shoot & kick",
