@@ -144,14 +144,16 @@ public class RobotContainer {
             .and(shooter.inShootMode)
             .and(() -> drive.getLinearSpeed() <= KickerTunables.ROBOT_MAX_SPEED_WHEN_KICKING);
 
+    private final Trigger robotEnabled = new Trigger(() -> DriverStation.isTeleopEnabled());
+
     public RobotContainer() {
         CameraServer.startAutomaticCapture(0);
         CameraServer.startAutomaticCapture(1);
 
         // automatically disable the vision LED mode when teleOp is enabled
-        // robotEnabled.onTrue(vision.deactivateLEDMode());
+        robotEnabled.onTrue(vision.deactivateLEDMode()).onTrue(vision.setLEDsIdle());
         // automatically disable the vision LED mode when teleOp is enabled
-        // robotEnabled.onFalse(vision.activateLEDMode());
+        robotEnabled.onFalse(vision.activateLEDMode());
 
         configureDriverBindings();
         configureOperatorBindings();

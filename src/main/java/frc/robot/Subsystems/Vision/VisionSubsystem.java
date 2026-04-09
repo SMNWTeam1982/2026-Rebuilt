@@ -94,6 +94,15 @@ public class VisionSubsystem extends SubsystemBase {
                 .ignoringDisable(true);
     }
 
+    public Command setLEDsIdle() {
+        return runOnce(() -> {
+            VisionTunables.rainbowGradient.applyTo(shooterLEDBuffer);
+            shooterLED.setData(shooterLEDBuffer);
+            shooterLED.start();
+        })
+        .ignoringDisable(true);
+    }
+
     /** when LED mode is enabled, the LEDs on the limelight will turn on when it sees an april tag */
     public Command activateLEDMode() {
         return runOnce(() -> {
