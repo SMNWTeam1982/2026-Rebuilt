@@ -388,11 +388,11 @@ public class RobotContainer {
                 .debounce(0.05)
                 .onTrue(shooter.velocityControllerCommands.setTarget(ShooterTunables.SPEED_OVERRIDE_4));
 
-        Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
-        Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
+        // Trigger leftStickUp = new Trigger(() -> -operatorController.getLeftY() > 0.8);
+        // Trigger leftStickDown = new Trigger(() -> -operatorController.getLeftY() < -0.8);
 
-        leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(200));
-        leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-200));
+        // leftStickUp.debounce(0.05).onTrue(shooter.nudgeRPM(200));
+        // leftStickDown.debounce(0.05).onTrue(shooter.nudgeRPM(-200));
     }
 
     private void configureTestingBindings() {
