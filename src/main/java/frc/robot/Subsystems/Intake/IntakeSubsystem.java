@@ -145,7 +145,8 @@ public class IntakeSubsystem extends SubsystemBase {
                         run(() -> movePivot(IntakeTunables.PIVOT_MOVE_IN_SPEED))
                                 .withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)), // accelerate
                         run(() -> movePivot(0)).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)) // deccelerate
-                        ).until(switchState)
+                        )
+                .until(switchState)
                 .finallyDo(this::stopPivot);
     }
 
@@ -169,7 +170,8 @@ public class IntakeSubsystem extends SubsystemBase {
                         stopIntaking(),
                         runOnce(this::stopPivot),
                         runOnce(() -> setPivot(IntakeTunables.PIVOT_MOVE_IN_SPEED)),
-                        Commands.waitTime(IntakeTunables.RETRACT_ATTEMPT_TIME)).until(switchState)
+                        Commands.waitTime(IntakeTunables.RETRACT_ATTEMPT_TIME))
+                .until(switchState)
                 .finallyDo(this::stopPivot);
     }
 

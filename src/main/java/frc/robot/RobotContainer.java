@@ -160,7 +160,7 @@ public class RobotContainer {
         autoChooser = new LoggedDashboardChooser<Command>("auto chooser", AutoBuilder.buildAutoChooser());
 
         // temporary, will not be called during comp code
-        //configureTestingBindings();
+        // configureTestingBindings();
     }
 
     private void addNamedCommands() {
