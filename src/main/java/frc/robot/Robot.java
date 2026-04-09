@@ -26,17 +26,18 @@ public class Robot extends LoggedRobot {
         Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
         LoggedPowerDistribution.getInstance(CANBus.POWER_DISTRIBUTION_HUB, ModuleType.kRev);
 
-        if (isReal()) {
-            Logger.addDataReceiver(new NT4Publisher()); // Publish Data exclusively to NetworkTables
-            Logger.addDataReceiver(new WPILOGWriter()); // USB stick
-        } else {
-            setUseTiming(false); // Run as fast as possible
-            String logPath =
-                    LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-            Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-            Logger.addDataReceiver(
-                    new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-        }
+        // if (isReal()) {
+        //     Logger.addDataReceiver(new NT4Publisher()); // Publish Data exclusively to NetworkTables
+        //     Logger.addDataReceiver(new WPILOGWriter()); // USB stick
+        // } else {
+        //     setUseTiming(false); // Run as fast as possible
+        //     String logPath =
+        //             LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        //     Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+        //     Logger.addDataReceiver(
+        //             new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+        // }
+        Logger.addDataReceiver(new NT4Publisher());
 
         Logger.start();
 

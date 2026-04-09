@@ -9,6 +9,7 @@ import java.util.function.BooleanSupplier;
 
 import org.littletonrobotics.junction.Logger;
 
+
 public class LEDSubsystem extends SubsystemBase {
 
     // Shooter Addressable LED Strip
@@ -28,7 +29,7 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         shooterLEDs.setData(shooterLEDBuffer);
-        Logger.recordOutput("Test/LED Buffer", shooterLEDBuffer.getLED(0));
+        Logger.recordOutput("Test/ShooterLED", shooterLEDBuffer.getLED(0));
     }
 
     /**
