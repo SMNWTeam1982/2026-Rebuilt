@@ -1,0 +1,49 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "front of hub reversed to tower"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "hub shooting procedure 5 seconds"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop and deploy intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Tower to depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "tap depot to depot shooting pose"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "hub shooting procedure 10 seconds"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
