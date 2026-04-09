@@ -55,7 +55,7 @@ public class VisionSubsystem extends SubsystemBase {
         shooterLED = new AddressableLED(0);
         shooterLEDBuffer = new AddressableLEDBuffer(30);
 
-        hasVisionResult
+        hasVisionResult.and(() -> useLEDs)
                 .debounce(1.0, DebounceType.kFalling)
                 .onTrue(turnLEDsOn())
                 .onFalse(turnLEDsOff());
