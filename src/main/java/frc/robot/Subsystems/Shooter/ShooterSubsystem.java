@@ -195,24 +195,20 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public Command setReverse() {
-        return runOnce(
-            () -> {
-                setTargetAngularVelocity(ShooterTunables.FLYWHEEL_REVERSE_RPM);
-            }
-        );
+        return runOnce(() -> {
+            setTargetAngularVelocity(ShooterTunables.FLYWHEEL_REVERSE_RPM);
+        });
     }
 
     public Command turnOffJammedChannels() {
-        return runOnce(
-            () -> {
-                if(rightShooterJammed.getAsBoolean()){
-                    rightFlywheelDisabled = true;
-                }
-                if(leftShooterJammed.getAsBoolean()){
-                    leftFlywheelDisabled = true;
-                }
+        return runOnce(() -> {
+            if (rightShooterJammed.getAsBoolean()) {
+                rightFlywheelDisabled = true;
             }
-        );
+            if (leftShooterJammed.getAsBoolean()) {
+                leftFlywheelDisabled = true;
+            }
+        });
     }
 
     /** sets the RPM target to follow calculated RPM */

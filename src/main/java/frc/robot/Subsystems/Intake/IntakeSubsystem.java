@@ -5,6 +5,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,6 +22,11 @@ public class IntakeSubsystem extends SubsystemBase {
     private final SparkMax intakeMotor = new SparkMax(IntakeIDs.INTAKE, SparkMax.MotorType.kBrushless);
 
     private final RelativeEncoder intakeEncoder = intakeMotor.getEncoder();
+
+    private final DigitalInput intakeSwitch = new DigitalInput(IntakeIDs.SWITCH_DIO_CHANNEL);
+
+    @AutoLogOutput(key = "Intake/intake switch status")
+    public final Trigger switchState = new Trigger(() -> !intakeSwitch.get()).debounce(0.05);
 
     /** for deploying the intake */
     private final SparkMax pivotMotor = new SparkMax(IntakeIDs.PIVOT, SparkMax.MotorType.kBrushless);
@@ -115,7 +121,7 @@ public class IntakeSubsystem extends SubsystemBase {
      */
     public Command stow() {
         return stopIntaking()
-                .andThen(moveIn().withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME))
+                .andThen(moveIn().until(switchState).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME))
                 .handleInterrupt(this::stopPivot);
     }
 
@@ -139,7 +145,7 @@ public class IntakeSubsystem extends SubsystemBase {
                         run(() -> movePivot(IntakeTunables.PIVOT_MOVE_IN_SPEED))
                                 .withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)), // accelerate
                         run(() -> movePivot(0)).withTimeout(IntakeTunables.RETRACT_ATTEMPT_TIME.div(2.0)) // deccelerate
-                        )
+                        ).until(switchState)
                 .finallyDo(this::stopPivot);
     }
 
@@ -163,7 +169,7 @@ public class IntakeSubsystem extends SubsystemBase {
                         stopIntaking(),
                         runOnce(this::stopPivot),
                         runOnce(() -> setPivot(IntakeTunables.PIVOT_MOVE_IN_SPEED)),
-                        Commands.waitTime(IntakeTunables.RETRACT_ATTEMPT_TIME))
+                        Commands.waitTime(IntakeTunables.RETRACT_ATTEMPT_TIME)).until(switchState)
                 .finallyDo(this::stopPivot);
     }
 
@@ -177,22 +183,18 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     public Command setReverse() {
-        return runOnce(
-            () -> {
-                stopPivot();
-                setIntake(IntakeTunables.INTAKE_REVERSE_SPEED);
-            }
-        );
+        return runOnce(() -> {
+            stopPivot();
+            setIntake(IntakeTunables.INTAKE_REVERSE_SPEED);
+        });
     }
 
-    public Command turnOffJammedIntake(){
-        return runOnce(
-            () -> {
-                if(intakeMotorJammed.getAsBoolean()){
-                    intakeDisabled = true;
-                }
+    public Command turnOffJammedIntake() {
+        return runOnce(() -> {
+            if (intakeMotorJammed.getAsBoolean()) {
+                intakeDisabled = true;
             }
-        );
+        });
     }
 
     public Command turnOff() {

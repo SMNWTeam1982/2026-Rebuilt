@@ -24,6 +24,7 @@ import frc.robot.Commands.DriverCommands;
 import frc.robot.Commands.RobotCommands;
 import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
+import frc.robot.Constants.Tunables.KickerTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
@@ -137,8 +138,10 @@ public class RobotContainer {
      * <p> is the shooter in shoot mode? (is it calculating the velocity from the equations?)
      */
     @AutoLogOutput(key = "Driver info/robot ready to shoot")
-    private final Trigger robotReadyToShoot =
-            drive.atTargetHeading.and(shooter.readyToShoot).and(shooter.inShootMode);
+    private final Trigger robotReadyToShoot = drive.atTargetHeading
+            .and(shooter.readyToShoot)
+            .and(shooter.inShootMode)
+            .and(() -> drive.getLinearSpeed() <= KickerTunables.ROBOT_MAX_SPEED_WHEN_KICKING);
 
     public RobotContainer() {
         CameraServer.startAutomaticCapture(0);
@@ -157,14 +160,14 @@ public class RobotContainer {
         autoChooser = new LoggedDashboardChooser<Command>("auto chooser", AutoBuilder.buildAutoChooser());
 
         // temporary, will not be called during comp code
-        // configureTestingBindings();
+        //configureTestingBindings();
     }
 
     private void addNamedCommands() {
         // auto commands
         NamedCommands.registerCommand(
                 "hub shooting procedure 5 seconds",
-                AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(5), onBlueAlliance));
+                AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(3), onBlueAlliance));
         NamedCommands.registerCommand(
                 "hub shooting procedure 10 seconds",
                 AutoCommands.shootIntoHub(drive, shooter, kicker, Seconds.of(10), onBlueAlliance));
@@ -286,13 +289,11 @@ public class RobotContainer {
 
         // operatorController.a().onTrue(shooter.turnOff().andThen(kicker.turnOff()));
 
-        operatorController.rightTrigger().and(operatorController.leftTrigger()).debounce(1.0).onTrue(
-                RobotCommands.tryUnjam(
-                        shooter,
-                        kicker,
-                        intake
-                )
-        );
+        operatorController
+                .rightTrigger()
+                .and(operatorController.leftTrigger())
+                .debounce(1.0)
+                .onTrue(RobotCommands.tryUnjam(shooter, kicker, intake));
 
         // deploy/retract the intake with a & b
         operatorController.a().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
@@ -390,9 +391,11 @@ public class RobotContainer {
     }
 
     private void configureTestingBindings() {
+        // this deploy command works (use for auto)
         operatorController.a().debounce(0.05).onTrue(intake.deploy());
         operatorController.b().debounce(0.05).onTrue(intake.stow());
 
+        // use this deploy for teleOp
         operatorController.x().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
         operatorController.y().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
 
