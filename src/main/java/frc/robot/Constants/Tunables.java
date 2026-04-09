@@ -223,7 +223,7 @@ public class Tunables {
         /** Number of LEDs per meter of LED Strip */
         private static final Distance LED_SPACING = Meters.of(1 / 60);
         // Number of LEDs on a single strip
-        public static final int SHOOTER_LED_STRIP_LENGTH = 30;
+        public static final int SHOOTER_LED_STRIP_LENGTH = 28;
         public static final int HOPPER_LEFT_STRIP_LENGTH = 45;
         public static final int HOPPER_RIGHT_STRIP_LENGTH = 45;
         // Common LED patterns
