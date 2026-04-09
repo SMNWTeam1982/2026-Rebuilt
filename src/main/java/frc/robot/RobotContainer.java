@@ -146,8 +146,11 @@ public class RobotContainer {
             .and(shooter.inShootMode)
             .and(() -> drive.getLinearSpeed() <= KickerTunables.ROBOT_MAX_SPEED_WHEN_KICKING);
 
+    @AutoLogOutput(key = "Test/Teleop Enabled")
     private final Trigger teleopEnabled = new Trigger(() -> DriverStation.isTeleopEnabled());
+    @AutoLogOutput(key = "Test/Auto Enabled")
     private final Trigger autoEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
+    @AutoLogOutput(key = "Test/Robot Disabled")
     private final Trigger robotDisabled = new Trigger(() -> DriverStation.isDisabled());
 
     public RobotContainer() {
