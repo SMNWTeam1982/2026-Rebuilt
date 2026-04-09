@@ -31,8 +31,9 @@ public class KickerSubsystem extends SubsystemBase {
         if (getCurrentCommand() == null) {
             Logger.recordOutput("Kicker/current command", "no active command");
         } else {
+            String currentCommandName = this.getCurrentCommand().getName();
             Logger.recordOutput(
-                    "Kicker/current command", this.getCurrentCommand().getName());
+                    "Kicker/current command", currentCommandName);
         }
     }
 
@@ -71,7 +72,8 @@ public class KickerSubsystem extends SubsystemBase {
                         Commands.waitTime(KickerTunables.HIGH_TIME),
                         setLow(),
                         Commands.waitTime(KickerTunables.LOW_TIME))
-                .finallyDo(() -> setSpeed(KickerTunables.IDLE_SPEED));
+                .finallyDo(() -> setSpeed(KickerTunables.IDLE_SPEED))
+                .withName("kick");
         // return runOnce(() -> kickerMotor.set(KickerTunables.HIGH_SPEED))
         //         .andThen(new WaitCommand(KickerTunables.HIGH_TIME))
         //         .andThen(runOnce(() -> kickerMotor.set(KickerTunables.LOW_SPEED)))

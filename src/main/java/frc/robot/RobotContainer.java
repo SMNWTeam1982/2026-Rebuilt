@@ -297,7 +297,7 @@ public class RobotContainer {
         operatorController
                 .rightTrigger()
                 .and(operatorController.leftTrigger())
-                .debounce(1.0)
+                .debounce(2.0)
                 .onTrue(RobotCommands.tryUnjam(shooter, kicker, intake));
 
         // deploy/retract the intake with a & b

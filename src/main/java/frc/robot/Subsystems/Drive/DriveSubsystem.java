@@ -162,6 +162,8 @@ public class DriveSubsystem extends SubsystemBase {
         Logger.recordOutput("Drive/Field Reletive Velocity", getFieldRelativeVelocity());
         Logger.recordOutput("Drive/Robot Pose", getRobotPose());
 
+        Logger.recordOutput("Drive/Linear speed", getLinearSpeed());
+
         // Field2D logging
         teleopField.setRobotPose(getRobotPose());
         autoField.setRobotPose(getRobotPose());

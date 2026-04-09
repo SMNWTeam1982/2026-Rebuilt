@@ -116,7 +116,7 @@ public class Tunables {
         public static final double FLYWHEEL_V = 0.128; // 26 Feb 2026
         public static final double FLYWHEEL_A = 0;
 
-        public static final double FLYWHEEL_RPM_TOLERANCE = 300.0;
+        public static final double FLYWHEEL_RPM_TOLERANCE = 400.0;
 
         public static final double FLYWHEEL_IDLE_RPM = 1000.0;
 
@@ -160,7 +160,7 @@ public class Tunables {
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
         public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.5);
 
-        public static final double PIVOT_OUTPUT_RATE_LIMIT = 1.0;
+        public static final double PIVOT_OUTPUT_RATE_LIMIT = 4.0;
 
         public static final double PIVOT_MOVE_IN_SPEED = 0.4;
         public static final double PIVOT_MOVE_OUT_SPEED = -0.5;
@@ -193,7 +193,7 @@ public class Tunables {
         /** the speed for the kicker to run at when moving in reverse */
         public static final double REVERSE_SPEED = -0.5;
 
-        public static final double ROBOT_MAX_SPEED_WHEN_KICKING = 0.1;
+        public static final double ROBOT_MAX_SPEED_WHEN_KICKING = 0.2;
 
         public static final SparkBaseConfig KICKER_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(25)

@@ -31,7 +31,7 @@ public class AutoCommands {
                         .asProxy(), // run the shooter commands as proxies so that the PID can run in background
                 Commands.deadline(
                         Commands.sequence(
-                                Commands.waitSeconds(0.2),
+                                Commands.waitSeconds(0.1),
                                 Commands.waitUntil(shooter.readyToShoot),
                                 kicker.kick().withTimeout(shootingTime)),
                         drive.driveAndPointAtTarget(

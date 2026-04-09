@@ -40,4 +40,18 @@ public class RobotCommands {
                         Commands.parallel(shooter.setIdle(), kicker.setIdle(), intake.stopIntaking()))
                 .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
     }
+
+    public static Command tryUnjamNoIntake(ShooterSubsystem shooter, KickerSubsystem kicker) {
+        return Commands.sequence(
+                        Commands.parallel(
+                                shooter.setReverse(), // set shooter to reverse RPM
+                                kicker.setReverse()),
+                        shooter.runPIDs()
+                                .withTimeout(Tunables.UNJAM_ATTEMPT_TIME), // give subsystems some time to try and unjam
+                        Commands.parallel( // if the subsystems are still jammed after then disable their jammed
+                                // components
+                                shooter.turnOffJammedChannels()),
+                        Commands.parallel(shooter.setIdle(), kicker.setIdle()))
+                .withInterruptBehavior(InterruptionBehavior.kCancelIncoming);
+    }
 }
