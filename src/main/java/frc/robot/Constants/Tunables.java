@@ -1,7 +1,5 @@
 package frc.robot.Constants;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -16,8 +14,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Constants.Measured.FieldMeasurements;
 
 // the rev website recommends a limit of 40A-60A for NEO 1.1
@@ -213,8 +209,5 @@ public class Tunables {
     public static final class VisionTunables {
         public static final Matrix<N3, N1> STANDARD_DEVIATIONS = VecBuilder.fill(.7, .7, .3);
         public static final Matrix<N3, N1> MULTI_TAG_STANDARD_DEVIATIONS = VecBuilder.fill(0.15, 0.15, 0.1);
-        public static final LEDPattern redSolid = LEDPattern.solid(Color.kRed);
-        public static final LEDPattern greenSolid = LEDPattern.solid(Color.kGreen);
-        public static final LEDPattern rainbowGradient = LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(MetersPerSecond.of(1), Meters.of(1/60));
     }
 }
