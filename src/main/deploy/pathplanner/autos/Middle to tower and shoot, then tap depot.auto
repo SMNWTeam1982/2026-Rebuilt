@@ -25,13 +25,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Tower to depot"
+            "pathName": "Tower to tap depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "tap depot to depot shooting pose"
+            "pathName": "Tap depot to In depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "In depot to depot shooting pose"
           }
         },
         {

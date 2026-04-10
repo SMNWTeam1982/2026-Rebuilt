@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1,
-        "y": 5.875
+        "x": 4.0,
+        "y": 0.7
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6902421652421653,
-        "y": 5.848034188034188
+        "x": 5.0,
+        "y": 0.7
       },
       "isLocked": false,
-      "linkedName": "Tap depot"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.4610398860398859,
-        "y": 7.097094017094017
+        "x": 2.7848095238095247,
+        "y": 3.0
       },
       "prevControl": {
-        "x": 0.8501459294196105,
-        "y": 7.360069346072764
+        "x": 1.7848095238095247,
+        "y": 3.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot shooting pose"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -44.07840537716317
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

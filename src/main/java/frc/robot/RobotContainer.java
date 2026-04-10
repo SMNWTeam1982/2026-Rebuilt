@@ -155,7 +155,6 @@ public class RobotContainer {
         CameraServer.startAutomaticCapture(0);
         //CameraServer.startAutomaticCapture(1);
 
-
         //Run corresponding LED Animations based on Robot enable/disable state
         robotDisabled.onTrue(lights.setLEDAnimation(() -> LED_PATTERN.IDLE));
         vision.hasVisionResult

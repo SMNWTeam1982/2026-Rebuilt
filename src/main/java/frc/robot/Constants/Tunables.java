@@ -42,7 +42,7 @@ public class Tunables {
          * configurable based on driver preference and game need
          * <p> this will be capped by the artificial max speed, so it can be set to any value & used to tune sensitivity
          * <p> meters/sec */
-        public static final double DRIVE_SPEED = 2.8; // 1 m/s
+        public static final double DRIVE_SPEED = 2.6; // 1 m/s
         /** this can end up being capped by the artificial max speed, but the cap depends on robot size & module positions
          * <p> radians/sec
          */
@@ -76,7 +76,7 @@ public class Tunables {
 
         /** config for the drive motor on the module */
         public static final SparkBaseConfig DRIVE_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(34).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
+                new SparkMaxConfig().smartCurrentLimit(33).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
 
         /** config for the turn motor on the module */
         public static final SparkBaseConfig TURN_MOTOR_CONFIG =
@@ -145,7 +145,7 @@ public class Tunables {
         public static final Time AUTO_SPIN_UP_TIME = Seconds.of(3);
 
         /** if the motor is drawing more than this and is moving slow then the motor is considered jammed */
-        public static final double FLYWHEEL_MOTOR_JAM_CURRENT_THRESHHOLD = 30.0;
+        public static final double FLYWHEEL_MOTOR_JAM_CURRENT_THRESHHOLD = 15.0;
 
         // brake mode on for the flywheels so that we dont get a penalty for an eranious shot while the flywheels spin
         // down
@@ -153,7 +153,7 @@ public class Tunables {
         // the total flywheel current should not exceed 60A (30A * 2 motors)
         // being somewhat conservative with the flywheel current limits
         public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(40)
+                .smartCurrentLimit(20)
                 .idleMode(SparkBaseConfig.IdleMode.kCoast)
                 .secondaryCurrentLimit(50);
     }
@@ -166,7 +166,7 @@ public class Tunables {
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
         public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.5);
 
-        public static final double PIVOT_OUTPUT_RATE_LIMIT = 4.0;
+        public static final double PIVOT_OUTPUT_RATE_LIMIT = 8.0;
 
         public static final double PIVOT_MOVE_IN_SPEED = 0.4;
         public static final double PIVOT_MOVE_OUT_SPEED = -0.5;
@@ -187,31 +187,31 @@ public class Tunables {
 
     public static final class KickerTunables {
         /** the speed of the kicker when on high */
-        public static final double HIGH_BELT_SPEED = 0.6;
+        public static final double HIGH_BELT_SPEED = -0.6;
         public static final double HIGH_WHEEL_SPEED = 0.5;
         /** the speed of the kicker when on low */
-        public static final double LOW_BELT_SPEED = -0.6;
+        public static final double LOW_BELT_SPEED = 0.6;
         public static final double LOW_WHEEL_SPEED = 0.5;
         /** how long the kicker runs at the high speed before switching to the low speed */
         public static final Time HIGH_TIME = Seconds.of(1.0);
         /** how long the kicker runs at the low speed before switching to the high speed */
-        public static final Time LOW_TIME = Seconds.of(0.1);
+        public static final Time LOW_TIME = Seconds.of(0.2);
         /** the speed the kicker runs at when not active */
-        public static final double IDLE_BELT_SPEED = -0.05;
+        public static final double IDLE_BELT_SPEED = 0.05;
         public static final double IDLE_WHEEL_SPEED = -0.05;
         /** the speed for the kicker to run at when moving in reverse */
-        public static final double REVERSE_BELT_SPEED = -0.5;
+        public static final double REVERSE_BELT_SPEED = 0.5;
         public static final double REVERSE_WHEEL_SPEED = -0.5;
 
         public static final double ROBOT_MAX_SPEED_WHEN_KICKING = 0.2;
 
         public static final SparkBaseConfig BELT_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(20)
-                .secondaryCurrentLimit(30)
+                .smartCurrentLimit(30)
+                .secondaryCurrentLimit(40)
                 .idleMode(IdleMode.kCoast);
         
         public static final SparkBaseConfig WHEEL_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(25)
+                .smartCurrentLimit(15)
                 .secondaryCurrentLimit(30)
                 .idleMode(IdleMode.kBrake);
     }
@@ -225,7 +225,7 @@ public class Tunables {
         /** Static animation speed for LEDs */
         private static final LinearVelocity LED_SCROLL_SPEED = MetersPerSecond.of(0.45);
         /** Number of LEDs per meter of LED Strip */
-        private static final Distance LED_SPACING = Meters.of(1 / 30.0);
+        private static final Distance LED_SPACING = Meters.of(1.0 / 30.0);
         // Number of LEDs on a single strip
         public static final int SHOOTER_LED_STRIP_LENGTH = 28;
         public static final int HOPPER_LEFT_STRIP_LENGTH = 45;

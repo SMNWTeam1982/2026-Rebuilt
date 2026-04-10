@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.4739601139601144,
-        "y": 5.069340459715704
+        "x": 1.726642857142858,
+        "y": 5.028380952380953
       },
       "isLocked": false,
       "linkedName": "Tower"
@@ -20,35 +20,16 @@
         "y": 5.875
       },
       "prevControl": {
-        "x": 1.6644017094017096,
-        "y": 5.860954415954415
+        "x": 1.4998928571428576,
+        "y": 5.773416666666667
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": "Tap depot"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.2,
-      "rotationDegrees": 53.91989627891454
-    }
-  ],
-  "constraintZones": [
-    {
-      "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.36028928336621086,
-      "maxWaypointRelativePos": 1.0,
-      "constraints": {
-        "maxVelocity": 0.7,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 480.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "rotationTargets": [],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -60,8 +41,8 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -179.90639888839758
+    "velocity": 1.0,
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": null,

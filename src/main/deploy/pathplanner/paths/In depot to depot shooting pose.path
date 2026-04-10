@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.1,
-        "y": 5.875
+        "x": 0.8,
+        "y": 6.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6902421652421653,
-        "y": 5.848034188034188
+        "x": 2.2449285714285723,
+        "y": 6.032559523809524
       },
       "isLocked": false,
-      "linkedName": "Tap depot"
+      "linkedName": "In depot"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 7.097094017094017
       },
       "prevControl": {
-        "x": 0.8501459294196105,
-        "y": 7.360069346072764
+        "x": 0.5173095238095247,
+        "y": 7.10152380952381
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": 180.0
   },
   "useDefaultConstraints": true

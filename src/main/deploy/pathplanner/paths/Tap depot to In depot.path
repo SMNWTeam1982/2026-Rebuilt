@@ -8,24 +8,24 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.6902421652421653,
-        "y": 5.848034188034188
+        "x": 0.8500000000000001,
+        "y": 5.875
       },
       "isLocked": false,
       "linkedName": "Tap depot"
     },
     {
       "anchor": {
-        "x": 1.4610398860398859,
-        "y": 7.097094017094017
+        "x": 0.8,
+        "y": 6.0
       },
       "prevControl": {
-        "x": 0.8501459294196105,
-        "y": 7.360069346072764
+        "x": 1.05,
+        "y": 6.0
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot shooting pose"
+      "linkedName": "In depot"
     }
   ],
   "rotationTargets": [],
@@ -41,13 +41,13 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -44.07840537716317
+    "velocity": 3.0,
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
-    "velocity": 0,
+    "velocity": 1.0,
     "rotation": 180.0
   },
   "useDefaultConstraints": true
