@@ -35,12 +35,9 @@ public class CANBus {
         public static final int RIGHT_MOTOR_ID = 12;
     }
 
-    public static final class ClimberIDs {
-        public static final int CLIMBER = 13;
-    }
-
     public static final class KickerIDs {
-        public static final int KICKER = 14;
+        public static final int WHEELS = 13;
+        public static final int BELTS = 14;
     }
 
     public static final class VisionConstants {
