@@ -42,7 +42,7 @@ public class Tunables {
          * configurable based on driver preference and game need
          * <p> this will be capped by the artificial max speed, so it can be set to any value & used to tune sensitivity
          * <p> meters/sec */
-        public static final double DRIVE_SPEED = 2.6; // 1 m/s
+        public static final double DRIVE_SPEED = 2.5; // 1 m/s
         /** this can end up being capped by the artificial max speed, but the cap depends on robot size & module positions
          * <p> radians/sec
          */
@@ -76,11 +76,11 @@ public class Tunables {
 
         /** config for the drive motor on the module */
         public static final SparkBaseConfig DRIVE_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(33).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
+                new SparkMaxConfig().smartCurrentLimit(35).inverted(true).idleMode(SparkBaseConfig.IdleMode.kBrake);
 
         /** config for the turn motor on the module */
         public static final SparkBaseConfig TURN_MOTOR_CONFIG =
-                new SparkMaxConfig().smartCurrentLimit(30).idleMode(SparkBaseConfig.IdleMode.kCoast);
+                new SparkMaxConfig().smartCurrentLimit(25).idleMode(SparkBaseConfig.IdleMode.kCoast);
     }
 
     public static final class FieldTunables {
@@ -153,9 +153,9 @@ public class Tunables {
         // the total flywheel current should not exceed 60A (30A * 2 motors)
         // being somewhat conservative with the flywheel current limits
         public static final SparkBaseConfig FLYWHEEL_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(20)
+                .smartCurrentLimit(40)
                 .idleMode(SparkBaseConfig.IdleMode.kCoast)
-                .secondaryCurrentLimit(50);
+                .secondaryCurrentLimit(60);
     }
 
     public static final class IntakeTunables {
@@ -168,8 +168,8 @@ public class Tunables {
 
         public static final double PIVOT_OUTPUT_RATE_LIMIT = 8.0;
 
-        public static final double PIVOT_MOVE_IN_SPEED = 0.4;
-        public static final double PIVOT_MOVE_OUT_SPEED = -0.5;
+        public static final double PIVOT_MOVE_IN_SPEED = 0.8;
+        public static final double PIVOT_MOVE_OUT_SPEED = -0.8;
 
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.8;
@@ -180,7 +180,7 @@ public class Tunables {
         public static final double INTAKE_MOTOR_JAM_CURRENT_THRESHHOLD = 15.0;
 
         public static final SparkBaseConfig PIVOT_MOTOR_CONFIG = new SparkMaxConfig()
-                .smartCurrentLimit(40)
+                .smartCurrentLimit(20)
                 .secondaryCurrentLimit(60)
                 .idleMode(SparkBaseConfig.IdleMode.kCoast);
     }
