@@ -1,5 +1,7 @@
 package frc.robot.Constants;
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -13,7 +15,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.Constants.Measured.FieldMeasurements;
 
 // the rev website recommends a limit of 40A-60A for NEO 1.1
@@ -218,5 +224,46 @@ public class Tunables {
     public static final class VisionTunables {
         public static final Matrix<N3, N1> STANDARD_DEVIATIONS = VecBuilder.fill(.7, .7, .3);
         public static final Matrix<N3, N1> MULTI_TAG_STANDARD_DEVIATIONS = VecBuilder.fill(0.15, 0.15, 0.1);
+    }
+
+    public static final class LEDTunables {
+        /** Static animation speed for LEDs */
+        private static final LinearVelocity LED_SCROLL_SPEED = MetersPerSecond.of(0.45);
+        /** Number of LEDs per meter of LED Strip */
+        private static final Distance LED_SPACING = Meters.of(1 / 30.0);
+        // Number of LEDs on a single strip
+        public static final int SHOOTER_LED_STRIP_LENGTH = 28;
+        public static final int HOPPER_LEFT_STRIP_LENGTH = 45;
+        public static final int HOPPER_RIGHT_STRIP_LENGTH = 45;
+        // Common LED patterns
+        public static enum LED_PATTERN {
+            NO_VISION,
+            HAS_VISION,
+            IDLE,
+            BLUE_ALLIANCE,
+            RED_ALLIANCE,
+            SHOOTING
+        };
+
+        public static final LEDPattern RED_SOLID = LEDPattern.solid(Color.kRed);
+        public static final LEDPattern GREEN_SOLID = LEDPattern.solid(Color.kGreen);
+        public static final LEDPattern RAINBOW_ANIMATION =
+                LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
+        public static final LEDPattern BLUE_ALLIANCE_ANIMATION = LEDPattern.gradient(
+                        LEDPattern.GradientType.kDiscontinuous, Color.kBlue, Color.kBlack, Color.kOrangeRed)
+                .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
+        public static final LEDPattern RED_ALLIANCE_ANIMATION = LEDPattern.gradient(
+                        LEDPattern.GradientType.kDiscontinuous, Color.kRed, Color.kBlack, Color.kOrangeRed)
+                .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
+        public static final LEDPattern SHOOTING_ANIMATION = LEDPattern.gradient(
+                        LEDPattern.GradientType.kDiscontinuous,
+                        Color.kBlack,
+                        Color.kBlack,
+                        Color.kBlack,
+                        Color.kYellow,
+                        Color.kBlack,
+                        Color.kBlack,
+                        Color.kBlack)
+                .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
     }
 }

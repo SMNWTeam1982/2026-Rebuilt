@@ -49,6 +49,7 @@ public class VisionSubsystem extends SubsystemBase {
         instanceCamera = new PhotonCamera(VisionConstants.limeLightCameraName);
 
         hasVisionResult
+                .and(() -> useLEDs)
                 .debounce(1.0, DebounceType.kFalling)
                 .onTrue(turnLEDsOn())
                 .onFalse(turnLEDsOff());
