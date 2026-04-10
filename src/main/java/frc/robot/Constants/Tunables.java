@@ -227,6 +227,14 @@ public class Tunables {
         public static final int HOPPER_LEFT_STRIP_LENGTH = 45;
         public static final int HOPPER_RIGHT_STRIP_LENGTH = 45;
         // Common LED patterns
+        public static enum LED_PATTERN {
+            NO_VISION,
+            HAS_VISION,
+            IDLE_ANIMATED,
+            BLUE_ALLIANCE,
+            RED_ALLIANCE,
+            SHOOTING
+        };
         public static final LEDPattern RED_SOLID = LEDPattern.solid(Color.kRed);
         public static final LEDPattern GREEN_SOLID = LEDPattern.solid(Color.kGreen);
         public static final LEDPattern RAINBOW_ANIMATION =
@@ -237,5 +245,7 @@ public class Tunables {
         public static final LEDPattern RED_ALLIANCE_ANIMATION = LEDPattern.gradient(
                         LEDPattern.GradientType.kDiscontinuous, Color.kOrange, Color.kRed)
                 .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
+        public static final LEDPattern SHOOTING_ANIMATION = LEDPattern.gradient(
+            LEDPattern.GradientType.kDiscontinuous, Color.kBlack, Color.kBlack, Color.kBlack, Color.kYellow, Color.kBlack, Color.kBlack, Color.kBlack).scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
     }
 }

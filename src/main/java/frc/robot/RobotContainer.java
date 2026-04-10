@@ -26,6 +26,7 @@ import frc.robot.Constants.Measured.FieldMeasurements;
 import frc.robot.Constants.Tunables.DriveBaseTunables;
 import frc.robot.Constants.Tunables.KickerTunables;
 import frc.robot.Constants.Tunables.ShooterTunables;
+import frc.robot.Constants.Tunables.LEDTunables.LED_PATTERN;
 import frc.robot.Subsystems.Drive.DriveSubsystem;
 import frc.robot.Subsystems.Intake.IntakeSubsystem;
 import frc.robot.Subsystems.Kicker.KickerSubsystem;
@@ -146,11 +147,8 @@ public class RobotContainer {
             .and(shooter.inShootMode)
             .and(() -> drive.getLinearSpeed() <= KickerTunables.ROBOT_MAX_SPEED_WHEN_KICKING);
 
-    @AutoLogOutput(key = "Test/Teleop Enabled")
     private final Trigger teleopEnabled = new Trigger(() -> DriverStation.isTeleopEnabled());
-    @AutoLogOutput(key = "Test/Auto Enabled")
     private final Trigger autoEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
-    @AutoLogOutput(key = "Test/Robot Disabled")
     private final Trigger robotDisabled = new Trigger(() -> DriverStation.isDisabled());
 
     public RobotContainer() {
@@ -163,9 +161,10 @@ public class RobotContainer {
         // robotEnabled.onFalse(vision.activateLEDMode());
 
         // Run corresponding LED Animations based on Robot enable/disable state
-        robotDisabled.onTrue(lights.runIdleAnimation());
-        autoEnabled.onTrue(lights.runVisionAnimation(() -> vision.hasVisionResult.getAsBoolean()));
-        teleopEnabled.onTrue(lights.runAllianceAnimation(onBlueAlliance));
+        robotDisabled.onTrue(lights.setLEDAnimation(() -> LED_PATTERN.IDLE_ANIMATED));
+        vision.hasVisionResult.and(autoEnabled).onTrue(lights.setLEDAnimation(() -> LED_PATTERN.HAS_VISION)).onFalse(lights.setLEDAnimation(() -> LED_PATTERN.NO_VISION));
+        teleopEnabled.and(() -> onBlueAlliance.getAsBoolean()).onTrue(lights.setLEDAnimation(() -> LED_PATTERN.BLUE_ALLIANCE));
+        teleopEnabled.and(() -> onBlueAlliance.getAsBoolean() == false).onTrue(lights.setLEDAnimation(() -> LED_PATTERN.RED_ALLIANCE));
 
         configureDriverBindings();
         configureOperatorBindings();
@@ -325,7 +324,7 @@ public class RobotContainer {
                 .onTrue(Commands.runOnce(() -> {
                             autoKickerModeEnabled = false;
                         })
-                        .andThen(kicker.kick()));
+                        .andThen(kicker.kick()).andThen(lights.setLEDAnimation(() -> LED_PATTERN.SHOOTING)));
 
         operatorController
                 .leftBumper()
@@ -333,7 +332,7 @@ public class RobotContainer {
                 .onTrue(Commands.runOnce(() -> {
                             autoKickerModeEnabled = false;
                         })
-                        .andThen(kicker.setIdle()));
+                        .andThen(kicker.setIdle()).andThen(lights.setLEDAnimation(() -> LED_PATTERN.IDLE_ANIMATED)));
 
         // automatically start/stop the kicker when the robot is ready/not ready
         robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
