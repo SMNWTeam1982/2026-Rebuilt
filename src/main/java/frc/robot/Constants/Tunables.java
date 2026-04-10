@@ -231,20 +231,12 @@ public class Tunables {
         private static final LinearVelocity LED_SCROLL_SPEED = MetersPerSecond.of(0.45);
         /** Number of LEDs per meter of LED Strip */
         private static final Distance LED_SPACING = Meters.of(1 / 30.0);
+        // Number of LEDs on all LED strips
+        public static final int GLOBAL_LED_STRIP_LENGTH = 45;
         // Number of LEDs on a single strip
-        public static final int SHOOTER_LED_STRIP_LENGTH = 28;
-        public static final int HOPPER_LEFT_STRIP_LENGTH = 45;
-        public static final int HOPPER_RIGHT_STRIP_LENGTH = 45;
-        // Common LED patterns
-        public static enum LED_PATTERN {
-            NO_VISION,
-            HAS_VISION,
-            IDLE,
-            BLUE_ALLIANCE,
-            RED_ALLIANCE,
-            SHOOTING
-        };
-
+        public static final int SHOOTER_LED_STRIP_LENGTH = 14;
+        public static final int LEFT_HOPPER_LED_STRIP_LENGTH = 15;
+        public static final int RIGHT_HOPPER_LED_STRIP_LENGTH = 16;
         public static final LEDPattern RED_SOLID = LEDPattern.solid(Color.kRed);
         public static final LEDPattern GREEN_SOLID = LEDPattern.solid(Color.kGreen);
         public static final LEDPattern RAINBOW_ANIMATION =
@@ -256,14 +248,7 @@ public class Tunables {
                         LEDPattern.GradientType.kDiscontinuous, Color.kRed, Color.kBlack, Color.kOrangeRed)
                 .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
         public static final LEDPattern SHOOTING_ANIMATION = LEDPattern.gradient(
-                        LEDPattern.GradientType.kDiscontinuous,
-                        Color.kBlack,
-                        Color.kBlack,
-                        Color.kBlack,
-                        Color.kYellow,
-                        Color.kBlack,
-                        Color.kBlack,
-                        Color.kBlack)
-                .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
+            LEDPattern.GradientType.kDiscontinuous, Color.kBlack, Color.kBlack, Color.kBlack, Color.kYellow, Color.kBlack, Color.kBlack, Color.kBlack)
+            .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
     }
 }
