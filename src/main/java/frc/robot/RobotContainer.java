@@ -70,17 +70,17 @@ public class RobotContainer {
     // if the robot is in a good spot for reliable shooting at the given rpm, the driver or operator can press the right
     // trigger to leave a marker in the log
     // this marker can be looked at later to make it easier to find data points for the distance->RPM function
-    @AutoLogOutput(key = "Driver info/operator says at good shooting position")
-    private final BooleanSupplier operatorSaysAtGoodShootingPosition =
-            operatorController.rightTrigger().debounce(0.05)::getAsBoolean;
+//     @AutoLogOutput(key = "Driver info/operator says at good shooting position")
+//     private final BooleanSupplier operatorSaysAtGoodShootingPosition =
+//             operatorController.rightTrigger().debounce(0.05)::getAsBoolean;
 
-    @AutoLogOutput(key = "Driver info/driver says at good shooting position")
-    private final BooleanSupplier driverSaysAtGoodShootingPosition =
-            driverController.rightTrigger().debounce(0.05)::getAsBoolean;
+//     @AutoLogOutput(key = "Driver info/driver says at good shooting position")
+//     private final BooleanSupplier driverSaysAtGoodShootingPosition =
+//             driverController.rightTrigger().debounce(0.05)::getAsBoolean;
 
     private final VisionSubsystem vision = new VisionSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult, onBlueAlliance);
-    private final LEDSubsystem lights = new LEDSubsystem();
+    //private final LEDSubsystem lights = new LEDSubsystem();
 
     // @AutoLogOutput(key = "Driver info/calculated hub target")
     private final Supplier<Translation2d> calculatedHubTarget = () -> {
@@ -147,9 +147,9 @@ public class RobotContainer {
             .and(shooter.inShootMode)
             .and(() -> drive.getLinearSpeed() <= KickerTunables.ROBOT_MAX_SPEED_WHEN_KICKING);
 
-    private final Trigger teleopEnabled = new Trigger(() -> DriverStation.isTeleopEnabled());
-    private final Trigger autoEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
-    private final Trigger robotDisabled = new Trigger(() -> DriverStation.isDisabled());
+//     private final Trigger teleopEnabled = new Trigger(() -> DriverStation.isTeleopEnabled());
+//     private final Trigger autoEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
+//     private final Trigger robotDisabled = new Trigger(() -> DriverStation.isDisabled());
 
     public RobotContainer() {
         CameraServer.startAutomaticCapture(0);
@@ -161,15 +161,15 @@ public class RobotContainer {
         // robotEnabled.onFalse(vision.activateLEDMode());
 
         // Run corresponding LED Animations based on Robot enable/disable state
-        robotDisabled.onTrue(lights.setLEDAnimation(() -> LED_PATTERN.IDLE));
-        vision.hasVisionResult
-                .and(autoEnabled)
-                .onTrue(lights.setLEDAnimation(() -> LED_PATTERN.HAS_VISION))
-                .onFalse(lights.setLEDAnimation(() -> LED_PATTERN.NO_VISION));
-        teleopEnabled.and(() -> onBlueAlliance.getAsBoolean()).onTrue(lights.setLEDAnimation(() -> LED_PATTERN
-                .BLUE_ALLIANCE));
-        teleopEnabled.and(() -> onBlueAlliance.getAsBoolean() == false).onTrue(lights.setLEDAnimation(() -> LED_PATTERN
-                .RED_ALLIANCE));
+        // robotDisabled.onTrue(lights.setLEDAnimation(() -> LED_PATTERN.IDLE));
+        // vision.hasVisionResult
+        //         .and(autoEnabled)
+        //         .onTrue(lights.setLEDAnimation(() -> LED_PATTERN.HAS_VISION))
+        //         .onFalse(lights.setLEDAnimation(() -> LED_PATTERN.NO_VISION));
+        // teleopEnabled.and(() -> onBlueAlliance.getAsBoolean()).onTrue(lights.setLEDAnimation(() -> LED_PATTERN
+        //         .BLUE_ALLIANCE));
+        // teleopEnabled.and(() -> !onBlueAlliance.getAsBoolean()).onTrue(lights.setLEDAnimation(() -> LED_PATTERN
+        //         .RED_ALLIANCE));
 
         configureDriverBindings();
         configureOperatorBindings();
@@ -196,37 +196,37 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("stop and deploy intake", AutoCommands.deployIntake(drive, intake));
 
-        NamedCommands.registerCommand(
-                "shoot & kick",
-                shooter.setTarget(() -> drive.getRobotPose().getTranslation(), calculatedHubTarget)
-                        .andThen(shooter.runPIDs().withTimeout(ShooterTunables.AUTO_SPIN_UP_TIME))
-                        .andThen(kicker.kick().alongWith(shooter.runPIDs())));
+        // NamedCommands.registerCommand(
+        //         "shoot & kick",
+        //         shooter.setTarget(() -> drive.getRobotPose().getTranslation(), calculatedHubTarget)
+        //                 .andThen(shooter.runPIDs().withTimeout(ShooterTunables.AUTO_SPIN_UP_TIME))
+        //                 .andThen(kicker.kick().alongWith(shooter.runPIDs())));
 
-        // shooter
-        NamedCommands.registerCommand(
-                "set shooter to target the hub",
-                shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget)
-                        .asProxy());
-        NamedCommands.registerCommand(
-                "spin up shooter",
-                shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget)
-                        .asProxy()
-                        .andThen(new WaitCommand(ShooterTunables.AUTO_SPIN_UP_TIME)));
-        NamedCommands.registerCommand("idle shooter", shooter.setIdle().asProxy());
-        // kicker
-        NamedCommands.registerCommand("kick", kicker.kick());
-        NamedCommands.registerCommand("kick 5 seconds", kicker.kick().withTimeout(5));
-        NamedCommands.registerCommand("kick 7.5 seconds", kicker.kick().withTimeout(7.5));
-        NamedCommands.registerCommand("kick 10 seconds", kicker.kick().withTimeout(10));
-        NamedCommands.registerCommand("start kicker", kicker.setHigh());
-        NamedCommands.registerCommand("stop kicker", kicker.setIdle());
-        // intake
-        NamedCommands.registerCommand("start intaking", intake.startIntaking());
-        NamedCommands.registerCommand("stop intaking", intake.stopIntaking());
-        NamedCommands.registerCommand("deploy intake", intake.deploy());
-        NamedCommands.registerCommand("stow intake", intake.stow());
-        // drive
-        NamedCommands.registerCommand("stop drive", drive.stop());
+        // // shooter
+        // NamedCommands.registerCommand(
+        //         "set shooter to target the hub",
+        //         shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget)
+        //                 .asProxy());
+        // NamedCommands.registerCommand(
+        //         "spin up shooter",
+        //         shooter.setTarget(drive.getRobotPose()::getTranslation, calculatedHubTarget)
+        //                 .asProxy()
+        //                 .andThen(new WaitCommand(ShooterTunables.AUTO_SPIN_UP_TIME)));
+        // NamedCommands.registerCommand("idle shooter", shooter.setIdle().asProxy());
+        // // kicker
+        // NamedCommands.registerCommand("kick", kicker.kick());
+        // NamedCommands.registerCommand("kick 5 seconds", kicker.kick().withTimeout(5));
+        // NamedCommands.registerCommand("kick 7.5 seconds", kicker.kick().withTimeout(7.5));
+        // NamedCommands.registerCommand("kick 10 seconds", kicker.kick().withTimeout(10));
+        // NamedCommands.registerCommand("start kicker", kicker.setHigh());
+        // NamedCommands.registerCommand("stop kicker", kicker.setIdle());
+        // // intake
+        // NamedCommands.registerCommand("start intaking", intake.startIntaking());
+        // NamedCommands.registerCommand("stop intaking", intake.stopIntaking());
+        // NamedCommands.registerCommand("deploy intake", intake.deploy());
+        // NamedCommands.registerCommand("stow intake", intake.stow());
+        // // drive
+        // NamedCommands.registerCommand("stop drive", drive.stop());
     }
 
     private Command enterManualMode() {
@@ -313,8 +313,7 @@ public class RobotContainer {
         // operatorController.a().onTrue(shooter.turnOff().andThen(kicker.turnOff()));
 
         operatorController
-                .rightTrigger()
-                .and(operatorController.leftTrigger())
+                .leftTrigger()
                 .debounce(2.0)
                 .onTrue(RobotCommands.tryUnjam(shooter, kicker, intake));
 
@@ -331,8 +330,8 @@ public class RobotContainer {
                 .onTrue(Commands.runOnce(() -> {
                             autoKickerModeEnabled = false;
                         })
-                        .andThen(kicker.kick())
-                        .andThen(lights.setLEDAnimation(() -> LED_PATTERN.SHOOTING)));
+                        .andThen(kicker.kick()));
+                        //.andThen(lights.setLEDAnimation(() -> LED_PATTERN.SHOOTING)));
 
         operatorController
                 .leftBumper()
@@ -340,8 +339,8 @@ public class RobotContainer {
                 .onTrue(Commands.runOnce(() -> {
                             autoKickerModeEnabled = false;
                         })
-                        .andThen(kicker.setIdle())
-                        .andThen(lights.setLEDAnimation(() -> LED_PATTERN.IDLE)));
+                        .andThen(kicker.setIdle()));
+                        //.andThen(lights.setLEDAnimation(() -> LED_PATTERN.IDLE)));
 
         // automatically start/stop the kicker when the robot is ready/not ready
         robotReadyToShoot.and(() -> autoKickerModeEnabled).whileTrue(kicker.kick());
