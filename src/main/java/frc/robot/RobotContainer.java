@@ -153,7 +153,7 @@ public class RobotContainer {
 
     public RobotContainer() {
         CameraServer.startAutomaticCapture(0);
-        CameraServer.startAutomaticCapture(1);
+        //CameraServer.startAutomaticCapture(1);
 
         // automatically disable the vision LED mode when teleOp is enabled
         // robotEnabled.onTrue(vision.deactivateLEDMode()).onTrue(vision.setLEDsIdle());
