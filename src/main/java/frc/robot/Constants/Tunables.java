@@ -187,20 +187,20 @@ public class Tunables {
 
     public static final class KickerTunables {
         /** the speed of the kicker when on high */
-        public static final double HIGH_BELT_SPEED = -0.6;
+        public static final double HIGH_BELT_SPEED = 0.6;
         public static final double HIGH_WHEEL_SPEED = 0.5;
         /** the speed of the kicker when on low */
-        public static final double LOW_BELT_SPEED = 0.6;
+        public static final double LOW_BELT_SPEED = -0.6;
         public static final double LOW_WHEEL_SPEED = 0.5;
         /** how long the kicker runs at the high speed before switching to the low speed */
         public static final Time HIGH_TIME = Seconds.of(1.0);
         /** how long the kicker runs at the low speed before switching to the high speed */
         public static final Time LOW_TIME = Seconds.of(0.2);
         /** the speed the kicker runs at when not active */
-        public static final double IDLE_BELT_SPEED = 0.05;
+        public static final double IDLE_BELT_SPEED = -0.05;
         public static final double IDLE_WHEEL_SPEED = -0.05;
         /** the speed for the kicker to run at when moving in reverse */
-        public static final double REVERSE_BELT_SPEED = 0.5;
+        public static final double REVERSE_BELT_SPEED = -0.5;
         public static final double REVERSE_WHEEL_SPEED = -0.5;
 
         public static final double ROBOT_MAX_SPEED_WHEN_KICKING = 0.2;
