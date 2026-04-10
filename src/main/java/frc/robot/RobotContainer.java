@@ -80,7 +80,7 @@ public class RobotContainer {
 
     private final VisionSubsystem vision = new VisionSubsystem();
     private final DriveSubsystem drive = new DriveSubsystem(vision::getLastVisionResult, onBlueAlliance);
-    private final LEDSubsystem lights = new LEDSubsystem();
+    //private final LEDSubsystem lights = new LEDSubsystem();
 
     // @AutoLogOutput(key = "Driver info/calculated hub target")
     private final Supplier<Translation2d> calculatedHubTarget = () -> {
@@ -147,24 +147,24 @@ public class RobotContainer {
             .and(shooter.inShootMode)
             .and(() -> drive.getLinearSpeed() <= KickerTunables.ROBOT_MAX_SPEED_WHEN_KICKING);
 
-    private final Trigger teleopEnabled = new Trigger(() -> DriverStation.isTeleopEnabled());
-    private final Trigger autoEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
-    private final Trigger robotDisabled = new Trigger(() -> DriverStation.isDisabled());
+//     private final Trigger teleopEnabled = new Trigger(() -> DriverStation.isTeleopEnabled());
+//     private final Trigger autoEnabled = new Trigger(() -> DriverStation.isAutonomousEnabled());
+//     private final Trigger robotDisabled = new Trigger(() -> DriverStation.isDisabled());
 
     public RobotContainer() {
         CameraServer.startAutomaticCapture(0);
         //CameraServer.startAutomaticCapture(1);
 
         //Run corresponding LED Animations based on Robot enable/disable state
-        robotDisabled.onTrue(lights.setLEDAnimation(() -> LED_PATTERN.IDLE));
-        vision.hasVisionResult
-                .and(autoEnabled)
-                .onTrue(lights.setLEDAnimation(() -> LED_PATTERN.HAS_VISION))
-                .onFalse(lights.setLEDAnimation(() -> LED_PATTERN.NO_VISION));
-        teleopEnabled.and(() -> onBlueAlliance.getAsBoolean()).onTrue(lights.setLEDAnimation(() -> LED_PATTERN
-                .BLUE_ALLIANCE));
-        teleopEnabled.and(() -> !onBlueAlliance.getAsBoolean()).onTrue(lights.setLEDAnimation(() -> LED_PATTERN
-                .RED_ALLIANCE));
+        // robotDisabled.onTrue(lights.setLEDAnimation(() -> LED_PATTERN.IDLE));
+        // vision.hasVisionResult
+        //         .and(autoEnabled)
+        //         .onTrue(lights.setLEDAnimation(() -> LED_PATTERN.HAS_VISION))
+        //         .onFalse(lights.setLEDAnimation(() -> LED_PATTERN.NO_VISION));
+        // teleopEnabled.and(() -> onBlueAlliance.getAsBoolean()).onTrue(lights.setLEDAnimation(() -> LED_PATTERN
+        //         .BLUE_ALLIANCE));
+        // teleopEnabled.and(() -> !onBlueAlliance.getAsBoolean()).onTrue(lights.setLEDAnimation(() -> LED_PATTERN
+        //         .RED_ALLIANCE));
 
         configureDriverBindings();
         configureOperatorBindings();
