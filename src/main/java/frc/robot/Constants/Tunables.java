@@ -208,7 +208,7 @@ public class Tunables {
         public static final SparkBaseConfig BELT_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(20)
                 .secondaryCurrentLimit(30)
-                .idleMode(IdleMode.kBrake);
+                .idleMode(IdleMode.kCoast);
         
         public static final SparkBaseConfig WHEEL_MOTOR_CONFIG = new SparkMaxConfig()
                 .smartCurrentLimit(25)
