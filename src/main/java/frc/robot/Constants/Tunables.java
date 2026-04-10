@@ -219,9 +219,9 @@ public class Tunables {
 
     public static final class LEDTunables {
         /** Static animation speed for LEDs */
-        private static final LinearVelocity LED_SCROLL_SPEED = MetersPerSecond.of(1);
+        private static final LinearVelocity LED_SCROLL_SPEED = MetersPerSecond.of(0.45);
         /** Number of LEDs per meter of LED Strip */
-        private static final Distance LED_SPACING = Meters.of(1 / 60.0);
+        private static final Distance LED_SPACING = Meters.of(1 / 30.0);
         // Number of LEDs on a single strip
         public static final int SHOOTER_LED_STRIP_LENGTH = 28;
         public static final int HOPPER_LEFT_STRIP_LENGTH = 45;
@@ -230,22 +230,31 @@ public class Tunables {
         public static enum LED_PATTERN {
             NO_VISION,
             HAS_VISION,
-            IDLE_ANIMATED,
+            IDLE,
             BLUE_ALLIANCE,
             RED_ALLIANCE,
             SHOOTING
         };
+
         public static final LEDPattern RED_SOLID = LEDPattern.solid(Color.kRed);
         public static final LEDPattern GREEN_SOLID = LEDPattern.solid(Color.kGreen);
         public static final LEDPattern RAINBOW_ANIMATION =
                 LEDPattern.rainbow(255, 128).scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
         public static final LEDPattern BLUE_ALLIANCE_ANIMATION = LEDPattern.gradient(
-                        LEDPattern.GradientType.kDiscontinuous, Color.kOrange, Color.kBlue)
+                        LEDPattern.GradientType.kDiscontinuous, Color.kBlue, Color.kBlack, Color.kOrangeRed)
                 .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
         public static final LEDPattern RED_ALLIANCE_ANIMATION = LEDPattern.gradient(
-                        LEDPattern.GradientType.kDiscontinuous, Color.kOrange, Color.kRed)
+                        LEDPattern.GradientType.kDiscontinuous, Color.kRed, Color.kBlack, Color.kOrangeRed)
                 .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
         public static final LEDPattern SHOOTING_ANIMATION = LEDPattern.gradient(
-            LEDPattern.GradientType.kDiscontinuous, Color.kBlack, Color.kBlack, Color.kBlack, Color.kYellow, Color.kBlack, Color.kBlack, Color.kBlack).scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
+                        LEDPattern.GradientType.kDiscontinuous,
+                        Color.kBlack,
+                        Color.kBlack,
+                        Color.kBlack,
+                        Color.kYellow,
+                        Color.kBlack,
+                        Color.kBlack,
+                        Color.kBlack)
+                .scrollAtAbsoluteSpeed(LED_SCROLL_SPEED, LED_SPACING);
     }
 }
