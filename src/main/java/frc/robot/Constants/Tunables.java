@@ -172,9 +172,9 @@ public class Tunables {
         public static final double PIVOT_MOVE_OUT_SPEED = -0.4;
 
         // percent that the intake will be set at when intaking
-        public static final double INTAKE_SPEED = -0.8;
+        public static final double INTAKE_SPEED = 0.8;
 
-        public static final double INTAKE_REVERSE_SPEED = 0.8;
+        public static final double INTAKE_REVERSE_SPEED = -0.8;
 
         /** if the motor is drawing more than this and is moving slow then the motor is considered jammed */
         public static final double INTAKE_MOTOR_JAM_CURRENT_THRESHHOLD = 15.0;
