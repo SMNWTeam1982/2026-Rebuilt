@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.2449285714285723,
-        "y": 6.032559523809524
+        "x": 1.3703214285714296,
+        "y": 6.280904761904762
       },
       "isLocked": false,
       "linkedName": "In depot"
@@ -20,8 +20,8 @@
         "y": 7.097094017094017
       },
       "prevControl": {
-        "x": 0.5173095238095247,
-        "y": 7.10152380952381
+        "x": 1.4459047619047625,
+        "y": 6.4644642857142856
       },
       "nextControl": null,
       "isLocked": false,
@@ -29,7 +29,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 0.5,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {

@@ -161,7 +161,7 @@ public class Tunables {
     public static final class IntakeTunables {
 
         /** the maximuma mount of time that the intake will run the pivot motor during a deploy attempt */
-        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(2.0);
+        public static final Time DEPLOY_ATTEMPT_TIME = Seconds.of(2.1);
 
         /** the maximuma mount of time that the intake will run the pivot motor during a retract attempt */
         public static final Time RETRACT_ATTEMPT_TIME = Seconds.of(1.5);
@@ -169,7 +169,7 @@ public class Tunables {
         public static final double PIVOT_OUTPUT_RATE_LIMIT = 4.0;
 
         public static final double PIVOT_MOVE_IN_SPEED = 0.8;
-        public static final double PIVOT_MOVE_OUT_SPEED = -0.4;
+        public static final double PIVOT_MOVE_OUT_SPEED = -0.6;
 
         // percent that the intake will be set at when intaking
         public static final double INTAKE_SPEED = 0.8;
