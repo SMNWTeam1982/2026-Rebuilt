@@ -122,7 +122,7 @@ public class Tunables {
         public static final double FLYWHEEL_V = 0.128; // 26 Feb 2026
         public static final double FLYWHEEL_A = 0;
 
-        public static final double FLYWHEEL_RPM_TOLERANCE = 400.0;
+        public static final double FLYWHEEL_RPM_TOLERANCE = 200.0;
 
         public static final double FLYWHEEL_IDLE_RPM = 1000.0;
 

@@ -15,6 +15,12 @@
           "data": {
             "name": "hub shooting procedure 10 seconds"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "hub shooting procedure 10 seconds"
+          }
         }
       ]
     }

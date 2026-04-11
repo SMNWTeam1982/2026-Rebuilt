@@ -165,7 +165,7 @@ public class RobotContainer {
         autoEnabled.onTrue(lights.setAutoAnimation(vision.hasVisionResult, onBlueAlliance));
 
         configureDriverBindings();
-        configureOperatorBindings();
+        // configureOperatorBindings();
 
         addNamedCommands();
 
@@ -480,10 +480,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.sequence(enterManualMode(), autoChooser.get()).finallyDo(() -> {
-            autoKickerModeEnabled = true;
-            driverCanChangeShooterRPM = true;
-        });
+        return Commands.sequence(enterManualMode(), autoChooser.get(), shooter.turnOff(), kicker.turnOff(), intake.turnOff());
         // return drive.nudgeBack()
         //         .withTimeout(3)
         //         .andThen(DriverCommands.setAimAtTarget(
