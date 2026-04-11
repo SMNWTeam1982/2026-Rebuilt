@@ -164,15 +164,15 @@ public class RobotContainer {
         teleopEnabled.onTrue(lights.setTeleopAnimation(shooter.inShootMode, onBlueAlliance));
         autoEnabled.onTrue(lights.setAutoAnimation(vision.hasVisionResult, onBlueAlliance));
 
-        configureDriverBindings();
-        configureOperatorBindings();
+        //configureDriverBindings();
+        //configureOperatorBindings();
 
         addNamedCommands();
 
         autoChooser = new LoggedDashboardChooser<Command>("auto chooser", AutoBuilder.buildAutoChooser());
 
         // temporary, will not be called during comp code
-        // configureTestingBindings();
+        configureTestingBindings();
     }
 
     private void addNamedCommands() {
