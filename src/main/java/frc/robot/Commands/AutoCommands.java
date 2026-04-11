@@ -33,6 +33,7 @@ public class AutoCommands {
                         Commands.sequence(
                                 Commands.waitSeconds(0.1),
                                 Commands.waitUntil(shooter.readyToShoot),
+                                Commands.waitSeconds(0.1),
                                 kicker.kick().withTimeout(shootingTime)),
                         drive.driveAndPointAtTarget(
                                 () -> new ChassisSpeeds(),
