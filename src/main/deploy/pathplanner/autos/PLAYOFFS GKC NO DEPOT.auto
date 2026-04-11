@@ -17,9 +17,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "hub shooting procedure 10 seconds"
+            "waitTime": 1.0
           }
         }
       ]

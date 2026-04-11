@@ -165,7 +165,7 @@ public class RobotContainer {
         autoEnabled.onTrue(lights.setAutoAnimation(vision.hasVisionResult, onBlueAlliance));
 
         configureDriverBindings();
-        // configureOperatorBindings();
+        configureOperatorBindings();
 
         addNamedCommands();
 
@@ -305,14 +305,20 @@ public class RobotContainer {
 
         // operatorController.a().onTrue(shooter.turnOff().andThen(kicker.turnOff()));
 
+        operatorController.a().debounce(0.1).onTrue(
+                Commands.sequence(
+        shooter.turnOff(), kicker.turnOff(), intake.turnOff()
+                )
+        );
+
         operatorController
                 .leftTrigger()
                 .debounce(2.0)
                 .onTrue(RobotCommands.tryUnjam(shooter, kicker, intake));
 
         // deploy/retract the intake with a & b
-        operatorController.a().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
-        operatorController.b().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
+        //operatorController.a().debounce(0.05).whileTrue(intake.startIntaking().andThen(intake.moveOut()));
+        //operatorController.b().debounce(0.05).whileTrue(intake.stopIntaking().andThen(intake.moveIn()));
 
         operatorController.rightTrigger().debounce(0.05).whileTrue(intake.moveIn());
 
@@ -480,7 +486,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.sequence(enterManualMode(), autoChooser.get(), shooter.turnOff(), kicker.turnOff(), intake.turnOff());
+        return Commands.sequence(enterManualMode(), autoChooser.get());
         // return drive.nudgeBack()
         //         .withTimeout(3)
         //         .andThen(DriverCommands.setAimAtTarget(
