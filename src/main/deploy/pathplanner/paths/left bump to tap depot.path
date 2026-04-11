@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.549,
+        "x": 1.3835185185185184,
         "y": 5.529
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6994033564814814,
-        "y": 5.558410951967593
+        "x": 2.0166096866096868,
+        "y": 5.585427350427351
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "left bump end"
     },
     {
       "anchor": {
-        "x": 1.3835185185185184,
-        "y": 5.529
+        "x": 1.1,
+        "y": 5.875
       },
       "prevControl": {
-        "x": 1.7587451533564815,
-        "y": 5.562347583912038
+        "x": 1.952008547008547,
+        "y": 6.140997150997151
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "left bump end"
+      "linkedName": "Tap depot"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": -24.214696208817116
+    "velocity": 1.0,
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -24.214696208817116
   },
   "useDefaultConstraints": true
 }

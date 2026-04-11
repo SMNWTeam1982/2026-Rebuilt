@@ -1,0 +1,55 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left bump back"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "hub shooting procedure 5 seconds"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "stop and deploy intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left bump to tap depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Tap depot to In depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "In depot to depot shooting pose"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "hub shooting procedure 10 seconds"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
