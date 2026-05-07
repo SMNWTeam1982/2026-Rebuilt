@@ -6,11 +6,10 @@ import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkBaseConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -20,7 +19,6 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.CANBus.ShooterIDs;
 import frc.robot.Constants.Tunables.ShooterTunables;
@@ -42,9 +40,12 @@ public class ShooterSubsystem extends SubsystemBase {
     private final RelativeEncoder leftEncoder = leftMotor.getEncoder();
 
     @AutoLogOutput(key = "Shooter/right jammed")
-    public final Trigger rightShooterJammed = new Trigger(() -> rightMotor.getOutputCurrent() >= 30.0 && Math.abs(rightEncoder.getVelocity()) <= 400);
+    public final Trigger rightShooterJammed =
+            new Trigger(() -> rightMotor.getOutputCurrent() >= 30.0 && Math.abs(rightEncoder.getVelocity()) <= 400);
+
     @AutoLogOutput(key = "Shooter/left jammed")
-    public final Trigger leftShooterJammed = new Trigger(() -> leftMotor.getOutputCurrent() >= 30.0 && Math.abs(leftEncoder.getVelocity()) <= 400);
+    public final Trigger leftShooterJammed =
+            new Trigger(() -> leftMotor.getOutputCurrent() >= 30.0 && Math.abs(leftEncoder.getVelocity()) <= 400);
 
     /** input RPM, outputs volts */
     private final PIDController rightVelocityController =
@@ -122,8 +123,6 @@ public class ShooterSubsystem extends SubsystemBase {
             Logger.recordOutput(
                     "Shooter/current command", this.getCurrentCommand().getName());
         }
-
-        
     }
 
     /** set the target of both pid loops, doing unit conversion, clamping it, and sending an alert if it is out of bounds */
@@ -241,34 +240,33 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** disables the motors and sets their current limits to 0, their pid gains to 0, and their ff gains to 0 */
     public Command turnOff() {
-        return runOnce(
-            () -> {
-                Logger.recordOutput("Shooter/turned off", true);
-                rightMotor.disable();
-                leftMotor.disable();
+        return runOnce(() -> {
+            Logger.recordOutput("Shooter/turned off", true);
+            rightMotor.disable();
+            leftMotor.disable();
 
-                SparkBaseConfig disabledConfig = new SparkMaxConfig().idleMode(IdleMode.kBrake).smartCurrentLimit(0).secondaryCurrentLimit(0.0);
-                rightMotor.configure(disabledConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-                leftMotor.configure(disabledConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+            SparkBaseConfig disabledConfig = new SparkMaxConfig()
+                    .idleMode(IdleMode.kBrake)
+                    .smartCurrentLimit(0)
+                    .secondaryCurrentLimit(0.0);
+            rightMotor.configure(disabledConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+            leftMotor.configure(disabledConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-                flywheelFeedforward.setKa(0.0);
-                flywheelFeedforward.setKs(0.0);
-                flywheelFeedforward.setKv(0.0);
+            flywheelFeedforward.setKa(0.0);
+            flywheelFeedforward.setKs(0.0);
+            flywheelFeedforward.setKv(0.0);
 
-                rightVelocityController.setPID(0.0, 0.0, 0.0);
-                leftVelocityController.setPID(0.0, 0.0, 0.0);
+            rightVelocityController.setPID(0.0, 0.0, 0.0);
+            leftVelocityController.setPID(0.0, 0.0, 0.0);
 
-                setDefaultCommand(dontMove());
-            }
-        );
+            setDefaultCommand(dontMove());
+        });
     }
 
     public Command dontMove() {
-        return run(
-            () -> {
-                rightMotor.stopMotor();
-                leftMotor.stopMotor();
-            }
-        );
+        return run(() -> {
+            rightMotor.stopMotor();
+            leftMotor.stopMotor();
+        });
     }
 }

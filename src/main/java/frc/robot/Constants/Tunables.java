@@ -34,7 +34,6 @@ public class Tunables {
          * configurable based on driver preference and game need
          * <p> this will be capped by the artificial max speed, so it can be set to any value & used to tune sensitivity
          * <p> meters/sec */
-
         public static final double DRIVE_SPEED = 2.8; // 1 m/s
         /** this can end up being capped by the artificial max speed, but the cap depends on robot size & module positions
          * <p> radians/sec
@@ -47,7 +46,6 @@ public class Tunables {
         public static final double NUDGE_SPEED = 0.5;
 
         public static final double MAX_AUTO_SPEED = 1.5;
-
 
         public static final double HEADING_P = 6.0;
         public static final double HEADING_I = 0.0;
